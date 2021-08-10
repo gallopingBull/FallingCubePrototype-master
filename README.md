@@ -1,2 +1,2 @@
-# FallingCube-master
+# FallingCubePrototype-master
 project folder for small prototype I made
