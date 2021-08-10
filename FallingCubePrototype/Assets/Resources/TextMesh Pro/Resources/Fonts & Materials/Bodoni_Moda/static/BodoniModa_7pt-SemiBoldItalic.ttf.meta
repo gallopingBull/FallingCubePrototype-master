@@ -1,0 +1,26 @@
+fileFormatVersion: 2
+guid: 760de3f6780fe614183a643a0238c792
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bodoni Moda 7pt
+  fontNames:
+  - Bodoni Moda 7pt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: d5a15e80822baf04383ad9159b3beb56, type: 3}
+  - {fileID: 12800000, guid: 3344139374433dc4fae973e583d6f1f0, type: 3}
+  - {fileID: 12800000, guid: 1092a87ec9893344ebb03f929f66bfcc, type: 3}
+  - {fileID: 12800000, guid: 558a81eeda843bf41a0041ea074caf67, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

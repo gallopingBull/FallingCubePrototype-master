@@ -1,0 +1,31 @@
+fileFormatVersion: 2
+guid: ba71965b40d50ab4eac19f6b53874ba8
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bodoni Moda 72pt
+  fontNames:
+  - Bodoni Moda 72pt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 0aa847b136fb32441b8c59e4855a7889, type: 3}
+  - {fileID: 12800000, guid: 410602b7f370b4d4781d3414da1945bd, type: 3}
+  - {fileID: 12800000, guid: 64c0ccfa953e87149a39e3a56fc57485, type: 3}
+  - {fileID: 12800000, guid: 8145413bc8f9698459e6393909be3a80, type: 3}
+  - {fileID: 12800000, guid: c88bdbedca6d4f34ea0b47865d1a8068, type: 3}
+  - {fileID: 12800000, guid: 54fea32ee56421b4fb86382296fb7678, type: 3}
+  - {fileID: 12800000, guid: 830bb9ee183c40d44a06a3fb6a9aace5, type: 3}
+  - {fileID: 12800000, guid: d2835a6f6f958474bb74518c9e54843a, type: 3}
+  - {fileID: 12800000, guid: 097801cff39465f4b923c3ffa5cc9405, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

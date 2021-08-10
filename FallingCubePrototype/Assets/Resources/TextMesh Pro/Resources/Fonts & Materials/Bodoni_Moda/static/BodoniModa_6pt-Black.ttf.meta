@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: f25293f92c199b04cacdf365b331a55b
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bodoni Moda 6pt
+  fontNames:
+  - Bodoni Moda 6pt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 32b58362bff64114995425973afc532a, type: 3}
+  - {fileID: 12800000, guid: e006d263a0adc8043979326f7f6865a3, type: 3}
+  - {fileID: 12800000, guid: 00aac63d145c169488bb6cb1c4fdc97d, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

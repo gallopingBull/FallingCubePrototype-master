@@ -1,0 +1,33 @@
+fileFormatVersion: 2
+guid: 7ff9bc60b89376a42bfac9d87a93a708
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bodoni Moda 10pt
+  fontNames:
+  - Bodoni Moda 10pt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 3cf9d2006dab52a4eba6a00fe0d6bad4, type: 3}
+  - {fileID: 12800000, guid: 75b0b5605d924594fb13b2de623647c7, type: 3}
+  - {fileID: 12800000, guid: fa7fad81c1df47c4a80ec8a6631195e9, type: 3}
+  - {fileID: 12800000, guid: b77d4fc2d1674c049821f4c8fbac6176, type: 3}
+  - {fileID: 12800000, guid: 1e564f765ed9af84383e04ecd48117ac, type: 3}
+  - {fileID: 12800000, guid: 18651ac6b30c94848a1a5d92cd24949a, type: 3}
+  - {fileID: 12800000, guid: 4ea19efb97830b443b06763cec916148, type: 3}
+  - {fileID: 12800000, guid: 8a11981d9daff9b418cfe5bab3304efc, type: 3}
+  - {fileID: 12800000, guid: 27f23d8d72f656741a3fa14117277698, type: 3}
+  - {fileID: 12800000, guid: eea2082e9c2738f48bb0e1bb563fcd8d, type: 3}
+  - {fileID: 12800000, guid: 6dab70dec73d4664e94549989f9cbad1, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

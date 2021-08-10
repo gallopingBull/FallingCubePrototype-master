@@ -1,0 +1,32 @@
+fileFormatVersion: 2
+guid: 9e6be0423a4307444919c77799d2114b
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bodoni Moda 20pt
+  fontNames:
+  - Bodoni Moda 20pt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 9b9e2ad1c9ad39f4c9dc51b51fc17145, type: 3}
+  - {fileID: 12800000, guid: 077688b2a41566c4dbc2d8f606b9538b, type: 3}
+  - {fileID: 12800000, guid: 96f7ecd223f977942982a803d1938189, type: 3}
+  - {fileID: 12800000, guid: 3db50e74ff83dc24f9d36eb1b3448537, type: 3}
+  - {fileID: 12800000, guid: 0928fcd69a3bcf24798336254c66b536, type: 3}
+  - {fileID: 12800000, guid: 7831508959eff0541ad72a4c235ec621, type: 3}
+  - {fileID: 12800000, guid: 71b9f9da3ef1fb444949bb49c414309f, type: 3}
+  - {fileID: 12800000, guid: b882370bb95afda4697de9fedef58695, type: 3}
+  - {fileID: 12800000, guid: 7bc4752e52e948f41bbc0456517b33de, type: 3}
+  - {fileID: 12800000, guid: 2bad2d8f46b973e4eb0a49f07e5892b2, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,26 @@
+fileFormatVersion: 2
+guid: a3708f856501fdc4784cf57cd6eef83a
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bodoni Moda 24pt
+  fontNames:
+  - Bodoni Moda 24pt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 33c82271df52a194cb6b6c0f7156720d, type: 3}
+  - {fileID: 12800000, guid: d087af23f6e7d8e468ff6c83c53813bf, type: 3}
+  - {fileID: 12800000, guid: d03ee16a3bcfa7a46828870dd5fcc8d5, type: 3}
+  - {fileID: 12800000, guid: 91f24d1c996249147b8709b2776be3ae, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

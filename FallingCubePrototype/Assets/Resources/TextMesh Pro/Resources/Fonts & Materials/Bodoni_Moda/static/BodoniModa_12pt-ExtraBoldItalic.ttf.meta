@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: f3281df1e62fe6c4a80be404b7c77368
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bodoni Moda 12pt
+  fontNames:
+  - Bodoni Moda 12pt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: d2c2cf2224645dc4b8fe81e5a1d31d64, type: 3}
+  - {fileID: 12800000, guid: f3e4bbd8ca3853d44ad29800737fedda, type: 3}
+  - {fileID: 12800000, guid: e2cf29fe83d98bf49a9502e8c87791b1, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

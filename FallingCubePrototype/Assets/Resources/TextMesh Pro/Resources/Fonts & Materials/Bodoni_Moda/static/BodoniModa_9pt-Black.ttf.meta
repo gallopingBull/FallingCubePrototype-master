@@ -1,0 +1,30 @@
+fileFormatVersion: 2
+guid: 7aeeb5ec661d38e4d9f8bc6e01c4b24e
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bodoni Moda 9pt
+  fontNames:
+  - Bodoni Moda 9pt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 39b9d3307f0074b499484b9001804d5d, type: 3}
+  - {fileID: 12800000, guid: f923d7e1a1d70d1499034d8849d8b4cc, type: 3}
+  - {fileID: 12800000, guid: e18472aa7822253449451d062f05485d, type: 3}
+  - {fileID: 12800000, guid: f123aaaaadb840149be1e9c5471cc6a2, type: 3}
+  - {fileID: 12800000, guid: 64f3d51bf44ae3349892a17b8b2093e3, type: 3}
+  - {fileID: 12800000, guid: 85a34c7b2072b8446b9ed288a02a74d6, type: 3}
+  - {fileID: 12800000, guid: 77eddf0c139b44b4083a122e16a61a1d, type: 3}
+  - {fileID: 12800000, guid: f4ebe87d58fa6d8488eadb8935221dfd, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

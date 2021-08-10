@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: f461a664f876d524fb201dbe0456a920
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bodoni Moda 96pt
+  fontNames:
+  - Bodoni Moda 96pt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: d2ee98e53a9b1554aafcd8c35c84db2d, type: 3}
+  - {fileID: 12800000, guid: e020cbb9c2a2c4c43b953ba9a01ec792, type: 3}
+  - {fileID: 12800000, guid: e38924f9a5e17a540a473bfcd519bbda, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
