@@ -6,7 +6,10 @@ namespace Invector.Utils
         public Transform referenceLocalParent;
 
         public bool updateLocalX, updateLocalY, updateLocalZ;
-
+        
+        public bool limitOnBox;
+        [vHideInInspector("limitOnBox")]
+        public BoxCollider box;
         public void UpdatePosition(GameObject target)
         {
             SetLocalPosition(target.transform.position);
@@ -23,6 +26,7 @@ namespace Invector.Utils
         }
         void SetLocalPosition(Vector3 position)
         {
+            if (limitOnBox && box) position = box.ClosestPointOnBounds(position);
             var localPosition = referenceLocalParent.InverseTransformPoint(position);
             var selfLocalPosition = transform.localPosition;
             if (updateLocalX) selfLocalPosition.x = localPosition.x;

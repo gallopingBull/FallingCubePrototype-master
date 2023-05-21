@@ -4,6 +4,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 namespace Invector.Utils
 {
+
+    public interface vISceneLoadListener
+    {
+        void OnStartLoadScene(string sceneName);
+        void OnFinishLoadScene(string sceneName);
+    }
+
     public static class LoadLevelHelper
     {
         public static vThirdPersonInput targetCharacter;
@@ -16,8 +23,17 @@ namespace Invector.Utils
             targetCharacter = tpInput;
             spawnPointName = _spawnPointName;
             sceneName = _sceneName;
-            targetCharacter.StartCoroutine(LoadAsyncScene());
+            if (targetCharacter.tpCamera) targetCharacter.tpCamera.transform.parent = targetCharacter.transform;
 
+            if(targetCharacter)
+            {
+                var listeners = targetCharacter.GetComponents<vISceneLoadListener>();
+                for(int i =0;i<listeners.Length;i++)
+                {
+                    listeners[i].OnStartLoadScene(_sceneName);
+                }
+                targetCharacter.StartCoroutine(LoadAsyncScene());
+            } 
         }
 
         static IEnumerator LoadAsyncScene()
@@ -45,6 +61,11 @@ namespace Invector.Utils
 
         static void OnSceneLoaded(Scene arg0)
         {
+            var listeners = targetCharacter.GetComponents<vISceneLoadListener>();
+            for (int i = 0; i < listeners.Length; i++)
+            {
+                listeners[i].OnFinishLoadScene(arg0.name);
+            }
             MoveCharaterToSpawnPoint();
             SceneManager.sceneUnloaded -= OnSceneLoaded;
         }
@@ -55,18 +76,24 @@ namespace Invector.Utils
             //Set character position to target spawnPoint
             if (spawnPoint && targetCharacter)
             {
+               targetCharacter.lockCameraInput = true;
+
+                if (targetCharacter.tpCamera)
+                {
+                    targetCharacter.tpCamera.FreezeCamera();
+                }
                 targetCharacter.transform.position = spawnPoint.transform.position;
                 targetCharacter.transform.rotation = spawnPoint.transform.rotation;
-                //reset character camera
-                //targetCharacter.StartCoroutine(ResetCamera());
-            }
-        }
 
-        //static IEnumerator ResetCamera()
-        //{
-        //    yield return new WaitForEndOfFrame();
-        //    if (targetCharacter.tpCamera)
-        //        targetCharacter.tpCamera.ResetCamera();
-        //}
+                if (targetCharacter.tpCamera)
+                {
+                    targetCharacter.tpCamera.transform.parent = null;                 
+                    targetCharacter.tpCamera.UnFreezeCamera();
+                }
+                targetCharacter.lockCameraInput = false;
+               
+            }           
+            
+        }
     }
 }

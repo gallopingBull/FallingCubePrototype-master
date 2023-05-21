@@ -36,7 +36,11 @@ namespace Invector
 
         protected virtual void Start()
         {
-           
+            InitFootStep();        
+        }
+
+        public virtual void InitFootStep()
+        {
             var colls = GetComponentsInChildren<Collider>();
             if (animationType == AnimationType.Humanoid)
             {
@@ -80,7 +84,7 @@ namespace Invector
                         }
                     }
                 }
-            }          
+            }
         }
 
         protected virtual void UpdateTerrainInfo(Terrain newTerrain)
@@ -183,7 +187,7 @@ namespace Invector
         /// <param name="footStepObject"></param>
         public override void StepOnTerrain(FootStepObject footStepObject)
         {
-            if (currentStep != null && currentStep == footStepObject.sender)
+            if (currentStep != null && currentStep == footStepObject.sender && _useTriggerEnter)
             {
                 return;
             }
@@ -217,7 +221,7 @@ namespace Invector
         /// <param name="footStepObject"></param>
         public override void StepOnMesh(FootStepObject footStepObject)
         {
-            if (currentStep != null && currentStep == footStepObject.sender)
+            if (currentStep != null && currentStep == footStepObject.sender && _useTriggerEnter)
             {
                 return;
             }

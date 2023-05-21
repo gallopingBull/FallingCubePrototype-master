@@ -14,6 +14,8 @@
         [UnityEngine.Tooltip("Digits after the comma")]
         [vHideInInspector("roundValue")]
         public int roundDigits =1;
+        [UnityEngine.Tooltip("Invert number randomly")]
+        public bool randomInvert;
         protected override float GetEnterValue()
         {
             var val = 0f;
@@ -21,9 +23,13 @@
             {
                 val = UnityEngine.Random.Range(base.GetEnterValue(), maxEnterValue);
                 if (roundValue) val =(float) System.Math.Round(val, roundDigits);
+                
             }
             else val = base.GetEnterValue();
-
+            if (randomInvert)
+            {
+                if (UnityEngine.Random.Range(0, 100) > 50) val *= -1;
+            }
             return val;
         }
         protected override float GetExitValue()
@@ -35,6 +41,10 @@
                 if (roundValue) val = (float)System.Math.Round(val, roundDigits);
             }
             else val = base.GetExitValue();
+            if (randomInvert)
+            {
+                if (UnityEngine.Random.Range(0, 100) > 50) val *= -1;
+            }
             return val;
         }
         // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state

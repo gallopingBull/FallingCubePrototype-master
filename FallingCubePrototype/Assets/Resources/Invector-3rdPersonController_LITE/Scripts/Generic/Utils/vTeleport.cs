@@ -6,27 +6,36 @@ public class vTeleport : MonoBehaviour
 {
     public Transform targetPoint;
     public bool includeRoot;
-    public bool rotateToTargetForward = true;
+
+    public enum RotationType
+    {
+        None,
+        TargetForward,
+        RelativeForward,
+    }
+
+    public RotationType rotationType = RotationType.None;
+
     public void Teleport(Collider collider)
     {
-        var localPosition = transform.InverseTransformPoint(includeRoot?collider.transform.root.position: collider.transform.position);
-        var localForward = transform.InverseTransformDirection(includeRoot ? collider.transform.root.forward : collider.transform.forward);
+        Transform teleporter = includeRoot ? collider.transform.root : collider.transform;
+
+        var localPosition = transform.InverseTransformPoint(teleporter.position);
+        var localForward = transform.InverseTransformDirection(teleporter.forward);
         localPosition.Set(0, localPosition.y, 0);
-        if(includeRoot)
+
+        teleporter.position = targetPoint.TransformPoint(localPosition);
+
+        switch (rotationType)
         {
-            collider.transform.root.position = targetPoint.TransformPoint(localPosition);
-            if (rotateToTargetForward)
-                collider.transform.root.rotation = targetPoint.rotation;
-            else
-                collider.transform.root.forward = targetPoint.TransformDirection(localForward);
-        }
-        else
-        {
-            collider.transform.position = targetPoint.TransformPoint(localPosition);
-            if (rotateToTargetForward)
-                collider.transform.rotation = targetPoint.rotation;
-            else
-                collider.transform.forward = targetPoint.TransformDirection(localForward);
+            case RotationType.None:
+                break;
+            case RotationType.RelativeForward:
+                teleporter.forward = targetPoint.TransformDirection(localForward);
+                break;
+            case RotationType.TargetForward:
+                teleporter.rotation = targetPoint.rotation;
+                break;
         }
     }
 }

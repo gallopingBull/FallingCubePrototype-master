@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Invector
@@ -8,8 +8,10 @@ namespace Invector
     [vClassHeader("HITDAMAGE PARTICLE", "Default hit Particle to instantiate every time you receive damage and Custom hit Particle to instantiate based on a custom DamageType that comes from the MeleeControl Behaviour (AnimatorController)")]
     public class vHitDamageParticle : vMonoBehaviour
     {
-        public GameObject defaultDamageEffect;
+        public List<GameObject> defaultDamageEffects = new List<GameObject>();
         public List<vDamageEffect> customDamageEffects = new List<vDamageEffect>();
+
+        private vFisherYatesRandom _random;
 
         IEnumerator Start()
         {
@@ -28,7 +30,9 @@ namespace Invector
             var hitrotation = damageDirection != Vector3.zero ? Quaternion.LookRotation(damageDirection) : transform.rotation;
 
             if (damage.damageValue > 0)
-                TriggerEffect(new vDamageEffectInfo(new Vector3(transform.position.x, damage.hitPosition.y, transform.position.z), hitrotation, damage.damageType, damage.receiver));
+            {
+                TriggerEffect(new vDamageEffectInfo(damage.hitPosition, hitrotation, damage.damageType, damage.receiver));
+            }
         }
 
         /// <summary>
@@ -36,25 +40,45 @@ namespace Invector
         /// </summary>
         /// <param name="damageEffectInfo">Hit effect info.</param>
         void TriggerEffect(vDamageEffectInfo damageEffectInfo)
-        {
+        {            
+            if (_random == null)
+            {
+                _random = new vFisherYatesRandom();
+            }
             var damageEffect = customDamageEffects.Find(effect => effect.damageType.Equals(damageEffectInfo.damageType));
 
             if (damageEffect != null)
-            {
+            {                
                 damageEffect.onTriggerEffect.Invoke();
-                if (damageEffect.effectPrefab != null)
+                if (damageEffect.customDamageEffect != null && damageEffect.customDamageEffect.Count > 0)
                 {
-                    Instantiate(damageEffect.effectPrefab, damageEffectInfo.position,
-                        damageEffect.rotateToHitDirection ? damageEffectInfo.rotation : damageEffect.effectPrefab.transform.rotation,
+                    var randomCustomEffect = damageEffect.customDamageEffect[_random.Next(damageEffect.customDamageEffect.Count)];
+
+                    Instantiate(randomCustomEffect, damageEffectInfo.position,
+                        damageEffect.rotateToHitDirection ? damageEffectInfo.rotation : randomCustomEffect.transform.rotation,
                         damageEffect.attachInReceiver && damageEffectInfo.receiver ? damageEffectInfo.receiver : vObjectContainer.root);
                 }
             }
-            else if (defaultDamageEffect != null)
+            else if (defaultDamageEffects.Count > 0 && damageEffectInfo != null)
+            {                
+                var randomDefaultEffect = defaultDamageEffects[_random.Next(defaultDamageEffects.Count)];
+                Instantiate(randomDefaultEffect, damageEffectInfo.position, damageEffectInfo.rotation, vObjectContainer.root);
+            }
+        }
+
+        private void Reset()
+        {
+            defaultDamageEffects = new List<GameObject>();
+            var defaultEffect = Resources.Load("defaultDamageEffect");
+
+            if (defaultEffect != null)
             {
-                Instantiate(defaultDamageEffect, damageEffectInfo.position, damageEffectInfo.rotation, vObjectContainer.root);
+                defaultDamageEffects.Add(defaultEffect as GameObject);
             }
         }
     }
+
+
 
     public class vDamageEffectInfo
     {
@@ -76,7 +100,7 @@ namespace Invector
     public class vDamageEffect
     {
         public string damageType = "";
-        public GameObject effectPrefab;
+        public List<GameObject> customDamageEffect;
         public bool rotateToHitDirection = true;
         [Tooltip("Attach prefab in Damage Receiver transform")]
         public bool attachInReceiver = false;

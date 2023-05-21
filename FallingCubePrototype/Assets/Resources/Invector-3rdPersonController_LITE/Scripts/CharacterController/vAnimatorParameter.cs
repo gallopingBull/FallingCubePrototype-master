@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 namespace Invector
 {
+    /// <summary>
+    /// This class is useful when you don't make sure if parameter of the Animator exist
+    /// </summary>
     public class vAnimatorParameter
     {
         readonly AnimatorControllerParameter _parameter;
-
+  
         public static implicit operator int(vAnimatorParameter a)
         {
             if (a.isValid) return a._parameter.nameHash;
@@ -16,7 +19,7 @@ namespace Invector
 
         public vAnimatorParameter(Animator animator, string parameter)
         {
-            if (animator && animator.ContainsParam(parameter))
+            if (animator && animator.ContainsParameter(parameter))
             {
                 _parameter = animator.GetValidParameter(parameter);
                 this.isValid = true;
@@ -24,43 +27,57 @@ namespace Invector
 
             else this.isValid = false;
         }
+       
     }
+
+  
+    /// <summary>
+    /// Extencion class for Animator Paramentes
+    /// </summary>
     public static class vAnimatorParameterHelper
     {
-        public static AnimatorControllerParameter GetValidParameter(this Animator _Anim, string _ParamName)
+        /// <summary>
+        /// Get Animator paramenter
+        /// </summary>
+        /// <param name="animator">Target animator</param>
+        /// <param name="paramenterName">Target animator paramenter</param>
+        /// <returns></returns>
+        public static AnimatorControllerParameter GetValidParameter(this Animator animator, string paramenterName)
         {
-            foreach (AnimatorControllerParameter param in _Anim.parameters)
+            if (null == animator)
             {
-                if (param.name == _ParamName) return param;
+                return null;
             }
-            return null;
+            return System.Array.Find(animator.parameters, p => p.name.Equals(paramenterName)); ;
         }
-
-        public static bool ContainsParam(this Animator _Anim, string _ParamName)
+        /// <summary>
+        /// Check if Animator has specific paramenter
+        /// </summary>
+        /// <param name="animator">Target animator</param>
+        /// <param name="paramenterName">Target animator paramenter</param>
+        /// <returns></returns>
+        public static bool ContainsParameter(this Animator animator, string paramenterName)
         {
-            foreach (AnimatorControllerParameter param in _Anim.parameters)
-            {
-                if (param.name == _ParamName) return true;
-            }
-            return false;
-        }
-
-        public static bool HasParameterOfType(this Animator self, string name, AnimatorControllerParameterType type)
-        {
-            if (null == self)
+            if (null == animator)
             {
                 return false;
             }
-
-            var parameters = self.parameters;
-            foreach (var currParam in parameters)
+            return System.Array.Exists(animator.parameters,p=>p.name.Equals(paramenterName));
+        }
+        /// <summary>
+        /// Check if Animator has specific paramenter
+        /// </summary>
+        /// <param name="animator">Target animator</param>
+        /// <param name="parameterName">Target animator paramenter</param>
+        /// <param name="parameterType">Target animator paramenter type</param>
+        /// <returns></returns>
+        public static bool ContainsParameter(this Animator animator, string parameterName, AnimatorControllerParameterType parameterType)
+        {
+            if (null == animator)
             {
-                if (currParam.type == type && currParam.name == name)
-                {
-                    return true;
-                }
+                return false;
             }
-            return false;
+            return System.Array.Exists(animator.parameters, p => p.name.Equals(parameterName) && p.type.Equals(parameterType)); ;
         }
     }
 }

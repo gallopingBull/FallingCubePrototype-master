@@ -234,7 +234,7 @@ namespace Invector.vCharacterController.vActions
             tpInput.cc.ResetInputAnimatorParameters();
             targetLadderAction.OnDoAction.Invoke();
             currentLadderAction = targetLadderAction;
-            tpInput.cc.animator.updateMode = AnimatorUpdateMode.Normal;
+            //tpInput.cc.animator.updateMode = AnimatorUpdateMode.Normal;
             if (!string.IsNullOrEmpty(currentLadderAction.playAnimation))
             {
                 if (debugMode)
@@ -491,7 +491,7 @@ namespace Invector.vCharacterController.vActions
             tpInput.SetLockAllInput(false);
             tpInput.cc.StopCharacter();
             tpInput.cc.disableAnimations = false;
-            tpInput.cc.animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+            //tpInput.cc.animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
             if (transform.parent != null)
             {
                 transform.parent = null;

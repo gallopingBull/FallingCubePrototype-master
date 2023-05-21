@@ -25,8 +25,9 @@ namespace Invector.vCharacterController
         public bool removeComponentsAfterDie;
 
         [vEditorToolbar("Debug", order = 9)]
+        [HideInInspector]
         public bool debugActionListener;
-        public Animator animator { get; private set; }
+        public Animator animator { get; protected set; }
         public bool ragdolled { get; set; }
 
         [vEditorToolbar("Events")]
@@ -36,6 +37,7 @@ namespace Invector.vCharacterController
 
         [SerializeField] protected OnActiveRagdoll _onActiveRagdoll = new OnActiveRagdoll();
         public OnActiveRagdoll onActiveRagdoll { get { return _onActiveRagdoll; } protected set { _onActiveRagdoll = value; } }
+        public UnityEvent onDisableRagdoll;
         [Header("Check if Character is in Trigger with tag Action")]
         [HideInInspector]
         public OnActionHandle onActionEnter = new OnActionHandle();
@@ -72,7 +74,7 @@ namespace Invector.vCharacterController
             }
         }
 
-        private bool _isCrouching;
+        protected bool _isCrouching;
 
         #endregion        
 
@@ -135,7 +137,7 @@ namespace Invector.vCharacterController
                     // set the ID of the reaction based on the attack animation state of the attacker - Check the MeleeAttackBehaviour script
                     if (reactionIDHash.isValid) animator.SetInteger(reactionIDHash, damage.reaction_id);
                     if (triggerReactionHash.isValid) SetTrigger(triggerReactionHash);
-                    if (triggerResetStateHash.isValid) SetTrigger(triggerResetStateHash);
+                    if (triggerResetStateHash.isValid) SetTrigger(triggerResetStateHash);                 
                 }
                 else
                 {

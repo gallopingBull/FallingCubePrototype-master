@@ -1,13 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Invector.vCharacterController;
+using System.Collections;
 using UnityEngine;
 
 namespace Invector.vCamera
 {
+
     public class vThirdPersonCamera : MonoBehaviour
     {
-
         private static vThirdPersonCamera _instance;
+
         public static vThirdPersonCamera instance
         {
             get
@@ -26,12 +27,13 @@ namespace Invector.vCamera
 
         #region inspector properties    
         public Transform mainTarget;
-
         [Tooltip("Lerp speed between Camera States")]
         public float smoothBetweenState = 6f;
         public float smoothCameraRotation = 6f;
+        public float smoothSwitchSide = 2f;
         public float scrollSpeed = 10f;
-
+        [Tooltip("Multiplier of Mouse x and y when using joystick")]
+        public float joystickSensitivity = 1;
         [Tooltip("What layer will be culled")]
         public LayerMask cullingLayer = 1 << 0;
         [Tooltip("Change this value If the camera pass through the wall")]
@@ -40,11 +42,20 @@ namespace Invector.vCamera
         public bool showGizmos;
         public bool startUsingTargetRotation = true;
         public bool startSmooth = false;
+        [vHideInInspector("startSmooth")]
+        public float startSmoothFactor = 1f;
+        [Tooltip("Returns to behind the target automatically after 'behindTargetDelay' period")]
+        public bool autoBehindTarget = false;
+        [vHideInInspector("autoBehindTarget")]
+        public float behindTargetDelay = 2f;
+        [vHideInInspector("autoBehindTarget")]
+        public float behindTargetSmoothRotation = 1f;
+
         [Tooltip("Debug purposes, lock the camera behind the character for better align the states")]
-        public bool lockCamera;
+        [SerializeField] protected bool lockCamera;
 
+        WaitForEndOfFrame waitFrame = new WaitForEndOfFrame();
         public Vector2 offsetMouse;
-
         #endregion
 
         #region hide properties    
@@ -71,7 +82,12 @@ namespace Invector.vCamera
 
         protected float lockTargetSpeed;
         protected float lockTargetWeight;
-        protected Transform targetLookAt;
+        protected float initialCameraRotation;
+
+        protected bool cameraIsRotating;
+        protected Quaternion lastCameraRotation;
+        protected float lastRotationTimer;
+
         protected Vector3 currentTargetPos;
         protected Vector3 lookPoint;
         protected Vector3 current_cPos;
@@ -84,9 +100,10 @@ namespace Invector.vCamera
         protected float currentZoom;
         protected float cullingHeight;
         protected float cullingDistance;
-        protected float switchRight, currentSwitchRight;
+        internal float switchRight;
+        protected float currentSwitchRight;
         protected float heightOffset;
-        protected bool isInit;
+        internal bool isInit;
         protected bool useSmooth;
         protected bool isNewTarget;
         protected bool firstStateIsInit;
@@ -101,8 +118,41 @@ namespace Invector.vCamera
 
         protected private Vector3 cameraVelocityDamp;
         protected private bool firstUpdated;
-      
+
+        protected Transform _lookAtTarget;
+
+
+        protected Vector3 lastLookAtPosition, lastLookAtForward;
+        public bool isFreezed;
+        protected Transform targetLookAt
+        {
+            get
+            {
+                if (!_lookAtTarget)
+                {
+                    _lookAtTarget = new GameObject("targetLookAt").transform;
+                    _lookAtTarget.rotation = transform.rotation;
+                    _lookAtTarget.position = mainTarget.position;
+                }
+                return _lookAtTarget;
+            }
+        }
         #endregion
+        protected Rigidbody _selfRigidbody;
+        public Rigidbody selfRigidbody
+        {
+            get
+            {
+                if (!_selfRigidbody)
+                {
+                    _selfRigidbody = gameObject.AddComponent<Rigidbody>();
+                    _selfRigidbody.isKinematic = true;
+                    _selfRigidbody.interpolation = RigidbodyInterpolation.None;
+                }
+                return _selfRigidbody;
+            }
+
+        }
         /// <summary>
         /// Lock camera angle based to the <seealso cref="currentTarget"/>. if you need just to reset angle use <seealso cref="ResetAngle"/>
         /// </summary>
@@ -114,7 +164,8 @@ namespace Invector.vCamera
             }
             set
             {
-                lockCamera = false;
+
+                lockCamera = value;
             }
         }
 
@@ -133,6 +184,7 @@ namespace Invector.vCamera
 
         protected virtual void Start()
         {
+
             Init();
         }
         /// <summary>
@@ -141,25 +193,38 @@ namespace Invector.vCamera
         public virtual void Init()
         {
             if (mainTarget == null)
+            {
                 return;
+            }
+
             firstUpdated = true;
             useSmooth = true;
-            if (!targetLookAt) targetLookAt = new GameObject("targetLookAt").transform;
-
             targetLookAt.rotation = startUsingTargetRotation ? mainTarget.rotation : transform.rotation;
             targetLookAt.position = mainTarget.position;
             targetLookAt.hideFlags = HideFlags.HideInHierarchy;
-            startPosition = transform.position;
-            startRotation = transform.rotation;
-            if (!targetCamera) targetCamera = Camera.main;
+            startPosition = selfRigidbody.position;
+            startRotation = selfRigidbody.rotation;
+            initialCameraRotation = smoothCameraRotation;
+            if (!targetCamera)
+            {
+                targetCamera = Camera.main;
+            }
+
             currentTarget = mainTarget;
-            switchRight = 1f;
+            switchRight = 1;
             currentSwitchRight = 1f;
             mouseXStart = transform.eulerAngles.NormalizeAngle().y;
             mouseYStart = transform.eulerAngles.NormalizeAngle().x;
 
-            if (startSmooth) distance = Vector3.Distance(targetLookAt.position, transform.position);
-            else transformWeight = 1;
+            if (startSmooth)
+            {
+                distance = Vector3.Distance(targetLookAt.position, transform.position);
+            }
+            else
+            {
+                transformWeight = 1;
+            }
+
             if (startUsingTargetRotation)
             {
                 mouseY = currentTarget.eulerAngles.NormalizeAngle().x;
@@ -182,9 +247,13 @@ namespace Invector.vCamera
             isInit = true;
         }
 
-        protected virtual void FixedUpdate()
+        public virtual void FixedUpdate()
         {
-            if (mainTarget == null || targetLookAt == null || currentState == null || lerpState == null || !isInit) return;
+
+            if (mainTarget == null || targetLookAt == null || currentState == null || lerpState == null || !isInit || isFreezed)
+            {
+                return;
+            }
 
             switch (currentState.cameraMode)
             {
@@ -199,17 +268,23 @@ namespace Invector.vCamera
                     break;
             }
         }
+
         /// <summary>
         /// Set a <seealso cref="lockTarget"/> to the  camera  auto rotate to look to.
-        /// </summary>
+        /// </summary>   
         public virtual void SetLockTarget(Transform lockTarget)
         {
-            if (this.lockTarget != null && this.lockTarget == lockTarget) return;
+            if (this.lockTarget != null && this.lockTarget == lockTarget)
+            {
+                return;
+            }
+
             isNewTarget = lockTarget != this.lockTarget;
-            this.lockTarget = lockTarget;          
+            this.lockTarget = lockTarget;
             lockTargetWeight = 0;
             this.lockTargetSpeed = 1;
         }
+
         /// <summary>
         /// Set a <seealso cref="lockTarget"/> to the  camera  auto rotate to look to.
         /// </summary>
@@ -218,13 +293,18 @@ namespace Invector.vCamera
         /// <param name="lockSpeed">speed to look</param>
         public virtual void SetLockTarget(Transform lockTarget, float heightOffset, float lockSpeed = 1)
         {
-            if (this.lockTarget != null && this.lockTarget == lockTarget) return;
+            if (this.lockTarget != null && this.lockTarget == lockTarget)
+            {
+                return;
+            }
+
             isNewTarget = lockTarget != this.lockTarget;
             this.lockTarget = lockTarget;
             this.heightOffset = heightOffset;
             lockTargetWeight = 0;
             this.lockTargetSpeed = lockSpeed;
         }
+
         /// <summary>
         /// Remove the <seealso cref="lockTarget"/>
         /// </summary>
@@ -243,6 +323,7 @@ namespace Invector.vCamera
             lockTargetWeight = 0;
             currentTarget = newTarget ? newTarget : mainTarget;
         }
+
         /// <summary>
         /// Set<seealso cref="mainTarget"/> and<seealso cref= "currentTarget" />
         /// </summary>
@@ -251,7 +332,10 @@ namespace Invector.vCamera
         {
             mainTarget = newTarget;
             currentTarget = newTarget;
-            if (!isInit) Init();
+            if (!isInit)
+            {
+                Init();
+            }
         }
 
         /// <summary>
@@ -259,11 +343,14 @@ namespace Invector.vCamera
         /// </summary>
         public virtual void ResetTarget()
         {
-            if(currentTarget!=mainTarget)
-            {          
+            if (currentTarget != mainTarget)
+            {
                 currentTarget = mainTarget;
-                if (!isInit) Init();
-            }           
+                if (!isInit)
+                {
+                    Init();
+                }
+            }
         }
 
         /// <summary>
@@ -273,7 +360,7 @@ namespace Invector.vCamera
         {
             if (currentTarget)
             {
-                mouseY = currentTarget.eulerAngles.NormalizeAngle().x * 90;
+                mouseY = currentTarget.eulerAngles.NormalizeAngle().x;
                 mouseX = currentTarget.eulerAngles.NormalizeAngle().y;
             }
             else
@@ -281,6 +368,16 @@ namespace Invector.vCamera
                 mouseY = 0;
                 mouseX = 0;
             }
+        }
+
+        /// <summary>
+        /// Reset the camera angle back t
+        /// </summary>
+        public virtual void ResetAngleWithoutSmooth()
+        {
+            ResetAngle();
+
+            targetLookAt.forward = currentTarget.forward;
         }
 
         /// <summary>    
@@ -311,7 +408,11 @@ namespace Invector.vCamera
         {
             if (currentState != null && currentState.Name.Equals(stateName) || !isInit && firstStateIsInit)
             {
-                if (firstStateIsInit) useSmooth = hasSmooth;
+                if (firstStateIsInit)
+                {
+                    useSmooth = hasSmooth;
+                }
+
                 return;
             }
             useSmooth = !firstStateIsInit ? startSmooth : hasSmooth;
@@ -330,7 +431,9 @@ namespace Invector.vCamera
                     currentState.height = state.height;
                     currentState.fov = state.fov;
                     if (useSmooth)
+                    {
                         StartCoroutine(ResetFirstState());
+                    }
                     else
                     {
                         distance = lerpState.defaultDistance;
@@ -339,7 +442,9 @@ namespace Invector.vCamera
                 }
                 // in case there is no smooth, a copy will be make without the transition values
                 if (currentState != null && !useSmooth)
+                {
                     currentState.CopyState(state);
+                }
             }
             else
             {
@@ -347,7 +452,9 @@ namespace Invector.vCamera
                 if (CameraStateList != null && CameraStateList.tpCameraStates.Count > 0)
                 {
                     if (lerpState != null)
+                    {
                         return;
+                    }
 
                     state = CameraStateList.tpCameraStates[0];
                     currentStateName = state.Name;
@@ -355,7 +462,9 @@ namespace Invector.vCamera
                     lerpState = state;
 
                     if (currentState != null && !useSmooth)
+                    {
                         currentState.CopyState(state);
+                    }
                 }
             }
             // in case a list of states does not exist, a default state will be created
@@ -365,7 +474,10 @@ namespace Invector.vCamera
                 currentStateName = currentState.Name;
             }
             if (CameraStateList != null)
+            {
                 indexList = CameraStateList.tpCameraStates.IndexOf(state);
+            }
+
             currentZoom = state.defaultDistance;
 
             if (currentState.cameraMode == TPCameraMode.FixedAngle)
@@ -376,7 +488,10 @@ namespace Invector.vCamera
 
             currentState.fixedAngle = new Vector3(mouseX, mouseY);
             indexLookPoint = 0;
-            if (!isInit) CameraMovement(true);
+            if (!isInit)
+            {
+                CameraMovement(true);
+            }
         }
 
         /// <summary>
@@ -403,7 +518,9 @@ namespace Invector.vCamera
                     lerpState = state; // set the state of transition (lerpstate) to the state finded on the list
                                        // in case there is no smooth, a copy will be make without the transition values
                     if (currentState != null && !hasSmooth)
+                    {
                         currentState.CopyState(state);
+                    }
                 }
                 else
                 {
@@ -415,7 +532,9 @@ namespace Invector.vCamera
                         currentState.cameraMode = state.cameraMode;
                         lerpState = state;
                         if (currentState != null && !hasSmooth)
+                        {
                             currentState.CopyState(state);
+                        }
                     }
                 }
                 // in case a list of states does not exist, a default state will be created
@@ -460,19 +579,60 @@ namespace Invector.vCamera
         /// <param name="pointName"></param>
         public virtual void ChangePoint(string pointName)
         {
-            if (currentState == null || currentState.cameraMode != TPCameraMode.FixedPoint || currentState.lookPoints == null) return;
+            if (currentState == null || currentState.cameraMode != TPCameraMode.FixedPoint || currentState.lookPoints == null)
+            {
+                return;
+            }
+
             var point = currentState.lookPoints.Find(delegate (LookPoint obj) { return obj.pointName.Equals(pointName); });
-            if (point != null) indexLookPoint = currentState.lookPoints.IndexOf(point); else indexLookPoint = 0;
+            if (point != null)
+            {
+                indexLookPoint = currentState.lookPoints.IndexOf(point);
+            }
+            else
+            {
+                indexLookPoint = 0;
+            }
+        }
+
+        public virtual void FreezeCamera()
+        {
+            isFreezed = true;
+            if (mainTarget)
+            {
+                lastLookAtForward = mainTarget.InverseTransformDirection(targetLookAt.forward);
+                lastLookAtPosition = mainTarget.InverseTransformPoint(targetLookAt.position);
+                current_cPos = mainTarget.InverseTransformPoint(current_cPos);
+                desired_cPos = mainTarget.InverseTransformPoint(desired_cPos);
+            }
+        }
+
+        public virtual void UnFreezeCamera()
+        {
+            if (mainTarget)
+            {
+                targetLookAt.forward = mainTarget.TransformDirection(lastLookAtForward);
+                targetLookAt.position = mainTarget.TransformPoint(lastLookAtPosition);
+                current_cPos = mainTarget.TransformPoint(current_cPos);
+                desired_cPos = mainTarget.TransformPoint(desired_cPos);
+            }
+            isFreezed = false;
         }
 
         /// <summary>    
-        /// Zoom baheviour 
+        /// Zoom behavior 
         /// </summary>
         /// <param name="scroolValue"></param>
         /// <param name="zoomSpeed"></param>
         public virtual void Zoom(float scroolValue)
         {
             currentZoom -= scroolValue * scrollSpeed;
+        }
+
+        public virtual void CheckCameraIsRotating()
+        {
+            cameraIsRotating = (transform.eulerAngles - lastCameraRotation.eulerAngles).magnitude > 0.1 || movementSpeed.magnitude > 0;
+            lastCameraRotation.eulerAngles = transform.eulerAngles;
         }
 
         /// <summary>
@@ -482,38 +642,64 @@ namespace Invector.vCamera
         /// <param name="y"></param>
         public virtual void RotateCamera(float x, float y)
         {
+            if (currentState.cameraMode.Equals(TPCameraMode.FixedPoint) || !isInit || transformWeight < 1)
+            {
+                smoothCameraRotation = initialCameraRotation;
+                return;
+            }
 
-            if (currentState.cameraMode.Equals(TPCameraMode.FixedPoint) || !isInit) return;
             if (!currentState.cameraMode.Equals(TPCameraMode.FixedAngle))
             {
                 // lock into a target            
                 if (!lockTarget)
                 {
                     // free rotation 
-                    mouseX += x * currentState.xMouseSensitivity;
-                    mouseY -= y * currentState.yMouseSensitivity;
+                    mouseX += x * (vInput.instance.inputDevice == InputDevice.Joystick ? currentState.xMouseSensitivity * joystickSensitivity : currentState.xMouseSensitivity);
+                    mouseY -= y * (vInput.instance.inputDevice == InputDevice.Joystick ? currentState.yMouseSensitivity * joystickSensitivity : currentState.yMouseSensitivity);
 
                     movementSpeed.x = x;
                     movementSpeed.y = -y;
-                    if (!lockCamera)
+
+                    CheckCameraIsRotating();
+                    var isAlignedWithTarget = (transform.forward - currentTarget.forward).magnitude <= 0.5f;
+
+                    if (!LockCamera && cameraIsRotating)
                     {
+                        lastRotationTimer = Time.time;
+
+                        if (movementSpeed.x != 0 || movementSpeed.y != 0)
+                        {
+                            smoothCameraRotation = initialCameraRotation;
+                        }
+
                         mouseY = vExtensions.ClampAngle(mouseY, lerpState.yMinLimit, lerpState.yMaxLimit);
                         mouseX = vExtensions.ClampAngle(mouseX, lerpState.xMinLimit, lerpState.xMaxLimit);
                     }
-                    else
+                    else if (LockCamera || !isAlignedWithTarget && autoBehindTarget)
                     {
-                        mouseY = currentTarget.root.eulerAngles.NormalizeAngle().x;
-                        mouseX = currentTarget.root.eulerAngles.NormalizeAngle().y;
+                        if (autoBehindTarget)
+                            smoothCameraRotation = Mathf.Lerp(smoothCameraRotation, behindTargetSmoothRotation, 6f * Time.fixedDeltaTime);
+
+                        if (LockCamera || Time.time > lastRotationTimer + behindTargetDelay)
+                        {
+                            mouseY = currentTarget.root.eulerAngles.NormalizeAngle().x;
+                            mouseX = currentTarget.root.eulerAngles.NormalizeAngle().y;
+                        }
                     }
+                }
+                else
+                {
+                    smoothCameraRotation = initialCameraRotation;
                 }
             }
             else
             {
+                smoothCameraRotation = initialCameraRotation;
                 // fixed rotation
                 var _x = lerpState.fixedAngle.x;
                 var _y = lerpState.fixedAngle.y;
-                mouseX = useSmooth ? Mathf.LerpAngle(mouseX, _x, smoothBetweenState * Time.deltaTime) : _x;
-                mouseY = useSmooth ? Mathf.LerpAngle(mouseY, _y, smoothBetweenState * Time.deltaTime) : _y;
+                mouseX = useSmooth ? Mathf.LerpAngle(mouseX, _x, smoothBetweenState * Time.fixedDeltaTime) : _x;
+                mouseY = useSmooth ? Mathf.LerpAngle(mouseY, _y, smoothBetweenState * Time.fixedDeltaTime) : _y;
             }
 
         }
@@ -529,7 +715,11 @@ namespace Invector.vCamera
 
         protected virtual void CalculeLockOnPoint()
         {
-            if (currentState.cameraMode.Equals(TPCameraMode.FixedAngle) && lockTarget) return;   // check if angle of camera is fixed         
+            if (currentState.cameraMode.Equals(TPCameraMode.FixedAngle) && lockTarget)
+            {
+                return;   // check if angle of camera is fixed         
+            }
+
             var collider = lockTarget.GetComponent<Collider>();                                  // collider to get center of bounds
 
             if (collider == null)
@@ -545,13 +735,23 @@ namespace Invector.vCamera
             var y = 0f;
             var x = rotation.eulerAngles.y;
             if (rotation.eulerAngles.x < -180)
+            {
                 y = rotation.eulerAngles.x + 360;
+            }
             else if (rotation.eulerAngles.x > 180)
+            {
                 y = rotation.eulerAngles.x - 360;
+            }
             else
+            {
                 y = rotation.eulerAngles.x;
+            }
+
             if (lockTargetWeight < 1f)
-                lockTargetWeight += Time.deltaTime * lockTargetSpeed;
+            {
+                lockTargetWeight += Time.fixedDeltaTime * lockTargetSpeed;
+            }
+
             mouseY = Mathf.LerpAngle(mouseY, vExtensions.ClampAngle(y, currentState.yMinLimit, currentState.yMaxLimit), lockTargetWeight);
             mouseX = Mathf.LerpAngle(mouseX, vExtensions.ClampAngle(x, currentState.xMinLimit, currentState.xMaxLimit), lockTargetWeight);
         }
@@ -559,28 +759,34 @@ namespace Invector.vCamera
         protected virtual void CameraMovement(bool forceUpdate = false)
         {
             if (currentTarget == null || targetCamera == null || (!firstStateIsInit && !forceUpdate))
+            {
                 return;
-            transformWeight = Mathf.Clamp(transformWeight += Time.deltaTime, 0f, 1f);
+            }
+
+            transformWeight = Mathf.Clamp(transformWeight += Time.fixedDeltaTime * startSmoothFactor, 0f, 1f);
             if (useSmooth)
             {
-                currentState.Slerp(lerpState, smoothBetweenState * Time.deltaTime);
+                currentState.Slerp(lerpState, smoothBetweenState * Time.fixedDeltaTime);
             }
             else
+            {
                 currentState.CopyState(lerpState);
+            }
 
             if (currentState.useZoom)
             {
                 currentZoom = Mathf.Clamp(currentZoom, currentState.minDistance, currentState.maxDistance);
-                distance = useSmooth ? Mathf.Lerp(distance, currentZoom, lerpState.smooth * Time.deltaTime) : currentZoom;
+                distance = useSmooth ? Mathf.Lerp(distance, currentZoom, lerpState.smooth * Time.fixedDeltaTime) : currentZoom;
             }
             else
             {
-                distance = useSmooth ? Mathf.Lerp(distance, currentState.defaultDistance, lerpState.smooth * Time.deltaTime) : currentState.defaultDistance;
+                distance = useSmooth ? Mathf.Lerp(distance, currentState.defaultDistance, lerpState.smooth * Time.fixedDeltaTime) : currentState.defaultDistance;
                 currentZoom = currentState.defaultDistance;
             }
+
             targetCamera.fieldOfView = currentState.fov;
-            cullingDistance = Mathf.Lerp(cullingDistance, currentZoom, smoothBetweenState * Time.deltaTime);
-            currentSwitchRight = Mathf.Lerp(currentSwitchRight, switchRight, smoothBetweenState * Time.deltaTime);
+            cullingDistance = Mathf.Lerp(cullingDistance, currentZoom, smoothBetweenState * Time.fixedDeltaTime);
+            currentSwitchRight = Mathf.Lerp(currentSwitchRight, switchRight, smoothSwitchSide * Time.fixedDeltaTime);
             var camDir = (currentState.forward * targetLookAt.forward) + ((currentState.right * currentSwitchRight) * targetLookAt.right);
 
             camDir = camDir.normalized;
@@ -588,7 +794,7 @@ namespace Invector.vCamera
             var targetPos = new Vector3(currentTarget.position.x, currentTarget.position.y, currentTarget.position.z) + currentTarget.transform.up * offSetPlayerPivot;
             currentTargetPos = targetPos;
             desired_cPos = targetPos + currentTarget.transform.up * currentState.height;
-            current_cPos = firstUpdated ? targetPos + currentTarget.transform.up * currentHeight : Vector3.SmoothDamp(current_cPos, targetPos + currentTarget.transform.up * currentHeight, ref cameraVelocityDamp, lerpState.smoothDamp * Time.deltaTime);
+            current_cPos = firstUpdated ? targetPos + currentTarget.transform.up * currentHeight : Vector3.SmoothDamp(current_cPos, targetPos + currentTarget.transform.up * currentHeight, ref cameraVelocityDamp, lerpState.smoothDamp * Time.fixedDeltaTime);
             firstUpdated = false;
             RaycastHit hitInfo;
 
@@ -604,9 +810,9 @@ namespace Invector.vCamera
             }
             else
             {
-                cullingHeight = useSmooth ? Mathf.Lerp(cullingHeight, currentState.cullingHeight, smoothBetweenState * Time.deltaTime) : currentState.cullingHeight;
+                cullingHeight = useSmooth ? Mathf.Lerp(cullingHeight, currentState.cullingHeight, smoothBetweenState * Time.fixedDeltaTime) : currentState.cullingHeight;
             }
-            //Check if desired target position is not blocked       
+            //Check if desired target position is not blocked            
             if (CullingRayCast(desired_cPos, oldPoints, out hitInfo, currentZoom + 0.2f, cullingLayer, Color.blue))
             {
                 var dist = hitInfo.distance;
@@ -621,23 +827,30 @@ namespace Invector.vCamera
             }
             else
             {
-                currentHeight = useSmooth ? Mathf.Lerp(currentHeight, currentState.height, smoothBetweenState * Time.deltaTime) : currentState.height;
+                currentHeight = useSmooth ? Mathf.Lerp(currentHeight, currentState.height, smoothBetweenState * Time.fixedDeltaTime) : currentState.height;
             }
 
-            if (cullingDistance < distance) distance = cullingDistance;
+            if (cullingDistance < distance)
+            {
+                distance = cullingDistance;
+            }
 
             //Check if target position with culling height applied is not blocked
-            if (CullingRayCast(current_cPos, planePoints, out hitInfo, distance, cullingLayer, Color.cyan)) distance = Mathf.Clamp(cullingDistance, 0.0f, currentState.defaultDistance);
-            var lookPoint = current_cPos + targetLookAt.forward * 2f;
+            if (CullingRayCast(current_cPos, planePoints, out hitInfo, distance, cullingLayer, Color.cyan))
+            {
+                distance = Mathf.Clamp(cullingDistance, 0.0f, currentZoom);
+            }
+
+            var lookPoint = current_cPos + targetLookAt.forward * targetCamera.farClipPlane;
             lookPoint += (targetLookAt.right * Vector3.Dot(camDir * (distance), targetLookAt.right));
             targetLookAt.position = current_cPos;
 
             float _mouseY = Mathf.LerpAngle(mouseYStart, mouseY, transformWeight);
             float _mouseX = Mathf.LerpAngle(mouseXStart, mouseX, transformWeight);
             Quaternion newRot = Quaternion.Euler(_mouseY + offsetMouse.y, _mouseX + offsetMouse.x, 0);
-            targetLookAt.rotation = useSmooth ? Quaternion.Lerp(targetLookAt.rotation, newRot, smoothCameraRotation * Time.deltaTime) : newRot;
-            transform.position = Vector3.Lerp(startPosition, current_cPos + (camDir * (distance)), transformWeight);
-            var rotation = Quaternion.LookRotation((lookPoint) - transform.position);
+            targetLookAt.rotation = useSmooth ? Quaternion.Lerp(targetLookAt.rotation, newRot, smoothCameraRotation * Time.fixedDeltaTime) : newRot;
+            selfRigidbody.MovePosition(Vector3.Lerp(startPosition, current_cPos + (camDir * (distance)), transformWeight));
+            var rotation = Quaternion.LookRotation((lookPoint) - selfRigidbody.position);
 
             if (lockTarget)
             {
@@ -648,7 +861,7 @@ namespace Invector.vCamera
                     var collider = lockTarget.GetComponent<Collider>();
                     if (collider != null)
                     {
-                        var point = (collider.bounds.center + Vector3.up * heightOffset) - transform.position;
+                        var point = (collider.bounds.center + Vector3.up * heightOffset) - selfRigidbody.position;
                         var euler = Quaternion.LookRotation(point).eulerAngles - rotation.eulerAngles;
                         if (isNewTarget)
                         {
@@ -657,47 +870,58 @@ namespace Invector.vCamera
                             lookTargetAdjust.z = Mathf.LerpAngle(lookTargetAdjust.z, euler.z, lockTargetWeight);
                             // Quaternion.LerpUnclamped(lookTargetAdjust, Quaternion.Euler(euler), currentState.smoothFollow * Time.deltaTime);
                             if (Vector3.Distance(lookTargetAdjust, euler) < .5f)
+                            {
                                 isNewTarget = false;
+                            }
                         }
                         else
+                        {
                             lookTargetAdjust = euler;
+                        }
                     }
                 }
             }
             else
             {
-                lookTargetAdjust.x = Mathf.LerpAngle(lookTargetAdjust.x, 0, currentState.smooth * Time.deltaTime);
-                lookTargetAdjust.y = Mathf.LerpAngle(lookTargetAdjust.y, 0, currentState.smooth * Time.deltaTime);
-                lookTargetAdjust.z = Mathf.LerpAngle(lookTargetAdjust.z, 0, currentState.smooth * Time.deltaTime);
+                lookTargetAdjust.x = Mathf.LerpAngle(lookTargetAdjust.x, 0, currentState.smooth * Time.fixedDeltaTime);
+                lookTargetAdjust.y = Mathf.LerpAngle(lookTargetAdjust.y, 0, currentState.smooth * Time.fixedDeltaTime);
+                lookTargetAdjust.z = Mathf.LerpAngle(lookTargetAdjust.z, 0, currentState.smooth * Time.fixedDeltaTime);
                 //lookTargetAdjust = Quaternion.LerpUnclamped(lookTargetAdjust, Quaternion.Euler(Vector3.zero), 1 * Time.deltaTime);
             }
             var _euler = rotation.eulerAngles + lookTargetAdjust;
             _euler.z = 0;
             var _rot = Quaternion.Euler(_euler + currentState.rotationOffSet);
-            transform.rotation = Quaternion.Lerp(startRotation, _rot, transformWeight);
+            selfRigidbody.MoveRotation(Quaternion.Lerp(startRotation, _rot, transformWeight));
             movementSpeed = Vector2.zero;
         }
 
         protected virtual void CameraFixed()
         {
-            if (useSmooth) currentState.Slerp(lerpState, smoothBetweenState);
-            else currentState.CopyState(lerpState);
-            transformWeight = Mathf.Clamp(transformWeight += Time.deltaTime, 0f, 1f);
+            if (useSmooth)
+            {
+                currentState.Slerp(lerpState, smoothBetweenState);
+            }
+            else
+            {
+                currentState.CopyState(lerpState);
+            }
+
+            transformWeight = Mathf.Clamp(transformWeight += Time.fixedDeltaTime, 0f, 1f);
             var targetPos = new Vector3(currentTarget.position.x, currentTarget.position.y + offSetPlayerPivot + currentState.height, currentTarget.position.z);
-            currentTargetPos = useSmooth ? Vector3.MoveTowards(currentTargetPos, targetPos, currentState.smooth * Time.deltaTime) : targetPos;
+            currentTargetPos = useSmooth ? Vector3.MoveTowards(currentTargetPos, targetPos, currentState.smooth * Time.fixedDeltaTime) : targetPos;
             current_cPos = currentTargetPos;
             var pos = isValidFixedPoint ? currentState.lookPoints[indexLookPoint].positionPoint : transform.position;
-            transform.position = Vector3.Lerp(startPosition, useSmooth ? Vector3.Lerp(transform.position, pos, currentState.smooth * Time.deltaTime) : pos, transformWeight);
+            transform.position = Vector3.Lerp(startPosition, useSmooth ? Vector3.Lerp(transform.position, pos, currentState.smooth * Time.fixedDeltaTime) : pos, transformWeight);
             targetLookAt.position = current_cPos;
             if (isValidFixedPoint && currentState.lookPoints[indexLookPoint].freeRotation)
             {
                 var rot = Quaternion.Euler(currentState.lookPoints[indexLookPoint].eulerAngle);
-                transform.rotation = Quaternion.Lerp(startRotation, useSmooth ? Quaternion.Slerp(transform.rotation, rot, (currentState.smooth * 0.5f) * Time.deltaTime) : rot, transformWeight);
+                transform.rotation = Quaternion.Lerp(startRotation, useSmooth ? Quaternion.Slerp(transform.rotation, rot, (currentState.smooth * 0.5f) * Time.fixedDeltaTime) : rot, transformWeight);
             }
             else if (isValidFixedPoint)
             {
                 var rot = Quaternion.LookRotation(currentTargetPos - transform.position);
-                transform.rotation = Quaternion.Lerp(startRotation, useSmooth ? Quaternion.Slerp(transform.rotation, rot, (currentState.smooth) * Time.deltaTime) : rot, transformWeight);
+                transform.rotation = Quaternion.Lerp(startRotation, useSmooth ? Quaternion.Slerp(transform.rotation, rot, (currentState.smooth) * Time.fixedDeltaTime) : rot, transformWeight);
             }
             targetCamera.fieldOfView = currentState.fov;
         }
@@ -733,19 +957,28 @@ namespace Invector.vCamera
             if (Physics.Raycast(from, _to.LowerRight - from, out hitInfo, distance, cullingLayer))
             {
                 value = true;
-                if (cullingDistance > hitInfo.distance) cullingDistance = hitInfo.distance;
+                if (cullingDistance > hitInfo.distance)
+                {
+                    cullingDistance = hitInfo.distance;
+                }
             }
 
             if (Physics.Raycast(from, _to.UpperLeft - from, out hitInfo, distance, cullingLayer))
             {
                 value = true;
-                if (cullingDistance > hitInfo.distance) cullingDistance = hitInfo.distance;
+                if (cullingDistance > hitInfo.distance)
+                {
+                    cullingDistance = hitInfo.distance;
+                }
             }
 
             if (Physics.Raycast(from, _to.UpperRight - from, out hitInfo, distance, cullingLayer))
             {
                 value = true;
-                if (cullingDistance > hitInfo.distance) cullingDistance = hitInfo.distance;
+                if (cullingDistance > hitInfo.distance)
+                {
+                    cullingDistance = hitInfo.distance;
+                }
             }
 
             return hitInfo.collider && value;

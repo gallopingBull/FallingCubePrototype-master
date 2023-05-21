@@ -11,8 +11,10 @@ namespace Invector
         public vDamage damage;
         [Tooltip("Assign this to set other damage sender")]
         public Transform overrideDamageSender;
-        [Tooltip("List of tags that can be hit")]
-        public List<string> tags;
+        [Tooltip("List of layers that can be hit, nothing will apply to all layers")]
+        public LayerMask layerToCollide;
+        [Tooltip("List of tags that can be hit, nothing will apply to all tags")]
+        public vTagMask tags;
         [Tooltip("Check to use the damage Frequence")]
         public bool continuousDamage;
         [Tooltip("Apply damage to each end of the frequency in seconds ")]
@@ -99,7 +101,7 @@ namespace Invector
             if (!this.enabled) return;
             if (collisionMethod != CollisionMethod.OnColliderEnter || continuousDamage) return;
 
-            if ((tags.Count == 0 || tags.Contains(hit.transform.tag)))
+            if (CanApplyDamage(hit.gameObject))
             {
                 ApplyDamage(hit.collider, hit.contacts[0].point);
 
@@ -110,15 +112,19 @@ namespace Invector
         {
             if (!this.enabled) return;
             if (collisionMethod != CollisionMethod.OnTriggerEnter) return;
-            if (continuousDamage && (tags.Count == 0 || tags.Contains(hit.transform.tag)) && !targets.Contains(hit))
+            if (continuousDamage && CanApplyDamage(hit.gameObject) && !targets.Contains(hit))
             {
                 targets.Add(hit);
             }
-            else if (tags.Count == 0 || tags.Contains(hit.gameObject.tag))
-            {
+            else if (CanApplyDamage(hit.gameObject))
+            {               
                 ApplyDamage(hit, transform.position);
-
             }
+        }
+
+        private bool CanApplyDamage(GameObject hitObject)
+        {
+            return (tags.Count == 0 || tags.Contains(hitObject.tag)) && layerToCollide==0|| layerToCollide.ContainsLayer(hitObject.layer);
         }
 
         protected virtual void OnTriggerExit(Collider hit)
@@ -126,7 +132,7 @@ namespace Invector
             if (!this.enabled) return;
             if (collisionMethod == CollisionMethod.OnColliderEnter && !continuousDamage) return;
 
-            if ((tags.Count == 0 || tags.Contains(hit.transform.tag)) && targets.Contains(hit))
+            if (CanApplyDamage(hit.gameObject) && targets.Contains(hit))
             {
                 targets.Remove(hit);
             }
@@ -135,27 +141,30 @@ namespace Invector
         protected virtual void OnParticleCollision(GameObject hit)
         {
             if (!this.enabled) return;
-            if (collisionMethod != CollisionMethod.OnParticleCollision) return;
-
-            int numCollisionEvents = part.GetCollisionEvents(hit, collisionEvents);
-
-            Collider collider = hit.GetComponent<Collider>();
-            int i = 0;
-
-            while ((!limitParticleCollisionEvent && i < numCollisionEvents) || (!limitParticleCollisionEvent && i < maxParticleCollisionEvent))
+            if (CanApplyDamage(hit))
             {
-                if (collider)
+                if (collisionMethod != CollisionMethod.OnParticleCollision) return;
+
+                int numCollisionEvents = part.GetCollisionEvents(hit, collisionEvents);
+
+                Collider collider = hit.GetComponent<Collider>();
+                int i = 0;
+
+                while ((!limitParticleCollisionEvent && i < numCollisionEvents) || (!limitParticleCollisionEvent && i < maxParticleCollisionEvent))
                 {
-                    if (continuousDamage && (tags.Count == 0 || tags.Contains(hit.transform.tag)) && !targets.Contains(collider))
+                    if (collider)
                     {
-                        targets.Add(collider);
+                        if (continuousDamage && !targets.Contains(collider))
+                        {
+                            targets.Add(collider);
+                        }
+                        else
+                        {
+                            ApplyDamage(collider, transform.position);
+                        }
                     }
-                    else if ((tags.Count == 0 || tags.Contains(hit.transform.tag)))
-                    {
-                        ApplyDamage(collider, transform.position);
-                    }
+                    i++;
                 }
-                i++;
             }
         }
 

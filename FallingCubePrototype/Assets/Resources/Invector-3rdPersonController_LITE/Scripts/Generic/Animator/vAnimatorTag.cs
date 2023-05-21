@@ -8,7 +8,7 @@ namespace Invector.vEventSystems
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            base.OnStateEnter(animator, stateInfo, layerIndex);
+            base.OnStateEnter(animator, stateInfo, layerIndex); 
             if (stateInfos != null)
             {
                 for (int i = 0; i < tags.Length; i++)
@@ -22,6 +22,17 @@ namespace Invector.vEventSystems
             OnStateEnterEvent(tags.vToList());
         }
 
+        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        {
+            base.OnStateUpdate(animator, stateInfo, layerIndex);
+            if (stateInfos != null)
+            {
+                for (int a = 0; a < stateInfos.Count; a++)
+                {
+                    stateInfos[a].UpdateStateInfo(layerIndex, stateInfo.normalizedTime, stateInfo.shortNameHash);
+                }
+            }
+        }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
@@ -34,7 +45,7 @@ namespace Invector.vEventSystems
                 }
             }
             base.OnStateExit(animator, stateInfo, layerIndex);
-            OnStateExitEvent(tags.vToList());
+            OnStateExitEvent(tags.vToList());           
         }
     }
 }

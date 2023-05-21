@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace Invector.vCharacterController
 {
@@ -8,22 +9,39 @@ namespace Invector.vCharacterController
         [HideInInspector]
         public bool isDragging;
         /// <summary>
-        /// Move the controller to a specific Position
+        /// Move the controller to a specific Position, you must Lock the Input first 
+        /// </summary>
+        /// <param name="targetPosition"></param>
+        public virtual void MoveToPosition(Transform targetPosition)
+        {
+            MoveToPosition(targetPosition.position);
+        }
+
+        /// <summary>
+        /// Move the controller to a specific Position, you must Lock the Input first 
         /// </summary>
         /// <param name="targetPosition"></param>
         public virtual void MoveToPosition(Vector3 targetPosition)
         {
             Vector3 dir = targetPosition - transform.position;
             dir.y = 0;
-            //moveDirection = dir.normalized;
-            input = transform.InverseTransformDirection(dir.normalized);
-            // calculate input smooth
-            inputSmooth = Vector3.Lerp(inputSmooth, input, (isStrafing ? strafeSpeed.movementSmooth : freeSpeed.movementSmooth) * Time.deltaTime);
+            /*dir = dir.normalized * Mathf.Min(1f, dir.magnitude);*/           /*That is to make smootly stop*/
+
+            if (dir.magnitude < 0.1f)
+            {
+                input = Vector3.zero;
+                moveDirection = Vector3.zero;
+            }
+            else
+            {
+                input = transform.InverseTransformDirection(dir.normalized);
+                moveDirection = dir.normalized;
+            }
         }
 
         /// <summary>
         /// Handle RootMotion movement and specific Actions
-        /// </summary>
+        /// </summary>       
         public virtual void ControlAnimatorRootMotion()
         {
             if (!this.enabled)
@@ -40,14 +58,6 @@ namespace Invector.vCharacterController
             if (customAction || lockAnimMovement)
             {
                 StopCharacterWithLerp();
-
-                transform.position = animator.rootPosition;
-                transform.rotation = animator.rootRotation;
-            }
-
-            else if (inputSmooth == Vector3.zero && isGrounded)
-            {
-                animator.ApplyBuiltinRootMotion();
                 transform.position = animator.rootPosition;
                 transform.rotation = animator.rootRotation;
             }
@@ -63,7 +73,7 @@ namespace Invector.vCharacterController
         /// </summary>
         public virtual void ControlLocomotionType()
         {
-            if (lockAnimMovement || lockMovement || customAction || isRolling)
+            if (lockAnimMovement || lockMovement || customAction)
             {
                 return;
             }
@@ -108,7 +118,10 @@ namespace Invector.vCharacterController
                     // calculate input smooth
                     inputSmooth = Vector3.Lerp(inputSmooth, input, (isStrafing ? strafeSpeed.movementSmooth : freeSpeed.movementSmooth) * Time.deltaTime);
                 }
-                Vector3 dir = (isStrafing && (!isSprinting || sprintOnlyFree == false) || (freeSpeed.rotateWithCamera && input == Vector3.zero)) && rotateTarget ? rotateTarget.forward : moveDirection;
+                Vector3 dir = (isStrafing && isGrounded && (!isSprinting || sprintOnlyFree == false) || (freeSpeed.rotateWithCamera && input == Vector3.zero)) && rotateTarget ? rotateTarget.forward : moveDirection;
+
+                //RotationTest(dir);
+
                 RotateToDirection(dir);
             }
         }
@@ -135,7 +148,7 @@ namespace Invector.vCharacterController
         /// <param name="referenceTransform"></param>
         public virtual void UpdateMoveDirection(Transform referenceTransform = null)
         {
-            if (isRolling && !rollControl || input.magnitude <= 0.01)
+            if (isRolling && !rollControl /*|| input.magnitude <= 0.01*/)
             {
                 moveDirection = Vector3.Lerp(moveDirection, Vector3.zero, (isStrafing ? strafeSpeed.movementSmooth : freeSpeed.movementSmooth) * Time.deltaTime);
                 return;
@@ -163,8 +176,8 @@ namespace Invector.vCharacterController
         /// <param name="value"></param>
         public virtual void Sprint(bool value)
         {
-            var sprintConditions = (currentStamina > 0 && hasMovementInput && isGrounded && !customAction &&
-                !(isStrafing && !strafeSpeed.walkByDefault && (horizontalSpeed >= 0.5 || horizontalSpeed <= -0.5 || verticalSpeed <= 0.1f) && !sprintOnlyFree));
+            var sprintConditions = (!isCrouching || (!inCrouchArea && CanExitCrouch())) && (currentStamina > 0 && hasMovementInput &&
+                !(isStrafing && (horizontalSpeed >= 0.5 || horizontalSpeed <= -0.5 || verticalSpeed <= 0.1f) && !sprintOnlyFree));
 
             if (value && sprintConditions)
             {
@@ -178,6 +191,7 @@ namespace Invector.vCharacterController
                         if (isSprinting)
                         {
                             OnStartSprinting.Invoke();
+                            alwaysWalkByDefault = false;
                         }
                         else
                         {
@@ -187,6 +201,8 @@ namespace Invector.vCharacterController
                     else if (!isSprinting)
                     {
                         OnStartSprinting.Invoke();
+
+                        alwaysWalkByDefault = false;
                         isSprinting = true;
                     }
                 }
@@ -250,16 +266,17 @@ namespace Invector.vCharacterController
         {
             // trigger jump behaviour
             jumpCounter = jumpTimer;
-            isJumping = true;
             OnJump.Invoke();
 
             // trigger jump animations
             if (input.sqrMagnitude < 0.1f)
             {
+                StartCoroutine(DelayToJump());
                 animator.CrossFadeInFixedTime("Jump", 0.1f);
             }
             else
             {
+                isJumping = true;
                 animator.CrossFadeInFixedTime("JumpMove", .2f);
             }
 
@@ -271,16 +288,26 @@ namespace Invector.vCharacterController
             }
         }
 
+        protected IEnumerator DelayToJump()
+        {
+            inJumpStarted = true;
+            yield return new WaitForSeconds(jumpStandingDelay);
+            isJumping = true;
+            inJumpStarted = false;
+        }
+
         /// <summary>
         /// Triggers the Roll Animation and set the stamina cost for this action
         /// </summary>
         public virtual void Roll()
         {
+            OnRoll.Invoke();
             isRolling = true;
-            animator.CrossFadeInFixedTime("Roll", 0.1f);
+            animator.CrossFadeInFixedTime("Roll", rollTransition, baseLayer);
             ReduceStamina(rollStamina, false);
             currentStaminaRecoveryDelay = 2f;
         }
+
 
         #region Check Action Triggers 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using UnityEditor;
@@ -69,7 +70,7 @@ namespace Invector
                 variables = new List<string>();
             }
         }
-
+       
         protected virtual void OnEnable()
         {
          
@@ -87,8 +88,7 @@ namespace Invector
             var prop = serializedObject.GetIterator();
 
             if (((vMonoBehaviour)target) != null)
-            {
-                const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
+            {               
                 List<string> events = new List<string>();
 
                 toolbars = new List<vToolBar>();
@@ -99,11 +99,19 @@ namespace Invector
                 var index = 0;
                 bool needReorder = false;
                 int oldOrder = 0;
+               
                 while (prop.NextVisible(true))
                 {
-                    var fieldInfo = targetObject.GetType().GetField(prop.name, flags);
+                    FieldInfo fieldInfo = null;
+                    if (!targetObject.TryGetField( prop.name,out fieldInfo))
+                    {                       
+                        continue;
+                    }
+
+                 
                     if (fieldInfo != null)
                     {
+                       
                         var toolBarAttributes = fieldInfo.GetCustomAttributes(typeof(vEditorToolbarAttribute), true);
 
                         if (toolBarAttributes.Length > 0)

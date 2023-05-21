@@ -12,8 +12,8 @@ namespace Invector
         #region Variables
 
         [vEditorToolbar("Health", order = 0)]
-        [SerializeField] [vReadOnly] protected bool _isDead;
-        [vBarDisplay("maxHealth")] [SerializeField] protected float _currentHealth;
+        [SerializeField][vReadOnly] protected bool _isDead;
+        [vBarDisplay("maxHealth")][SerializeField] protected float _currentHealth;
         public bool isImmortal = false;
         [vHelpBox("If you want to start with different value, uncheck this and make sure that the current health has a value greater zero")]
         public bool fillHealthOnStart = true;
@@ -40,36 +40,34 @@ namespace Invector
                 if (_currentHealth != value)
                 {
                     _currentHealth = value;
+                    _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
                     onChangeHealth.Invoke(_currentHealth);
+                    HandleCheckHealthEvents();
+                }
+                var newDeathState = _currentHealth <= 0;
+                if (newDeathState != isDead)
+                {
+                    isDead = newDeathState;
                 }
 
-                if (!_isDead && _currentHealth <= 0)
-                {
-                    _isDead = true;
-                    onDead.Invoke(gameObject);
-                }
-                else if (isDead && _currentHealth > 0)
-                {
-                    _isDead = false;
-                }
             }
         }
-        public bool isDead
+        public virtual bool isDead
         {
             get
             {
-                if (!_isDead && currentHealth <= 0)
-                {
-                    _isDead = true;
-                    onDead.Invoke(gameObject);
-                }
                 return _isDead;
             }
             set
             {
-                _isDead = value;
+                if (_isDead != value)
+                {
+                    _isDead = value;
+                    if (value) onDead.Invoke(gameObject);
+                }
             }
         }
+
         public float healthRecovery = 0f;
         public float healthRecoveryDelay = 0f;
         [HideInInspector]
@@ -117,7 +115,7 @@ namespace Invector
 
         protected virtual void HealthRecovery()
         {
-            if (!canRecoverHealth||isDead) return;
+            if (!canRecoverHealth || isDead) return;
             if (currentHealthRecoveryDelay > 0)
                 currentHealthRecoveryDelay -= Time.deltaTime;
             else
@@ -136,13 +134,6 @@ namespace Invector
         public virtual void AddHealth(int value)
         {
             currentHealth += value;
-            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-            if (!isDead && currentHealth <= 0)
-            {
-                isDead = true;
-                onDead.Invoke(gameObject);
-            }
-            HandleCheckHealthEvents();
         }
 
         /// <summary>
@@ -152,13 +143,6 @@ namespace Invector
         public virtual void ChangeHealth(int value)
         {
             currentHealth = value;
-            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-            if (!isDead && currentHealth <= 0)
-            {
-                isDead = true;
-                onDead.Invoke(gameObject);
-            }
-            HandleCheckHealthEvents();
         }
 
         /// <summary>
@@ -169,7 +153,6 @@ namespace Invector
         {
             currentHealth = health;
             onResetHealth.Invoke();
-            if (isDead) isDead = false;
         }
         /// <summary>
         /// Reset's current health to max health
@@ -178,7 +161,7 @@ namespace Invector
         {
             currentHealth = maxHealth;
             onResetHealth.Invoke();
-            if (isDead) isDead = false;
+
         }
 
         /// <summary>
@@ -191,7 +174,17 @@ namespace Invector
             if (maxHealth < 0)
                 maxHealth = 0;
         }
-   
+
+        /// <summary>
+        /// Set a value to HealthRecovery to start recovering health
+        /// </summary>
+        /// <param name="value"></param>
+        public virtual void SetHealthRecovery(float value)
+        {
+            healthRecovery = value;
+            StartCoroutine(RecoverHealth());
+        }
+
         /// <summary>
         /// Apply Damage to Current Health
         /// </summary>
@@ -199,7 +192,7 @@ namespace Invector
         public virtual void TakeDamage(vDamage damage)
         {
             if (damage != null)
-            {             
+            {
                 onStartReceiveDamage.Invoke(damage);
                 currentHealthRecoveryDelay = currentHealth <= 0 ? 0 : healthRecoveryDelay;
 
@@ -210,7 +203,7 @@ namespace Invector
 
                 if (damage.damageValue > 0)
                     onReceiveDamage.Invoke(damage);
-                HandleCheckHealthEvents();
+
             }
         }
 

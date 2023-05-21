@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 103556}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.627, z: 0.25}
+  m_LocalPosition: {x: -0, y: 0.619, z: 1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411434}
@@ -427,7 +427,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 121388}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.622, z: 0.25}
+  m_LocalPosition: {x: -0, y: 0.614, z: 1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 409446}
@@ -1362,8 +1362,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.1, z: 3.45}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.9999999, y: 1, z: 5.7412267}
+  m_Center: {x: -3.0692086e-15, y: 0, z: -2.1597636}
 --- !u!114 &11491334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1378,14 +1378,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openCloseEvents: 0
   openCloseWindow: 0
-  selectedToolbar: 0
+  selectedToolbar: 3
   inputType: 0
   actionInput:
     useInput: 1
     isAxisInUse: 0
+    isUnityInput: 0
     keyboard: E
     keyboardAxis: 0
-    joystick: RB
+    joystick: A
     joystickAxis: 0
     mobile: A
     mobileAxis: 0
@@ -1396,21 +1397,24 @@ MonoBehaviour:
     lastTimeTheButtonWasPressed: 0
     inButtomTimer: 0
   buttonTimer: 3
-  inputDelay: 0.01
-  playAnimationWhileHoldingButton: 0
+  inputDelay: 0.1
+  playAnimationWhileHoldingButton: 1
   doubleButtomTime: 0.25
+  actionName: Action
   actionTag: Action
   disableOnStart: 0
   disableCollision: 1
   disableGravity: 1
   activeFromForward: 1
-  forwardAngle: 30
+  forwardAngle: 55
   useTriggerRotation: 1
   destroyAfter: 0
   destroyDelay: 0
   customCameraState: Default
   playAnimation: ClimbUp
-  endExitTimeAnimation: 0.6
+  crossFadeTransition: 0.3
+  endActionManualy: 0
+  endExitTimeAnimation: 0.65
   animatorActionState: 0
   resetAnimatorActionState: 1
   useAnimatorMatchTarget: 0
@@ -1431,7 +1435,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.5
+      time: 0.6026012
       value: 1
       inSlope: 0
       outSlope: 0
@@ -1464,8 +1468,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.5
-      value: 1
+      time: 0.45231214
+      value: 1.0017544
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1565,10 +1569,32 @@ MonoBehaviour:
       m_Calls: []
   OnValidate:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 194324}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   OnInvalidate:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 194324}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &162784
 GameObject:
   m_ObjectHideFlags: 0
@@ -1713,8 +1739,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.1, z: 3.45}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.9999999, y: 1, z: 5.7412267}
+  m_Center: {x: -3.0692086e-15, y: 0, z: -2.1597636}
 --- !u!114 &11415558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1734,9 +1760,10 @@ MonoBehaviour:
   actionInput:
     useInput: 1
     isAxisInUse: 0
+    isUnityInput: 0
     keyboard: E
     keyboardAxis: 0
-    joystick: RB
+    joystick: A
     joystickAxis: 0
     mobile: A
     mobileAxis: 0
@@ -1747,21 +1774,24 @@ MonoBehaviour:
     lastTimeTheButtonWasPressed: 0
     inButtomTimer: 0
   buttonTimer: 3
-  inputDelay: 0.01
-  playAnimationWhileHoldingButton: 0
+  inputDelay: 0.1
+  playAnimationWhileHoldingButton: 1
   doubleButtomTime: 0.25
+  actionName: Action
   actionTag: Action
   disableOnStart: 0
   disableCollision: 1
   disableGravity: 1
   activeFromForward: 1
-  forwardAngle: 30
+  forwardAngle: 55
   useTriggerRotation: 1
   destroyAfter: 0
   destroyDelay: 0
   customCameraState: Default
   playAnimation: ClimbUp
-  endExitTimeAnimation: 0.6
+  crossFadeTransition: 0.3
+  endActionManualy: 0
+  endExitTimeAnimation: 0.65
   animatorActionState: 0
   resetAnimatorActionState: 1
   useAnimatorMatchTarget: 0
@@ -1782,7 +1812,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.5
+      time: 0.6026012
       value: 1
       inSlope: 0
       outSlope: 0
@@ -1815,8 +1845,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.5
-      value: 1
+      time: 0.45231214
+      value: 1.0017544
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1916,10 +1946,32 @@ MonoBehaviour:
       m_Calls: []
   OnValidate:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 145530}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   OnInvalidate:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 145530}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &182138
 GameObject:
   m_ObjectHideFlags: 0
@@ -1965,8 +2017,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.1, z: 3.45}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.9999999, y: 1, z: 5.7412267}
+  m_Center: {x: -3.0692086e-15, y: 0, z: -2.1597636}
 --- !u!114 &11485190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1986,9 +2038,10 @@ MonoBehaviour:
   actionInput:
     useInput: 1
     isAxisInUse: 0
+    isUnityInput: 0
     keyboard: E
     keyboardAxis: 0
-    joystick: RB
+    joystick: A
     joystickAxis: 0
     mobile: A
     mobileAxis: 0
@@ -1999,21 +2052,24 @@ MonoBehaviour:
     lastTimeTheButtonWasPressed: 0
     inButtomTimer: 0
   buttonTimer: 3
-  inputDelay: 0.01
-  playAnimationWhileHoldingButton: 0
+  inputDelay: 0.1
+  playAnimationWhileHoldingButton: 1
   doubleButtomTime: 0.25
+  actionName: Action
   actionTag: Action
   disableOnStart: 0
   disableCollision: 1
   disableGravity: 1
   activeFromForward: 1
-  forwardAngle: 30
+  forwardAngle: 55
   useTriggerRotation: 1
   destroyAfter: 0
   destroyDelay: 0
   customCameraState: Default
   playAnimation: ClimbUp
-  endExitTimeAnimation: 0.6
+  crossFadeTransition: 0.3
+  endActionManualy: 0
+  endExitTimeAnimation: 0.65
   animatorActionState: 0
   resetAnimatorActionState: 1
   useAnimatorMatchTarget: 0
@@ -2034,7 +2090,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.5
+      time: 0.6026012
       value: 1
       inSlope: 0
       outSlope: 0
@@ -2067,8 +2123,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.5
-      value: 1
+      time: 0.45231214
+      value: 1.0017544
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -2168,10 +2224,32 @@ MonoBehaviour:
       m_Calls: []
   OnValidate:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 153554}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   OnInvalidate:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 153554}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &186258
 GameObject:
   m_ObjectHideFlags: 0
@@ -2491,7 +2569,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 192636}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.622, z: 0.25}
+  m_LocalPosition: {x: -0, y: 0.614, z: 1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 418624}
@@ -2542,8 +2620,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.1, z: 3.45}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.9999999, y: 1, z: 5.7412267}
+  m_Center: {x: -3.0692086e-15, y: 0, z: -2.1597636}
 --- !u!114 &11455772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2563,9 +2641,10 @@ MonoBehaviour:
   actionInput:
     useInput: 1
     isAxisInUse: 0
+    isUnityInput: 0
     keyboard: E
     keyboardAxis: 0
-    joystick: RB
+    joystick: A
     joystickAxis: 0
     mobile: A
     mobileAxis: 0
@@ -2576,21 +2655,24 @@ MonoBehaviour:
     lastTimeTheButtonWasPressed: 0
     inButtomTimer: 0
   buttonTimer: 3
-  inputDelay: 0.01
-  playAnimationWhileHoldingButton: 0
+  inputDelay: 0.1
+  playAnimationWhileHoldingButton: 1
   doubleButtomTime: 0.25
+  actionName: Action
   actionTag: Action
   disableOnStart: 0
   disableCollision: 1
   disableGravity: 1
   activeFromForward: 1
-  forwardAngle: 30
+  forwardAngle: 55
   useTriggerRotation: 1
   destroyAfter: 0
   destroyDelay: 0
   customCameraState: Default
   playAnimation: ClimbUp
-  endExitTimeAnimation: 0.6
+  crossFadeTransition: 0.3
+  endActionManualy: 0
+  endExitTimeAnimation: 0.65
   animatorActionState: 0
   resetAnimatorActionState: 1
   useAnimatorMatchTarget: 0
@@ -2611,7 +2693,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.5
+      time: 0.6026012
       value: 1
       inSlope: 0
       outSlope: 0
@@ -2644,8 +2726,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.5
-      value: 1
+      time: 0.45231214
+      value: 1.0017544
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -2745,10 +2827,32 @@ MonoBehaviour:
       m_Calls: []
   OnValidate:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 162784}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   OnInvalidate:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 162784}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &194324
 GameObject:
   m_ObjectHideFlags: 0
@@ -3089,7 +3193,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 196228}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.616, z: -0.25}
+  m_LocalPosition: {x: 0, y: 0.608, z: 1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 493022}

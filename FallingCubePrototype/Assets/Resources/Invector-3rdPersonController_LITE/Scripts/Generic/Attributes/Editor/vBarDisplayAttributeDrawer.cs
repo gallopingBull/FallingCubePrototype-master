@@ -18,7 +18,7 @@ public class vBarDisplayAttributeDrawer : PropertyDrawer {
         {
             if (atrbt.showJuntInPlayMode && !Application.isPlaying)
             {
-                EditorGUI.PropertyField(position, property);
+                EditorGUI.PropertyField(position, property,label);
                 return;
             }
             
@@ -68,7 +68,7 @@ public class vBarDisplayAttributeDrawer : PropertyDrawer {
         }
         GUI.color = color;
        
-        EditorGUI.PropertyField(position, property);
+        EditorGUI.PropertyField(position, property,label);
     }
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {

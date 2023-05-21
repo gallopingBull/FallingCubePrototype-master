@@ -20,8 +20,8 @@ namespace Invector.vCharacterController
                     _instance = GameObject.FindObjectOfType<vInput>();
                     if (_instance == null)
                     {
-                        new GameObject("vInputType", typeof(vInput));
-                        return vInput.instance;
+                        _instance =   new GameObject("vInputType").AddComponent<vInput>();
+                        return _instance;
                     }
                 }
                 return _instance;
@@ -216,26 +216,27 @@ namespace Invector.vCharacterController
         public bool useInput = true;
         [SerializeField]
         private bool isAxisInUse;
+        [SerializeField]
+        private bool isUnityInput;
+        [SerializeField]
+        public string keyboard;
+        [SerializeField]
+        public bool keyboardAxis;
+        [SerializeField]
+        public string joystick;
+        [SerializeField]
+        public bool joystickAxis;
+        [SerializeField]
+        public string mobile;
+        [SerializeField]
+        public bool mobileAxis;
 
         [SerializeField]
-        private string keyboard;
+        public bool joystickAxisInvert;
         [SerializeField]
-        private bool keyboardAxis;
+        public bool keyboardAxisInvert;
         [SerializeField]
-        private string joystick;
-        [SerializeField]
-        private bool joystickAxis;
-        [SerializeField]
-        private string mobile;
-        [SerializeField]
-        private bool mobileAxis;
-
-        [SerializeField]
-        private bool joystickAxisInvert;
-        [SerializeField]
-        private bool keyboardAxisInvert;
-        [SerializeField]
-        private bool mobileAxisInvert;
+        public bool mobileAxisInvert;
 
         public float timeButtonWasPressed;
         public float lastTimeTheButtonWasPressed;
@@ -356,10 +357,11 @@ namespace Invector.vCharacterController
         {
             get
             {
-                if (vInput.instance != null)
+                if (vInput.instance != null && !isUnityInput)
                 {
                     if (System.Enum.IsDefined(typeof(KeyCode), buttonName))
                         return true;
+                    isUnityInput = true;
                 }
                 return false;
             }
@@ -560,20 +562,25 @@ namespace Invector.vCharacterController
         {
             if (string.IsNullOrEmpty(buttonName) || !IsButtonAvailable(this.buttonName)) return false;
 
+          
             if (multTapCounter == 0 && GetButtonDown())
-            {
+            {               
                 multTapTimer = Time.time;
                 multTapCounter = 1;
                 return false;
             }
-
-            if (multTapCounter == 1 && GetButtonDown())
+            else if (multTapCounter == 1 && GetButtonDown())
             {
                 var time = multTapTimer + inputTime;
                 var valid = (Time.time < time);
                 multTapTimer = 0;
-                multTapCounter = 0;
+                multTapCounter = 0;              
                 return valid;
+            }
+            else if(multTapCounter == 1 && multTapTimer + inputTime<Time.time)
+            {               
+                multTapTimer = 0;
+                multTapCounter = 0;
             }
             return false;
         }

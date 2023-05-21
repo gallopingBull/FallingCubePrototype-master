@@ -15,13 +15,17 @@ namespace Invector.vCharacterController
         [SerializeField] protected float debugTimeToStayRagdolled;
         [vEditorToolbar("Settings")]
         public LayerMask groundLayer = 1 << 0;
+
         public bool keepRagdolled;
+        public bool invertGetUpAnim;
         public bool _ignoreGetUpAnimation;
         public bool removePhysicsAfterDie;
+
         [Tooltip("SHOOTER: Keep false to use detection hit on each children collider, don't forget to change the layer to BodyPart from hips to all childrens. MELEE: Keep true to only hit the main Capsule Collider.")]
         public bool disableColliders = false;
         public AudioSource collisionSource;
         public AudioClip collisionClip;
+
         [Header("Add Tags for Weapons or Itens here:")]
         public List<string> ignoreTags = new List<string>() { "Weapon", "Ignore Ragdoll" };
         public AnimatorStateInfo stateInfo;
@@ -44,6 +48,8 @@ namespace Invector.vCharacterController
 
         public bool ignoreGetUpAnimation { get => _ignoreGetUpAnimation; set => _ignoreGetUpAnimation = value; }
 
+        Vector3 localY;
+        
         bool ragdolled
         {
             get
@@ -65,8 +71,9 @@ namespace Invector.vCharacterController
                 }
                 else
                 {
-                    characterHips.parent = hipsParent;
+                    characterHips.SetParent(hipsParent);
                     isActive = false;
+
                     if (state == RagdollState.ragdolled)
                     {
                         setKinematic(true); //disable gravity etc.
@@ -82,7 +89,7 @@ namespace Invector.vCharacterController
                             b.storedRotation = b.transform.rotation;
                             b.storedPosition = b.transform.position;
                         }
-
+                      
                         //Remember some key positions
                         ragdolledFeetPosition = 0.5f * (animator.GetBoneTransform(HumanBodyBones.LeftToes).position + animator.GetBoneTransform(HumanBodyBones.RightToes).position);
                         ragdolledHeadPosition = animator.GetBoneTransform(HumanBodyBones.Head).position;
@@ -90,15 +97,24 @@ namespace Invector.vCharacterController
 
                         //Initiate the get up animation
                         //hip hips forward vector pointing upwards, initiate the get up from back animation
-                        if (!ignoreGetUpAnimation)
+                        if (!ignoreGetUpAnimation && animator.enabled && gameObject.activeInHierarchy)
                         {
-                            if (animator.GetBoneTransform(HumanBodyBones.Hips).forward.y > 0)
+                            if (characterHips.TransformDirection(localY).y > 0)
+                            {
                                 animator.Play("StandUp@FromBack");
+                            }
                             else
+                            {
                                 animator.Play("StandUp@FromBelly");
-
+                            }
                         }
 
+                    }
+                    else if (state == RagdollState.animated)
+                    {
+                        setKinematic(true); //disable gravity etc.
+                        setCollider(true);
+                        animator.enabled = true; //enable animation
                     }
                 }
             }
@@ -150,10 +166,8 @@ namespace Invector.vCharacterController
         void Start()
         {
             // store the Animator component
-            animator = GetComponent<Animator>();
             _parentRigb = GetComponent<Rigidbody>();
             iChar = GetComponent<vICharacter>();
-
             if (iChar != null)
             {
                 iChar.onActiveRagdoll.AddListener(ActivateRagdoll);
@@ -167,14 +181,61 @@ namespace Invector.vCharacterController
                 collisionSource = _collisionPrefab.AddComponent<AudioSource>();
             }
 
-            // find character chest and hips
-            characterChest = animator.GetBoneTransform(HumanBodyBones.Chest);
-            characterHips = animator.GetBoneTransform(HumanBodyBones.Hips);
-            hipsParent = characterHips.parent;
-            // set all RigidBodies to kinematic so that they can be controlled with Mecanim
-            // and there will be no glitches when transitioning to a ragdoll
+            LoadBodyPart();
             CreateRagdollContainer();
 
+            if (startRagdolled)
+            {
+                Invoke("ActivateRagdoll", 0.1f);
+            }
+        }
+
+      
+        private void OnDisable()
+        {
+            inStabilize = false;
+            Invoke("ChangeToHipsParent",0.01f);
+            setKinematic(true); 
+            setCollider(true);
+        }
+        void ChangeToHipsParent()
+        {
+            if (characterHips.parent != hipsParent)
+            {
+                characterHips.position = transform.position;
+                characterHips.SetParent(hipsParent);
+            }
+
+        }
+        public void RestoreRagdoll()
+        {
+            if (isActive)
+            {
+                ChangeToHipsParent();
+                iChar.ResetRagdoll();
+                isActive = false;
+                state = RagdollState.animated;
+                inStabilize = false;
+                setKinematic(true); //disable gravity etc.
+                setCollider(true);
+                animator.enabled = true; //enable animation
+            }
+        }
+        public void LoadBodyPart()
+        {
+            bodyParts.Clear();
+            // find character chest and hips
+            if (!animator)
+            {
+                animator = GetComponent<Animator>();
+            }
+
+            characterChest = animator.GetBoneTransform(HumanBodyBones.Chest);
+            characterHips = animator.GetBoneTransform(HumanBodyBones.Hips);
+            localY = characterHips.InverseTransformDirection(Vector3.up);
+            hipsParent = characterHips.parent;
+            // set all RigidBodies to kinematic so that they can be controlled with Mecanim
+            // and there will be no glitches when transitioning to a ragdoll 
             // find all the transforms in the character, assuming that this script is attached to the root
             if (characterHips)
             {
@@ -202,46 +263,63 @@ namespace Invector.vCharacterController
                 setKinematic(true);
                 setCollider(true);
             }
-
-            if (startRagdolled) Invoke("ActivateRagdoll", 0.1f);
         }
 
         void CreateRagdollContainer()
         {
             if (!_ragdollContainer)
+            {
                 _ragdollContainer = new GameObject("RagdollContainer " + gameObject.name);
+            }
             //_ragdollContainer.hideFlags = HideFlags.HideInHierarchy;
         }
 
         void LateUpdate()
         {
-            if (animator == null) return;
-            if (!updateBehaviour && animator.updateMode == AnimatorUpdateMode.AnimatePhysics) return;
+            if (animator == null)
+            {
+                return;
+            }
+
+            if (!updateBehaviour && animator.updateMode == AnimatorUpdateMode.AnimatePhysics)
+            {
+                return;
+            }
+
             updateBehaviour = false;
             RagdollBehaviour();
-
         }
 
         void FixedUpdate()
         {
             updateBehaviour = true;
-            if (!isActive) return;
-            if (iChar.currentHealth > 0)
+            if (!isActive)
             {
-                if (!_ragdollContainer) CreateRagdollContainer();
-                if (characterHips.parent != _ragdollContainer.transform) characterHips.SetParent(_ragdollContainer.transform);
-                if (ragdolled && !inStabilize && !keepRagdolled)
-                {
-                    ragdolled = false;
-                    StartCoroutine(ResetPlayer(1.1f));
-                }
-                else if (animator != null && !animator.isActiveAndEnabled && ragdolled || (animator == null && ragdolled))
-                {                  
-                    transform.position = characterHips.position;
-                }
-                  
+               
+                return;
             }
-        }
+
+            if (!_ragdollContainer)
+            {
+                CreateRagdollContainer();
+            }
+            if (characterHips.parent != _ragdollContainer.transform)
+            {
+                characterHips.SetParent(_ragdollContainer.transform);
+            }
+
+            if (ragdolled && !inStabilize && !keepRagdolled && !iChar.isDead)
+            {
+                ragdolled = false;
+                StartCoroutine(ResetPlayer(1.1f));
+            }
+            else if (animator != null && !animator.isActiveAndEnabled && ragdolled || (animator == null && ragdolled))
+            {
+                transform.position = characterHips.position;
+            }
+
+        }      
+       
 
         void OnDestroy()
         {
@@ -259,6 +337,7 @@ namespace Invector.vCharacterController
             }
         }
 
+
         /// <summary>
         /// Reset the inApplyDamage variable. Set to false;
         /// </summary>
@@ -275,12 +354,15 @@ namespace Invector.vCharacterController
         void KeepRagdolled(float time)
         {
             if (time > 0)
+            {
                 keepRagdolled = true;
+            }
 
             CancelInvoke("ResetStayRagdolled");
             Invoke("ResetStayRagdolled", time);
 
         }
+
         /// <summary>
         /// Reset keep ragdolled time
         /// </summary>
@@ -296,6 +378,7 @@ namespace Invector.vCharacterController
         {
             ActivateRagdoll(null);
         }
+
         /// <summary>
         /// Active Ragdoll
         /// </summary>
@@ -304,7 +387,9 @@ namespace Invector.vCharacterController
         public void ActivateRagdoll(vDamage damage, float timeToStayRagdolled)
         {
             if (isActive || (damage != null && !damage.activeRagdoll))
+            {
                 return;
+            }
 
             ActivateRagdoll(damage);
             KeepRagdolled(timeToStayRagdolled);
@@ -314,15 +399,29 @@ namespace Invector.vCharacterController
         public void ActivateRagdoll(vDamage damage)
         {
             if (isActive || (damage != null && !damage.activeRagdoll))
+            {
                 return;
-            if (!_ragdollContainer) CreateRagdollContainer();
-            if (damage != null && damage.senselessTime > 0) KeepRagdolled(damage.senselessTime);
+            }
+
+            if (!_ragdollContainer)
+            {
+                CreateRagdollContainer();
+            }
+
+            if (damage != null && damage.senselessTime > 0)
+            {
+                KeepRagdolled(damage.senselessTime);
+            }
 
             inApplyCollisionSound = true;
             isActive = true;
 
-            if (transform.parent != null && !transform.parent.gameObject.isStatic) transform.parent = null;
-            var isDead = true;
+            if (transform.parent != null && !transform.parent.gameObject.isStatic)
+            {
+                transform.parent = null;
+            }
+
+
 
             // turn ragdoll on
             inStabilize = true;
@@ -330,16 +429,12 @@ namespace Invector.vCharacterController
             if (iChar != null)
             {
                 iChar.EnableRagdoll();
-                isDead = !(iChar.currentHealth > 0);
             }
             // start to check if the ragdoll is stable
             StartCoroutine(RagdollStabilizer(2f));
 
-            if (!isDead)
-            {
-                characterHips.SetParent(_ragdollContainer.transform);// = null;
-
-            }
+           // if(!iChar.isDead) 
+                characterHips.SetParent(_ragdollContainer.transform);
 
             Invoke("ResetCollisionSound", 0.2f);
         }
@@ -376,7 +471,10 @@ namespace Invector.vCharacterController
 
                 }
                 else
+                {
                     break;
+                }
+
                 yield return new WaitForEndOfFrame();
             }
 
@@ -395,15 +493,24 @@ namespace Invector.vCharacterController
             yield return new WaitForSeconds(waitTime);
             //Debug.Log("Ragdoll OFF");        
             if (iChar != null)
+            {
                 iChar.ResetRagdoll();
+            }
         }
 
         // ragdoll blend - code based on the script by Perttu Hämäläinen with modifications to work with this Controller        
         void RagdollBehaviour()
         {
             var isDead = !(iChar != null && iChar.currentHealth > 0);
-            if (isDead) return;
-            if (iChar == null || !iChar.ragdolled) return;
+            if (isDead)
+            {
+                return;
+            }
+
+            if (iChar == null || !iChar.ragdolled)
+            {
+                return;
+            }
 
             //Blending from ragdoll back to animated
             if (state == RagdollState.blendToAnim)
@@ -417,7 +524,6 @@ namespace Invector.vCharacterController
 
                     //Now cast a ray from the computed position downwards and find the highest hit that does not belong to the character 
                     RaycastHit[] hits = Physics.RaycastAll(new Ray(newRootPosition + Vector3.up, Vector3.down), 1, groundLayer, QueryTriggerInteraction.Ignore);
-
 
                     foreach (RaycastHit hit in hits)
                     {
@@ -453,7 +559,9 @@ namespace Invector.vCharacterController
                     { //this if is to prevent us from modifying the root of the character, only the actual body parts
                       //position is only interpolated for the hips
                         if (b.transform == animator.GetBoneTransform(HumanBodyBones.Hips))
+                        {
                             b.transform.position = Vector3.Lerp(b.transform.position, b.storedPosition, ragdollBlendAmount);
+                        }
                         //rotation is interpolated for all body parts
                         b.transform.rotation = Quaternion.Slerp(b.transform.rotation, b.storedRotation, ragdollBlendAmount);
                     }
@@ -499,9 +607,13 @@ namespace Invector.vCharacterController
                     if (!bp.transform.Equals(transform) && bp.collider)
                     {
                         if (disableColliders)
+                        {
                             bp.collider.enabled = !newValue;
+                        }
                         else
+                        {
                             bp.collider.isTrigger = newValue;
+                        }
                     }
                 }
             }
@@ -516,30 +628,44 @@ namespace Invector.vCharacterController
                 for (int i = 0; i < comps.Length; i++)
                 {
                     if (comps[i].transform != transform)
+                    {
                         Destroy(comps[i]);
+                    }
                 }
                 var joints = GetComponentsInChildren<CharacterJoint>();
                 if (joints != null)
                 {
                     foreach (CharacterJoint comp in joints)
+                    {
                         if (!ignoreTags.Contains(comp.gameObject.tag) && comp.transform != transform)
+                        {
                             Destroy(comp);
+                        }
+                    }
                 }
 
                 var rigidbodies = GetComponentsInChildren<Rigidbody>();
                 if (rigidbodies != null)
                 {
                     foreach (Rigidbody comp in rigidbodies)
+                    {
                         if (!ignoreTags.Contains(comp.gameObject.tag) && comp.transform != transform)
+                        {
                             Destroy(comp);
+                        }
+                    }
                 }
 
                 var colliders = GetComponentsInChildren<Collider>();
                 if (colliders != null)
                 {
                     foreach (Collider comp in colliders)
+                    {
                         if (!ignoreTags.Contains(comp.gameObject.tag) && comp.transform != transform)
+                        {
                             Destroy(comp);
+                        }
+                    }
                 }
             }
         }

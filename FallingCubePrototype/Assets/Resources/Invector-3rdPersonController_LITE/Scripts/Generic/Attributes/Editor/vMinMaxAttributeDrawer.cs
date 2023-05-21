@@ -16,13 +16,13 @@ public class vMinMaxAttributeDrawer : PropertyDrawer
 
         Vector2 value = property.vector2Value;
         var minmax = attribute as vMinMaxAttribute;
-       
-
+        position.height = EditorGUIUtility.singleLineHeight;
+         needLine = contextWidth < 400; 
         label = EditorGUI.BeginProperty(position, label, property);
         if (needLine)
         {
             EditorGUI.LabelField(position, label);
-            position.y += 16f;           
+            position.y += EditorGUIUtility.singleLineHeight;           
         }
         else
         {           

@@ -16,9 +16,14 @@ namespace Invector
             public bool sendByTrigger;
             public List<vMessageReceiver> defaultReceivers;
         }
-
+        [System.Serializable]
+        public class vGlobalMessage
+        {
+            public string name;
+            public string message;
+        }
         public List<vMessage> messages;
-
+        public List<vGlobalMessage> globalMessages;
         /// <summary>
         /// Send a message to default receiver of the target message
         /// </summary>
@@ -43,12 +48,13 @@ namespace Invector
             {
                 for (int i = 0; i < _messages.Count; i++)
                 {
-                    for (int a = 0; a < _messages[i].defaultReceivers.Count; i++)
+                    for (int a = 0; a < _messages[i].defaultReceivers.Count; a++)
                         if (_messages[i].defaultReceivers[a])
                             _messages[i].defaultReceivers[a].Send(_messages[i].name, _messages[i].message);
                 }
             }
         }
+
         /// <summary>
         /// Send a message to default receiver of the target message
         /// </summary>
@@ -56,15 +62,15 @@ namespace Invector
         public virtual void SendToParentReceiver(int messageIndex)
         {
             var receiver = GetComponentInParent<vMessageReceiver>();
-           
+
             if (!receiver) return;
-           
+
             vMessage _message = messages.Count > 0 && messageIndex < messages.Count ? messages[messageIndex] : null;
             if (_message != null)
             {
                 receiver.Send(_message.name, _message.message);
             }
-                 
+
         }
 
         /// <summary>
@@ -79,7 +85,7 @@ namespace Invector
             if (_messages != null && _messages.Count > 0)
             {
                 for (int i = 0; i < _messages.Count; i++)
-                {                        
+                {
                     receiver.Send(_messages[i].name, _messages[i].message);
                 }
             }
@@ -203,6 +209,33 @@ namespace Invector
             if (!_receiver) return;
             for (int i = 0; i < messages.Count; i++)
                 if (messages[i].sendByTrigger) _receiver.Send(messages[i].name, messages[i].message);
+
+        }
+
+        /// <summary>
+        /// Send message to global receivers
+        /// </summary>
+        /// <param name="messageName">Message name</param>
+        public virtual void SendGlobal(string messageName)
+        {
+            var _messages = globalMessages.FindAll(m => m.name.Equals(messageName));
+            for (int i = 0; i < _messages.Count; i++)
+            {
+                vMessageReceiver.SendGlobal(_messages[i].name, _messages[i].message);
+            }
+        }
+
+        /// <summary>
+        /// Send message to global receivers
+        /// </summary>
+        /// <param name="messageIndex">Index of Message</param>
+        public virtual void SendGlobal(int messageIndex)
+        {
+            vGlobalMessage _message = globalMessages.Count > 0 && messageIndex < globalMessages.Count ? globalMessages[messageIndex] : null;
+            if (_message != null)
+            {
+                vMessageReceiver.SendGlobal(_message.name, _message.message);
+            }
         }
     }
 }

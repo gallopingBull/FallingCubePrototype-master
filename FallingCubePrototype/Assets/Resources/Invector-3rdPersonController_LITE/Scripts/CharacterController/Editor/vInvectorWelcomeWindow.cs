@@ -46,12 +46,12 @@ namespace Invector.vCharacterController
             #if INVECTOR_BASIC
             new ToolBar("Add-ons",AddonsPageContent),
             #endif
-            new ToolBar("Forum",Forum)
+            new ToolBar("Forum | Discord",Forum)
         };
         #endregion
 
-        public const string _thirdPersonVersion = "2.5.6a";
-        public const string _fsmAIVersion = "1.1.5";
+        public const string _thirdPersonVersion = "2.6.2c";
+        public const string _fsmAIVersion = "1.1.8b";
 
         public const string _projectSettingsPath = "Assets/Invector-3rdPersonController/Basic Locomotion/Resources/vProjectSettings.unitypackage";
         public const string _mobilePackagePath = "Assets/Invector-3rdPersonController/Basic Locomotion/Resources/vMobileAddon.unitypackage";
@@ -73,6 +73,8 @@ namespace Invector.vCharacterController
         public static Texture2D builderAddon = null;
         public static Texture2D ziplineAddon = null;
         public static Texture2D craftingAddon = null;
+        public static Texture2D pushAddon = null;
+        public static Texture2D coverAddon = null;
 
         public static Vector2 scrollPosition;
 
@@ -88,7 +90,7 @@ namespace Invector.vCharacterController
 
 #if INVECTOR_BASIC
 
-        [MenuItem("Invector/Addons", false, windowWidth)]
+        [MenuItem("Invector/Add-Ons", false, windowWidth, priority = 2)]
         static void AddonsMenu()
         {
             GetWindow<vInvectorWelcomeWindow>(true).toolBarIndex = 2;
@@ -122,6 +124,8 @@ namespace Invector.vCharacterController
             builderAddon = (Texture2D)Resources.Load("builderAddon", typeof(Texture2D));
             ziplineAddon = (Texture2D)Resources.Load("ziplineAddon", typeof(Texture2D));
             craftingAddon = (Texture2D)Resources.Load("craftingAddon", typeof(Texture2D));
+            pushAddon = (Texture2D)Resources.Load("pushAddon", typeof(Texture2D));
+            coverAddon = (Texture2D)Resources.Load("coverAddon", typeof(Texture2D));
         }
 
         public void OnGUI()
@@ -222,12 +226,12 @@ namespace Invector.vCharacterController
             }
 #endif
 
-            GUILayout.BeginVertical("box");
+            GUILayout.Space(10);
             if (GUILayout.Button("Youtube Tutorials"))
             {
                 Application.OpenURL("https://www.youtube.com/channel/UCSEoY03WFn7D0m1uMi6DxZQ/videos");
             }
-            GUILayout.EndVertical();
+
 
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
@@ -245,12 +249,15 @@ namespace Invector.vCharacterController
             DrawNewAddon(platformIcon, "2.5D Examples", "2.5D with corner transition, basic, melee and shooter scenes included", "Import Package", _platformPackagePath, false);
             DrawNewAddon(vMansionIcon, "Mansion CameraMode Examples", "Cool example of how to use the CameraMode to create a CCTV or oldschool gameplay style", "Import Package", _vMansionPath, false);
 
+            DrawNewAddon(coverAddon, "Shooter Cover Add-on", "Advanced Cover mechanics to bring more Shooter action or Stealth approach for your game", "Go to AssetStore", "https://assetstore.unity.com/packages/tools/game-toolkits/invector-shooter-cover-add-on-204918", true);
+            DrawNewAddon(pushAddon, "Push & Pull Add-on", "Push and Pull objects to create puzzles", "Go to AssetStore", "https://assetstore.unity.com/packages/tools/game-toolkits/invector-push-add-on-188670", true);
             DrawNewAddon(craftingAddon, "Crafting Add-on", "Expand Invector's Inventory System to create new items by combining two or more items into a new one.", "Go to AssetStore", "https://assetstore.unity.com/packages/templates/systems/invector-crafting-add-on-168799", true);
             DrawNewAddon(climbAddon, "FreeClimb Add-on", "Climb on any surface such as walls or cliffs.", "Go to AssetStore", "https://assetstore.unity.com/packages/tools/utilities/third-person-freeclimb-add-on-105187", true);
             DrawNewAddon(swimmingAddon, "Swimming Add-on", "Swim on the surface or dive into the water", "Go to AssetStore", "https://assetstore.unity.com/packages/tools/utilities/third-person-swimming-add-on-97418", true);
             DrawNewAddon(ziplineAddon, "Zipline Add-on", "Zipline through pre located ropes", "Go to AssetStore", "https://assetstore.unity.com/packages/tools/utilities/third-person-zipline-add-on-97410", true);
             DrawNewAddon(stealthKillAddon, "Stealth Kill Add-on (Free!)", "Example using the GenericAction feature, animations included.", "Go to AssetStore", "https://assetstore.unity.com/packages/templates/systems/invector-stealth-kill-add-on-135495", true);
             DrawNewAddon(builderAddon, "Builder Add-on", "Collect Items and Build them anywhere in your scene to create traps or interactables!", "Go to AssetStore", "https://assetstore.unity.com/packages/tools/utilities/third-person-builder-add-on-152689", true);
+
 
             GUILayout.EndScrollView();
             GUILayout.FlexibleSpace();
@@ -287,6 +294,7 @@ namespace Invector.vCharacterController
         {
             GUILayout.BeginVertical("window");
 
+
             GUILayout.BeginHorizontal("box");
             GUILayout.Label("<b>1</b>- First you need to Import our <b>ProjectSettings</b>, otherwise you will get errors about missing Inputs and Layers. Then create a new folder for your Project and put your files there, don't use the Invector Folder to avoid losing files when updating to a new version.");
             GUILayout.EndHorizontal();
@@ -304,6 +312,12 @@ namespace Invector.vCharacterController
             GUILayout.EndHorizontal();
             GUILayout.Space(6);
 
+            if (GUILayout.Button("Guideline to Import/Update"))
+            {
+                Application.OpenURL("https://invector.proboards.com/thread/2896/guideline-import-update-invector-assets");
+            }
+
+
             EditorGUILayout.HelpBox("- ALWAYS BACKUP your project before updating!", MessageType.Warning, true);
             EditorGUILayout.HelpBox("- To update your template you need to Delete the Invector folder, this way you won't get any conflicts between old files and newer files.", MessageType.Info, true);
 
@@ -320,6 +334,16 @@ namespace Invector.vCharacterController
             if (GUILayout.Button("Open Forum"))
             {
                 Application.OpenURL("http://invector.proboards.com/");
+            }
+            GUILayout.EndVertical();
+
+            GUILayout.Space(5);
+
+            GUILayout.BeginVertical("box");
+            EditorGUILayout.HelpBox("Join the Official Invector Discord Channel to get help, talk with developers, share experiencies and more...", MessageType.Info);
+            if (GUILayout.Button("Join Discord"))
+            {
+                Application.OpenURL("https://discord.gg/arWD8UPbgN");
             }
             GUILayout.EndVertical();
 

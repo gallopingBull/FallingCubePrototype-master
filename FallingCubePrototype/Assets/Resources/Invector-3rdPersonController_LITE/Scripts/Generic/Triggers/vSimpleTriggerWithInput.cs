@@ -33,7 +33,7 @@ public class vSimpleTriggerWithInput : vSimpleTrigger
     public UnityEvent OnPressButton;
     public UnityEvent OnCancelButtonTimer;
     public OnUpdateValue OnUpdateButtonTimer;
-
+    
     void Update()
     {
         if (!other)

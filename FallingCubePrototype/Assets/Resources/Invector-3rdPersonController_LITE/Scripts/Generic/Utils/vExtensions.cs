@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace Invector
 {
+    public enum vAngleAxis
+    {
+        X, Y, Z
+    }
     public static class vExtensions
     {
         public static string InsertSpaceBeforeUpperCase(this string input)
         {
-            var result = "";          
+            var result = "";
             foreach (char c in input)
             {
                 if (char.IsUpper(c))
@@ -40,6 +45,30 @@ namespace Invector
         {
             return target.Replace(" ", string.Empty).ToUpper();
         }
+
+        /// <summary>
+        /// Check if Value is inside a range  (greater equals min && less equals than Max)
+        /// </summary>
+        /// <param name="value">value to compare</param>
+        /// <param name="min">min range</param>
+        /// <param name="max">max range</param>
+        /// <returns></returns>
+        public static bool IsInSideRange(this float value, float min, float max)
+        {
+            return value >= min && value <= max;
+        }
+
+        /// <summary>
+        /// Check if Value is inside a range (greater equals min && less equals than Max)
+        /// </summary>
+        /// <param name="value">value to compare</param>
+        /// <param name="minMaxRange">range (x min,y max)</param>
+        /// <returns></returns>
+        public static bool IsInSideRange(this float value, Vector2 minMaxRange)
+        {
+            return value >= minMaxRange.x && value <= minMaxRange.y;
+        }
+
         public static bool IsVectorNaN(this Vector3 vector)
         {
             return float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z);
@@ -67,6 +96,23 @@ namespace Invector
                 newPts = pts;
             }
             return newPts;
+        }
+
+
+
+        public static float GetLenght(this UnityEngine.AI.NavMeshPath path)
+        {
+            float lenght = 0;
+            if (path != null && path.corners.Length > 1)
+            {
+                Vector3 lastPoint = path.corners[0];
+                for (int i = 1; i < path.corners.Length; i++)
+                {
+                    lenght += Vector3.Distance(lastPoint, path.corners[i]);
+                    lastPoint = path.corners[i];
+                }
+            }
+            return lenght;
         }
 
         public static List<Vector3> MakeSmoothCurve(this List<Vector3> pts, float smoothFactor = 0.25f)
@@ -137,7 +183,9 @@ namespace Invector
         public static void SetActiveChildren(this GameObject gameObjet, bool value)
         {
             foreach (Transform child in gameObjet.transform)
+            {
                 child.gameObject.SetActive(value);
+            }
         }
 
         /// <summary>
@@ -148,27 +196,43 @@ namespace Invector
         /// <returns></returns>
         public static bool isChild(this Transform me, Transform target)
         {
-            if (!target) return false;
+            if (!target)
+            {
+                return false;
+            }
+
             var objName = target.gameObject.name;
             var obj = me.FindChildByNameRecursive(objName);
-            if (obj == null) return false;
-            else return obj.Equals(target);
+            if (obj == null)
+            {
+                return false;
+            }
+            else
+            {
+                return obj.Equals(target);
+            }
         }
 
         static Transform FindChildByNameRecursive(this Transform me, string name)
         {
             if (me.name == name)
+            {
                 return me;
+            }
+
             for (int i = 0; i < me.childCount; i++)
             {
                 var child = me.GetChild(i);
                 var found = child.FindChildByNameRecursive(name);
                 if (found != null)
+                {
                     return found;
+                }
             }
             return null;
         }
 
+      
         /// <summary>
         /// Normalized the angle. between -180 and 180 degrees
         /// </summary>
@@ -177,14 +241,32 @@ namespace Invector
         {
             var delta = eulerAngle;
 
-            if (delta.x > 180) delta.x -= 360;
-            else if (delta.x < -180) delta.x += 360;
+            if (delta.x > 180)
+            {
+                delta.x -= 360;
+            }
+            else if (delta.x < -180)
+            {
+                delta.x += 360;
+            }
 
-            if (delta.y > 180) delta.y -= 360;
-            else if (delta.y < -180) delta.y += 360;
+            if (delta.y > 180)
+            {
+                delta.y -= 360;
+            }
+            else if (delta.y < -180)
+            {
+                delta.y += 360;
+            }
 
-            if (delta.z > 180) delta.z -= 360;
-            else if (delta.z < -180) delta.z += 360;
+            if (delta.z > 180)
+            {
+                delta.z -= 360;
+            }
+            else if (delta.z < -180)
+            {
+                delta.z += 360;
+            }
 
             return new Vector3(delta.x, delta.y, delta.z);//round values to angle;
         }
@@ -193,15 +275,39 @@ namespace Invector
         {
             return otherVector - vector;
         }
+        public static Vector3 AngleFormOtherDirection(this Vector3 directionA, Vector3 directionB)
+        {
+            return Quaternion.LookRotation(directionA).eulerAngles.AngleFormOtherEuler(Quaternion.LookRotation(directionB).eulerAngles);
+        }
+
+        public static Vector3 AngleFormOtherDirection(this Vector3 directionA, Vector3 directionB, Vector3 up)
+        {
+            return Quaternion.LookRotation(directionA,up).eulerAngles.AngleFormOtherEuler(Quaternion.LookRotation(directionB,up).eulerAngles);
+        }
+        public static Vector3 AngleFormOtherEuler(this Vector3 eulerA, Vector3 eulerB)
+        {
+            Vector3 angles = eulerA.NormalizeAngle().Difference(eulerB.NormalizeAngle()).NormalizeAngle();
+            return angles;
+        }
+        public static string ToStringColor(this bool value)
+        {
+            if (value) return "<color=green>YES</color>";
+            else return "<color=red>NO</color>";
+        }
 
         public static float ClampAngle(float angle, float min, float max)
         {
             do
             {
                 if (angle < -360)
+                {
                     angle += 360;
+                }
+
                 if (angle > 360)
+                {
                     angle -= 360;
+                }
             } while (angle < -360 || angle > 360);
 
             return Mathf.Clamp(angle, min, max);
@@ -227,7 +333,11 @@ namespace Invector
         public static List<T> vCopy<T>(this List<T> list)
         {
             List<T> _list = new List<T>();
-            if (list == null || list.Count == 0) return list;
+            if (list == null || list.Count == 0)
+            {
+                return list;
+            }
+
             for (int i = 0; i < list.Count; i++)
             {
                 _list.Add(list[i]);
@@ -238,7 +348,11 @@ namespace Invector
         public static List<T> vToList<T>(this T[] array)
         {
             List<T> list = new List<T>();
-            if (array == null || array.Length == 0) return list;
+            if (array == null || array.Length == 0)
+            {
+                return list;
+            }
+
             for (int i = 0; i < array.Length; i++)
             {
                 list.Add(array[i]);
@@ -249,7 +363,11 @@ namespace Invector
         public static T[] vToArray<T>(this List<T> list)
         {
             T[] array = new T[list.Count];
-            if (list == null || list.Count == 0) return array;
+            if (list == null || list.Count == 0)
+            {
+                return array;
+            }
+
             for (int i = 0; i < list.Count; i++)
             {
                 array[i] = list[i];
@@ -265,11 +383,51 @@ namespace Invector
             return new Vector3(length, height, width);
         }
 
+        public static bool IsClosed(this BoxCollider boxCollider, Vector3 position, Vector3 margin, Vector3 centerOffset)
+        {
+            var size = boxCollider.BoxSize();
+            var marginX = margin.x;
+            var marginY = margin.y;
+            var marginZ = margin.z;
+            var center = boxCollider.center + centerOffset;
+            Vector2 rangeX = new Vector2((center.x - (size.x * 0.5f)) - marginX, (center.x + (size.x * 0.5f)) + marginX);
+            Vector2 rangeY = new Vector2((center.y - (size.y * 0.5f)) - marginY, (center.y + (size.y * 0.5f)) + marginY);
+            Vector2 rangeZ = new Vector2((center.z - (size.z * 0.5f)) - marginZ, (center.z + (size.z * 0.5f)) + marginZ);
+            position = boxCollider.transform.InverseTransformPoint(position);
+
+            bool inX = (position.x * boxCollider.transform.lossyScale.x).IsInSideRange(rangeX);
+            bool inY = (position.y * boxCollider.transform.lossyScale.y).IsInSideRange(rangeY);
+            bool inZ = (position.z * boxCollider.transform.lossyScale.z).IsInSideRange(rangeZ);
+
+            return inX && inY && inZ;
+        }
+
         public static T ToEnum<T>(this string value, bool ignoreCase = true)
         {
             return (T)Enum.Parse(typeof(T), value, ignoreCase);
         }
+        public static bool TryGetField(this object obj, string name, out FieldInfo info)
+        {
+            Type t = obj.GetType();
+            bool found = false;
+            info = null;
+            do
+            {
+                var field = t.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
+                if (field != null)
+                {
+                    found = true;
+                    info = field;
+                }
+                else
+                {
+                    t = t.BaseType;
+                }
+            } while (!found && t != null);
+
+            return found;
+        }
         public static bool Contains<T>(this Enum value, Enum lookingForFlag) where T : struct
         {
             int intValue = (int)(object)value;
@@ -304,7 +462,7 @@ namespace Invector
             get
             {
                 return !unscaledTime
-                       ? Time.deltaTime 
+                       ? Time.deltaTime
                        : Time.unscaledDeltaTime;
             }
         }
@@ -315,7 +473,7 @@ namespace Invector
         {
             get
             {
-                return !unscaledTime 
+                return !unscaledTime
                        ? Time.fixedDeltaTime
                        : Time.fixedUnscaledDeltaTime;
             }
@@ -331,6 +489,11 @@ namespace Invector
                        ? Time.time
                        : Time.unscaledTime;
             }
+        }
+
+        public static float GetNormalizedTime(this Animator animator, int layer, int round = 2)
+        {
+            return (float)System.Math.Round(((animator.IsInTransition(layer) ? animator.GetNextAnimatorStateInfo(layer).normalizedTime : animator.GetCurrentAnimatorStateInfo(layer).normalizedTime)%1), round);
         }
     }
 }

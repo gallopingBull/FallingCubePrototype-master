@@ -114,20 +114,21 @@ namespace Invector
 
         protected virtual Transform GetBoneByName(string name)
         {
-            Transform root = transform.parent;
+            var animator = GetComponentInParent<Animator>();
+            if (!animator) return null;
+            var root = animator.GetBoneTransform(HumanBodyBones.Hips);
             if (root == null)
             {
-                root = transform;
+                root = animator.transform;
             }
 
-            List<Transform> childrens = root.gameObject.GetComponentsInChildren<Transform>().vToList();
+            List<Transform> childrens = root.gameObject.GetComponentsInChildren<Transform>(true).vToList();
             Transform t = null;
             if (childrens.Count > 0)
             {
                 if (!string.IsNullOrEmpty(name.Trim()))
                 {
                     string[] nameSplited = name.Trim().Split(';');
-
                     t = childrens.Find(child => ContainsName(nameSplited, child.gameObject.name.Trim()));
                 }
 

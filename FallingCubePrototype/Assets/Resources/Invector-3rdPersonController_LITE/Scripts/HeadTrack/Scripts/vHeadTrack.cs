@@ -36,6 +36,7 @@ namespace Invector.vCharacterController
         [Header("Tracking")]
         [Tooltip("Follow the Camera Forward")]
         public bool followCamera = true;
+        public bool _freezeLookPoint = false;
         [vHideInInspector("followCamera")]
         [Tooltip("Force to follow camera")]
         public bool alwaysFollowCamera = false;
@@ -70,14 +71,14 @@ namespace Invector.vCharacterController
         internal Camera cameraMain;
         internal vLookTarget currentLookTarget;
         internal vLookTarget lastLookTarget;
-        internal Vector3 currentLookPosition;
+
         internal Quaternion currentLookRotation;
         internal List<vLookTarget> targetsInArea = new List<vLookTarget>();
         internal bool ignoreSmooth = false;
         private float yRotation, xRotation;
         private float _currentHeadWeight, _currentbodyWeight;
         private Animator animator;
-        private vAnimatorStateInfos animatorStateInfos;
+        private vIAnimatorStateInfoController animatorStateInfo;
         private float headHeight;
         private Transform simpleTarget;
         private Vector3 temporaryLookPoint;
@@ -85,8 +86,11 @@ namespace Invector.vCharacterController
         private vHeadTrackSensor sensor;
         private float interation;
         private vICharacter vchar;
-        private float yAngle, xAngle;
-        private float _yAngle, _xAngle;
+
+        [SerializeField, vReadOnly(false)]
+        private Vector2 _lookAngle;
+        [SerializeField, vReadOnly(false)]
+        private Vector2 _lookAngleDifferency;
         private Transform forwardReference;
         #endregion
         public float Smooth
@@ -96,10 +100,30 @@ namespace Invector.vCharacterController
                 return ignoreSmooth ? 1f : smooth * Time.deltaTime;
             }
         }
-        protected virtual void OnEnable()
+
+        protected Vector3 _currentLocalLookPosition;
+        protected Vector3 _lastLocalLookPosition;
+
+        public float verticalLookAngle { get => _lookAngle.x; protected set => _lookAngle.x = value; }
+        public float horizontalLookAngle { get => _lookAngle.y; protected set => _lookAngle.y = value; }
+
+
+        public float verticalLookAngleDifferency { get => _lookAngleDifferency.x; protected set => _lookAngleDifferency.x = value; }
+        public float horizontalLookAngleDifferency { get => _lookAngleDifferency.y; protected set => _lookAngleDifferency.y = value; }
+
+        public virtual bool freezeLookPoint { get => _freezeLookPoint; set => _freezeLookPoint = value; }
+
+        public virtual Vector3 currentLookPosition
         {
-            if (animatorStateInfos != null && animator)
-                animatorStateInfos.RegisterListener();
+            get => freezeLookPoint ? transform.TransformPoint(_lastLocalLookPosition) : transform.TransformPoint(_currentLocalLookPosition);
+            protected set
+            {
+                _currentLocalLookPosition = transform.InverseTransformPoint(value);
+                if (!freezeLookPoint)
+                {
+                    _lastLocalLookPosition = _currentLocalLookPosition;
+                }
+            }
         }
 
         void Start()
@@ -120,19 +144,35 @@ namespace Invector.vCharacterController
 
             vchar = GetComponent<vICharacter>();
             sensor.headTrack = this;
-            animator = GetComponentInChildren<Animator>();
-            if (animator)
+            cameraMain = Camera.main;
+            var layer = LayerMask.NameToLayer("HeadTrack");
+            sensor.transform.parent = transform;
+            sensor.gameObject.layer = layer;
+            sensor.gameObject.tag = transform.tag;
+            animatorStateInfo = GetComponent<vIAnimatorStateInfoController>();
+            Init();
+        }
+
+        public void Init()
+        {
+            currentLookPosition = GetLookPoint();
+            _lastLocalLookPosition = _currentLocalLookPosition;
+            if (animator == null)
             {
-                animatorStateInfos = new vAnimatorStateInfos(animator);
-                animatorStateInfos.RegisterListener();
+                animator = GetComponentInChildren<Animator>();
             }
 
             if (autoFindBones)
             {
+                spine.Clear();
                 head = animator.GetBoneTransform(HumanBodyBones.Head);
                 if (head)
                 {
-                    forwardReference = new GameObject("FWRF").transform;
+                    if (!forwardReference)
+                    {
+                        forwardReference = new GameObject("FWRF").transform;
+                    }
+
                     forwardReference.SetParent(head);
                     forwardReference.transform.localPosition = Vector3.zero;
                     forwardReference.transform.rotation = transform.rotation;
@@ -147,13 +187,16 @@ namespace Invector.vCharacterController
                                 spine.Add(target.parent);
                                 target = target.parent;
                             }
-                            else break;
+                            else
+                            {
+                                break;
+                            }
                         }
                     }
                 }
             }
 
-            cameraMain = Camera.main;
+
             if (head)
             {
                 headHeight = Vector3.Distance(transform.position, head.position);
@@ -168,24 +211,27 @@ namespace Invector.vCharacterController
             {
                 Debug.Log("Headtrack Spines missing");
             }
-            var layer = LayerMask.NameToLayer("HeadTrack");
-            sensor.transform.parent = transform;
-            sensor.gameObject.layer = layer;
-            sensor.gameObject.tag = transform.tag;
+
             spine.Reverse();
-            GetLookPoint();
         }
 
         Vector3 headPoint { get { return transform.position + (transform.up * headHeight); } }
 
         public virtual void UpdateHeadTrack()
         {
-            if (animator == null || !animator.enabled) return;
+            if (animator == null || !animator.enabled)
+            {
+                return;
+            }
 
             if (vchar != null && vchar.currentHealth > 0f && animator != null && !vchar.ragdolled)
             {
                 onInitUpdate.Invoke();
-                currentLookPosition = GetLookPoint();
+                if (!freezeLookPoint)
+                {
+                    currentLookPosition = GetLookPoint();
+                }
+
                 SetLookAtPosition(currentLookPosition, _currentHeadWeight, _currentbodyWeight);
                 onFinishUpdate.Invoke();
             }
@@ -199,10 +245,11 @@ namespace Invector.vCharacterController
             var y = NormalizeAngle(euler.y);
             var x = NormalizeAngle(euler.x);
             var eulerB = considerHeadAnimationForward ? forwardReference.eulerAngles - transform.eulerAngles : Vector3.zero;
-            xAngle = Mathf.Clamp(Mathf.Lerp(xAngle, ((x) - eulerB.NormalizeAngle().x) + Quaternion.Euler(offsetSpine + defaultOffsetSpine).eulerAngles.NormalizeAngle().x, Smooth), verticalAngleLimit.x, verticalAngleLimit.y);
-            yAngle = Mathf.Clamp(Mathf.Lerp(yAngle, ((y) - eulerB.NormalizeAngle().y) + Quaternion.Euler(offsetSpine + defaultOffsetSpine).eulerAngles.NormalizeAngle().y, Smooth), horizontalAngleLimit.x, horizontalAngleLimit.y);
-            var xSpine = NormalizeAngle(xAngle);
-            var ySpine = NormalizeAngle(yAngle);
+            verticalLookAngle = Mathf.Clamp(Mathf.Lerp(verticalLookAngle, ((x) - eulerB.NormalizeAngle().x) + Quaternion.Euler(offsetSpine + defaultOffsetSpine).eulerAngles.NormalizeAngle().x, Smooth), verticalAngleLimit.x, verticalAngleLimit.y);
+            horizontalLookAngle = Mathf.Clamp(Mathf.Lerp(horizontalLookAngle, ((y) - eulerB.NormalizeAngle().y) + Quaternion.Euler(offsetSpine + defaultOffsetSpine).eulerAngles.NormalizeAngle().y, Smooth), horizontalAngleLimit.x, horizontalAngleLimit.y);
+            
+            var xSpine = NormalizeAngle(verticalLookAngle);
+            var ySpine = NormalizeAngle(horizontalLookAngle);
 
             foreach (Transform segment in spine)
             {
@@ -213,8 +260,8 @@ namespace Invector.vCharacterController
             }
             if (head)
             {
-                var xHead = NormalizeAngle(xAngle - (xSpine * spineWeight) + Quaternion.Euler(offsetHead + defaultOffsetHead).eulerAngles.NormalizeAngle().x);
-                var yHead = NormalizeAngle(yAngle - (ySpine * spineWeight) + Quaternion.Euler(offsetHead + defaultOffsetHead).eulerAngles.NormalizeAngle().y);
+                var xHead = NormalizeAngle(verticalLookAngle - (xSpine * spineWeight) + Quaternion.Euler(offsetHead + defaultOffsetHead).eulerAngles.NormalizeAngle().x);
+                var yHead = NormalizeAngle(horizontalLookAngle - (ySpine * spineWeight) + Quaternion.Euler(offsetHead + defaultOffsetHead).eulerAngles.NormalizeAngle().y);
                 var _rotY = Quaternion.AngleAxis(yHead * headWeight, head.InverseTransformDirection(transform.up));
                 head.rotation *= _rotY;
                 var _rotX = Quaternion.AngleAxis(xHead * headWeight, head.InverseTransformDirection(transform.TransformDirection(upDownAxis)));
@@ -222,6 +269,9 @@ namespace Invector.vCharacterController
             }
         }
 
+        public Vector3 desiredLookDirection { get; protected set; }
+
+        public Vector3 LookDirection { get; protected set; }
         bool lookConditions
         {
             get
@@ -236,10 +286,15 @@ namespace Invector.vCharacterController
 
         Vector3 GetLookPoint()
         {
+            if(animator == null)
+            {
+                return Vector3.zero;
+            }
+
             var distanceToLook = 100;
             if (lookConditions && !IgnoreHeadTrack())
             {
-                var dir = transform.forward;
+                desiredLookDirection = transform.forward;
                 if (temporaryLookTime <= 0)
                 {
                     var lookPosition = headPoint + (transform.forward * distanceToLook);
@@ -248,12 +303,14 @@ namespace Invector.vCharacterController
                         lookPosition = (cameraMain.transform.position + (cameraMain.transform.forward * distanceToLook));
                     }
 
-                    dir = lookPosition - headPoint;
+                    desiredLookDirection = lookPosition - headPoint;
+                  
                     if ((followCamera && !alwaysFollowCamera) || !followCamera)
                     {
+
                         if (simpleTarget != null)
                         {
-                            dir = simpleTarget.position - headPoint;
+                            desiredLookDirection = simpleTarget.position - headPoint;
                             if (currentLookTarget && currentLookTarget == lastLookTarget)
                             {
                                 currentLookTarget.ExitLook(this);
@@ -262,7 +319,7 @@ namespace Invector.vCharacterController
                         }
                         else if (currentLookTarget != null && (currentLookTarget.ignoreHeadTrackAngle || TargetIsOnRange(currentLookTarget.lookPoint - headPoint)) && currentLookTarget.IsVisible(headPoint, obstacleLayer))
                         {
-                            dir = currentLookTarget.lookPoint - headPoint;
+                            desiredLookDirection = currentLookTarget.lookPoint - headPoint;
                             if (currentLookTarget != lastLookTarget)
                             {
                                 currentLookTarget.EnterLook(this);
@@ -278,7 +335,7 @@ namespace Invector.vCharacterController
                 }
                 else
                 {
-                    dir = temporaryLookPoint - headPoint;
+                    desiredLookDirection = temporaryLookPoint - headPoint;
                     temporaryLookTime -= Time.deltaTime;
                     if (currentLookTarget && currentLookTarget == lastLookTarget)
                     {
@@ -287,49 +344,72 @@ namespace Invector.vCharacterController
                     }
                 }
 
-                var angle = GetTargetAngle(dir);
+                var angle = GetTargetAngle(desiredLookDirection);
                 if (cancelTrackOutOfAngle && (lastLookTarget == null || !lastLookTarget.ignoreHeadTrackAngle))
                 {
-                    if (TargetIsOnRange(dir))
+                    if (TargetIsOnRange(desiredLookDirection))
                     {
                         if (animator.GetBool("IsStrafing") && !IsAnimatorTag("Upperbody Pose"))
+                        {
                             SmoothValues(strafeHeadWeight, strafeBodyWeight, angle.x, angle.y);
+                        }
                         else if (animator.GetBool("IsStrafing") && IsAnimatorTag("Upperbody Pose"))
+                        {
                             SmoothValues(aimingHeadWeight, aimingBodyWeight, angle.x, angle.y);
+                        }
                         else
+                        {
                             SmoothValues(freeHeadWeight, freeBodyWeight, angle.x, angle.y);
+                        }
                     }
                     else
+                    {
                         SmoothValues();
+                    }
                 }
                 else
                 {
                     if (animator.GetBool("IsStrafing") && !IsAnimatorTag("Upperbody Pose"))
+                    {
                         SmoothValues(strafeHeadWeight, strafeBodyWeight, angle.x, angle.y);
+                    }
                     else if (animator.GetBool("IsStrafing") && IsAnimatorTag("Upperbody Pose"))
+                    {
                         SmoothValues(aimingHeadWeight, aimingBodyWeight, angle.x, angle.y);
+                    }
                     else
+                    {
                         SmoothValues(freeHeadWeight, freeBodyWeight, angle.x, angle.y);
+                    }
                 }
                 if (targetsInArea.Count > 1)
+                {
                     SortTargets();
+                }
             }
             else
             {
                 SmoothValues();
                 if (targetsInArea.Count > 1)
+                {
                     SortTargets();
+                }
             }
 
             var rotA = Quaternion.AngleAxis(yRotation, transform.up);
             var rotB = Quaternion.AngleAxis(xRotation, transform.right);
             var finalRotation = (rotA * rotB);
             var lookDirection = finalRotation * transform.forward;
+            LookDirection = lookDirection;
+            _lookAngleDifferency = GetTargetAngle(desiredLookDirection) - GetTargetAngle(lookDirection);
+
+
             return headPoint + (lookDirection * distanceToLook);
         }
 
         Vector2 GetTargetAngle(Vector3 direction)
         {
+            if (direction.magnitude == 0) return Vector2.zero;
             var lookRotation = Quaternion.LookRotation(direction, transform.up);
             var angleResult = lookRotation.eulerAngles - transform.eulerAngles;
 
@@ -353,9 +433,15 @@ namespace Invector.vCharacterController
         /// <param name="target"></param>
         public virtual void SetLookTarget(vLookTarget target, bool priority = false)
         {
-            if (!targetsInArea.Contains(target)) targetsInArea.Add(target);
+            if (!targetsInArea.Contains(target))
+            {
+                targetsInArea.Add(target);
+            }
+
             if (priority)
+            {
                 currentLookTarget = target;
+            }
         }
 
         /// <summary>
@@ -380,14 +466,23 @@ namespace Invector.vCharacterController
 
         public virtual void RemoveLookTarget(vLookTarget target)
         {
-            if (targetsInArea.Contains(target)) targetsInArea.Remove(target);
-            if (currentLookTarget == target) currentLookTarget = null;
+            if (targetsInArea.Contains(target))
+            {
+                targetsInArea.Remove(target);
+            }
+
+            if (currentLookTarget == target)
+            {
+                currentLookTarget = null;
+            }
         }
 
         public virtual void RemoveLookTarget(Transform target)
         {
             if (simpleTarget == target)
+            {
                 simpleTarget = null;
+            }
         }
 
         /// <summary>
@@ -397,8 +492,14 @@ namespace Invector.vCharacterController
         /// <returns></returns>
         float NormalizeAngle(float angle)
         {
-            if (angle > 180) angle -= 360;
-            else if (angle < -180) angle += 360;
+            if (angle > 180)
+            {
+                angle -= 360;
+            }
+            else if (angle < -180)
+            {
+                angle += 360;
+            }
 
             return angle;
         }
@@ -430,7 +531,10 @@ namespace Invector.vCharacterController
                 if (targetsInArea == null || targetsInArea.Count < 2)
                 {
                     if (targetsInArea != null && targetsInArea.Count > 0)
+                    {
                         currentLookTarget = targetsInArea[0];
+                    }
+
                     return;
                 }
 
@@ -486,9 +590,13 @@ namespace Invector.vCharacterController
                 }
                 SortTargets();
                 if (targetsInArea.Count > 0)
+                {
                     currentLookTarget = targetsInArea[0];
+                }
                 else
+                {
                     currentLookTarget = null;
+                }
             }
         }
 
@@ -503,10 +611,14 @@ namespace Invector.vCharacterController
 
         public virtual bool IsAnimatorTag(string tag)
         {
-            if (animator == null) return false;
-            if (animatorStateInfos != null)
+            if (animator == null)
             {
-                if (animatorStateInfos.HasTag(tag))
+                return false;
+            }
+
+            if (animatorStateInfo.isValid())
+            {
+                if (animatorStateInfo.animatorStateInfos.HasTag(tag))
                 {
                     return true;
                 }

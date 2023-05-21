@@ -6,49 +6,9 @@ using UnityEditor;
 namespace Invector.vEventSystems
 {
     [CustomEditor(typeof(vAnimatorTagAdvanced))]
-    public class vAnimatorTagAdvancedEditor : Editor
+    public class vAnimatorTagAdvancedEditor : vAnimatorTagEditor
     {
-        public vAnimatorTagAdvanced animatorTag;
-        public GUISkin skin;
-
-        private void OnEnable()
-        {
-            animatorTag = target as vAnimatorTagAdvanced;
-        }
-
-        public override void OnInspectorGUI()
-        {
-            if (!skin) skin = Resources.Load("vSkin") as GUISkin;
-            serializedObject.Update();
-            GUILayout.BeginVertical(skin.box);
-            EditorStyles.helpBox.richText = true;
-            EditorGUILayout.HelpBox("Useful Tags:\n " +
-                "<b>CustomAction </b> - <i> Lock's position and rotation to use RootMotion instead</i> \n " +
-                "<b>LockMovement </b> - <i> Use to lock the character movement </i> \n " +
-                "<b>LockRotation </b> - <i> Use to lock the character rotation</i> \n " +
-                "<b>IgnoreHeadtrack </b> - <i> Ignore the Headtrack and follows the animation</i> \n " +
-                "<b>IgnoreIK </b> - <i> Ignore IK while this animation is playing</i> \n " +
-                "<b>Attack </b> - <i> Use for Melee Attacks </i>"
-                , MessageType.Info);
-            var tags = serializedObject.FindProperty("tags");
-            if (GUILayout.Button("Add Tag", skin.button, GUILayout.ExpandWidth(true)))
-            {
-                tags.arraySize++;
-                tags.GetArrayElementAtIndex(tags.arraySize - 1).FindPropertyRelative("tagName").stringValue = "New Tag";
-                tags.GetArrayElementAtIndex(tags.arraySize - 1).FindPropertyRelative("normalizedTime").vector2Value = new Vector2(0,1);
-            }
-
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("debug"));
-
-            for (int i = 0; i < tags.arraySize; i++)
-            {
-                if (!DrawTag(tags, i)) break;
-            }
-            GUILayout.EndVertical();
-            serializedObject.ApplyModifiedProperties();
-        }
-
-        public bool DrawTag(SerializedProperty list, int index)
+        public override bool DrawTag(SerializedProperty list, int index)
         {
             GUILayout.BeginHorizontal(skin.box);
             GUILayout.BeginVertical();
@@ -56,7 +16,7 @@ namespace Invector.vEventSystems
             var tagName = tagToDraw.FindPropertyRelative("tagName");
             var enumTagType = tagToDraw.FindPropertyRelative("tagType");
             var normalizedTime = tagToDraw.FindPropertyRelative("normalizedTime");
-            EditorGUILayout.PropertyField(tagName, GUIContent.none, GUILayout.Height(15));
+            DrawTagField(tagName);
             EditorGUILayout.PropertyField(enumTagType,  GUILayout.Height(15));
             Vector2 minMax = normalizedTime.vector2Value;
 
@@ -112,6 +72,14 @@ namespace Invector.vEventSystems
 
             GUILayout.EndHorizontal();
             return true;
+        }
+
+
+        protected override void AddTag(SerializedProperty list, string tag)
+        {
+            list.arraySize++;
+            var p = list.GetArrayElementAtIndex(list.arraySize - 1);
+            p.FindPropertyRelative("tagName").stringValue = tag;
         }
     }
 }

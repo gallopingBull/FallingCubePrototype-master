@@ -10,7 +10,11 @@ namespace Invector.vCharacterController
         #region Health/Stamina Variables
         [Header("Health/Stamina")]
         public Slider healthSlider;
+        public float healthSliderMaxValueSmooth = 10f;
+        public float healthSliderValueSmooth = 10;
         public Slider staminaSlider;
+        public float staminaSliderMaxValueSmooth = 10f;
+        public float staminaSliderValueSmooth = 100;
         [Header("DamageHUD")]
         public Image damageImage;
         public float flashSpeed = 5f;
@@ -71,18 +75,24 @@ namespace Invector.vCharacterController
             cc.onDead.AddListener(OnDead);
             cc.onReceiveDamage.AddListener(EnableDamageSprite);
             damageImage.color = new Color(0f, 0f, 0f, 0f);
-            if (cc.maxHealth != healthSlider.maxValue)
+            if (healthSlider)
             {
-                healthSlider.maxValue = cc.maxHealth;
-                healthSlider.onValueChanged.Invoke(healthSlider.value);
+                if (cc.maxHealth != healthSlider.maxValue)
+                {
+                    healthSlider.maxValue = cc.maxHealth;
+                    healthSlider.onValueChanged.Invoke(healthSlider.value);
+                }
+                healthSlider.value = cc.currentHealth;
             }
-            healthSlider.value = cc.currentHealth;
-            if (cc.maxStamina != staminaSlider.maxValue)
+            if (staminaSlider)
             {
-                staminaSlider.maxValue = cc.maxStamina;
-                staminaSlider.onValueChanged.Invoke(staminaSlider.value);
+                if (cc.maxStamina != staminaSlider.maxValue)
+                {
+                    staminaSlider.maxValue = cc.maxStamina;
+                    staminaSlider.onValueChanged.Invoke(staminaSlider.value);
+                }
+                staminaSlider.value = cc.currentStamina;
             }
-            staminaSlider.value = cc.currentStamina;
         }
 
         private void OnDead(GameObject arg0)
@@ -143,18 +153,24 @@ namespace Invector.vCharacterController
 
         void UpdateSliders(vThirdPersonController cc)
         {
-            if (cc.maxHealth != healthSlider.maxValue)
+            if (healthSlider != null)
             {
-                healthSlider.maxValue = Mathf.Lerp(healthSlider.maxValue, cc.maxHealth, 2f * Time.fixedDeltaTime);
-                healthSlider.onValueChanged.Invoke(healthSlider.value);
+                if (cc.maxHealth != healthSlider.maxValue)
+                {
+                    healthSlider.maxValue = Mathf.Lerp(healthSlider.maxValue, cc.maxHealth, healthSliderMaxValueSmooth * Time.fixedDeltaTime);
+                    healthSlider.onValueChanged.Invoke(healthSlider.value);
+                }
+                healthSlider.value = Mathf.Lerp(healthSlider.value, cc.currentHealth, healthSliderValueSmooth * Time.fixedDeltaTime);
             }
-            healthSlider.value = Mathf.Lerp(healthSlider.value, cc.currentHealth, 2f * Time.fixedDeltaTime);
-            if (cc.maxStamina != staminaSlider.maxValue)
+            if (staminaSlider)
             {
-                staminaSlider.maxValue = Mathf.Lerp(staminaSlider.maxValue, cc.maxStamina, 2f * Time.fixedDeltaTime);
-                staminaSlider.onValueChanged.Invoke(staminaSlider.value);
+                if (cc.maxStamina != staminaSlider.maxValue)
+                {
+                    staminaSlider.maxValue = Mathf.Lerp(staminaSlider.maxValue, cc.maxStamina, staminaSliderMaxValueSmooth * Time.fixedDeltaTime);
+                    staminaSlider.onValueChanged.Invoke(staminaSlider.value);
+                }
+                staminaSlider.value = Mathf.Lerp(staminaSlider.value, cc.currentStamina, staminaSliderValueSmooth * Time.fixedDeltaTime);
             }
-            staminaSlider.value = cc.currentStamina;
         }
 
         public void ShowDamageSprite()

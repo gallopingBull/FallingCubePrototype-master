@@ -152,8 +152,10 @@ namespace Invector.vCamera
         void StateData(vThirdPersonCameraState camState)
         {
             EditorGUILayout.Space();
-            camState.cameraMode = (TPCameraMode)EditorGUILayout.EnumPopup("Camera Mode", camState.cameraMode);
-            camState.Name = EditorGUILayout.TextField("State Name", camState.Name);
+
+            DrawEnumField("Camera Mode", ref camState.cameraMode);           
+            DrawTextField("State Name",ref camState.Name);
+
             if (CheckName(camState.Name, tpCamera.indexList))
             {
                 EditorGUILayout.HelpBox("This name already exist, choose another one", MessageType.Error);
@@ -257,65 +259,54 @@ namespace Invector.vCamera
 
         void FreeDirectionalMode(vThirdPersonCameraState camState)
         {
-            camState.forward = (float)((int)EditorGUILayout.Slider("Forward", camState.forward, -1f, 1f));
-            camState.right = EditorGUILayout.Slider("Right", camState.right, -3f, 3f);
-            camState.defaultDistance = EditorGUILayout.FloatField("Distance", camState.defaultDistance);
-            camState.useZoom = EditorGUILayout.Toggle("Use Zoom", camState.useZoom);
+
+            DrawSliderField("Forward", ref camState.forward, -1f, 1f);
+            DrawSliderField("Right", ref camState.right, -3f, 3f);
+            DrawFloatField("Distance",ref camState.defaultDistance);
+            DrawToogleField("Use Zoom",ref camState.useZoom);
             if (camState.useZoom)
             {
-                camState.maxDistance = EditorGUILayout.FloatField("Max Distance", camState.maxDistance);
-                camState.minDistance = EditorGUILayout.FloatField("Min Distance", camState.minDistance);
+                DrawFloatField("Max Distance", ref camState.maxDistance);
+                DrawFloatField("Min Distance",ref camState.minDistance);
             }
-            camState.height = EditorGUILayout.FloatField("Height", camState.height);
-            camState.fov = EditorGUILayout.Slider("Field of View", camState.fov, 1, 179);
-            camState.smooth = EditorGUILayout.FloatField("Smooth", camState.smooth);
-            camState.smoothDamp = EditorGUILayout.FloatField("Smooth Damp", camState.smoothDamp);
-            camState.cullingHeight = EditorGUILayout.FloatField("Culling Height", camState.cullingHeight);
-            camState.rotationOffSet = EditorGUILayout.Vector3Field("Rotation OffSet", camState.rotationOffSet);
-            camState.xMouseSensitivity = EditorGUILayout.FloatField("MouseSensitivity X", camState.xMouseSensitivity);
-            camState.yMouseSensitivity = EditorGUILayout.FloatField("MouseSensitivity Y", camState.yMouseSensitivity);
-            MinMaxSlider("Limit Angle X", ref camState.xMinLimit, ref camState.xMaxLimit, -360, 360);
-            MinMaxSlider("Limit Angle Y", ref camState.yMinLimit, ref camState.yMaxLimit, -180, 180);
-        }
+            DrawFloatField("Height", ref camState.height);
+            DrawSliderField("Field of View",ref camState.fov, 1, 179);
+            DrawFloatField("Smooth",ref camState.smooth);
+            DrawFloatField("Smooth Damp",ref camState.smoothDamp);
+            DrawFloatField("Culling Height",ref camState.cullingHeight);
+            DrawVector3Field("Rotation OffSet",ref camState.rotationOffSet);
+            DrawFloatField("MouseSensitivity X",ref camState.xMouseSensitivity);
+            DrawFloatField("MouseSensitivity Y",ref camState.yMouseSensitivity);
+            MinMaxSliderField("Limit Angle X", ref camState.xMinLimit, ref camState.xMaxLimit, -360, 360);
+            MinMaxSliderField("Limit Angle Y", ref camState.yMinLimit, ref camState.yMaxLimit, -180, 180);
+        }      
 
         void FixedAngleMode(vThirdPersonCameraState camState)
         {
-            camState.defaultDistance = EditorGUILayout.FloatField("Distance", camState.defaultDistance);
-            camState.useZoom = EditorGUILayout.Toggle("Use Zoom", camState.useZoom);
+           DrawFloatField("Distance",ref  camState.defaultDistance);
+           DrawToogleField("Use Zoom",ref camState.useZoom);
             if (camState.useZoom)
             {
-                camState.maxDistance = EditorGUILayout.FloatField("Max Distance", camState.maxDistance);
-                camState.minDistance = EditorGUILayout.FloatField("Min Distance", camState.minDistance);
+                DrawFloatField("Max Distance",ref camState.maxDistance);
+                DrawFloatField("Min Distance",ref camState.minDistance);
             }
-            camState.height = EditorGUILayout.FloatField("Height", camState.height);
-            camState.fov = EditorGUILayout.Slider("Field of View", camState.fov, 1, 179);
-            camState.smooth = EditorGUILayout.FloatField("Smooth Follow", camState.smooth);
-            camState.cullingHeight = EditorGUILayout.FloatField("Culling Height", camState.cullingHeight);
-            camState.right = EditorGUILayout.Slider("Right", camState.right, -3f, 3f);
-            camState.fixedAngle.x = EditorGUILayout.Slider("Angle X", camState.fixedAngle.x, -360, 360);
-            camState.fixedAngle.y = EditorGUILayout.Slider("Angle Y", camState.fixedAngle.y, -360, 360);
+            DrawFloatField("Height",ref camState.height);
+            DrawSliderField("Field of View",ref camState.fov, 1, 179);
+            DrawFloatField("Smooth Follow",ref camState.smooth);
+            DrawFloatField("Culling Height",ref camState.cullingHeight);
+            DrawSliderField("Right",ref camState.right, -3f, 3f);
+            DrawSliderField("Angle X",ref camState.fixedAngle.x, -360, 360);
+            DrawSliderField("Angle Y",ref camState.fixedAngle.y, -360, 360);
         }
 
         void FixedPointMode(vThirdPersonCameraState camState)
         {
-            camState.smooth = EditorGUILayout.FloatField("Smooth Follow", camState.smooth);
-            camState.fov = EditorGUILayout.Slider("Field of View", camState.fov, 1, 179);
+            DrawFloatField("Smooth Follow",ref camState.smooth);
+            DrawSliderField("Field of View",ref camState.fov, 1, 179);
             camState.fixedAngle.x = 0;
             camState.fixedAngle.y = 0;
 
             DrawLookPoint(camState);
-        }
-
-        void MinMaxSlider(string name, ref float minVal, ref float maxVal, float minLimit, float maxLimit)
-        {
-            GUILayout.BeginVertical();
-            GUILayout.Label(name);
-            GUILayout.BeginHorizontal("box");
-            minVal = EditorGUILayout.FloatField(minVal, GUILayout.MaxWidth(60));
-            EditorGUILayout.MinMaxSlider(ref minVal, ref maxVal, minLimit, maxLimit);
-            maxVal = EditorGUILayout.FloatField(maxVal, GUILayout.MaxWidth(60));
-            GUILayout.EndHorizontal();
-            GUILayout.EndVertical();
         }
 
         bool CheckName(string Name, int _index)
@@ -326,6 +317,104 @@ namespace Invector.vCamera
 
             return false;
         }
+
+        #region Camera State Drawers with undo
+
+        void DrawEnumField<T>(string name,ref T value)where T :System.Enum
+        {          
+            T _value = value;
+            EditorGUI.BeginChangeCheck();
+            _value = (T)EditorGUILayout.EnumPopup(name, _value);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(tpCamera.CameraStateList, "ChangeCameraState");
+                value = _value;
+            }
+        }
+
+        void DrawTextField(string name, ref string value)
+        {
+            string _value = value;
+            EditorGUI.BeginChangeCheck();
+            _value =EditorGUILayout.TextField(name, _value);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(tpCamera.CameraStateList, "ChangeCameraState");
+                value = _value;
+            }
+        }
+
+        void DrawVector3Field(string name, ref Vector3 value)
+        {
+            Vector3 _value = value;
+            EditorGUI.BeginChangeCheck();
+            _value = EditorGUILayout.Vector3Field("Rotation OffSet", _value);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(tpCamera.CameraStateList, "ChangeCameraState");
+                value = _value;
+            }
+        }
+
+        void DrawSliderField(string name, ref float value, float min, float max)
+        {
+            float _value = value;
+            EditorGUI.BeginChangeCheck();
+            _value = EditorGUILayout.Slider(name, _value, min, max);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(tpCamera.CameraStateList, "ChangeCameraState");
+                value = _value;
+            }
+        }
+
+        void DrawFloatField(string name, ref float value)
+        {
+            float _value = value;
+            EditorGUI.BeginChangeCheck();
+            _value = EditorGUILayout.FloatField(name, _value);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(tpCamera.CameraStateList, "ChangeCameraState");
+                value = _value;
+            }
+        }
+
+        void DrawToogleField(string name, ref bool value)
+        {
+            bool _value = value;
+            EditorGUI.BeginChangeCheck();
+            _value = EditorGUILayout.Toggle(name, _value);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(tpCamera.CameraStateList, "ChangeCameraState");
+                value = _value;
+            }
+        }
+
+        void MinMaxSliderField(string name, ref float minVal, ref float maxVal, float minLimit, float maxLimit)
+        {
+            float _minVal = minVal;
+            float _maxVal = maxVal;
+            GUILayout.BeginVertical();
+            GUILayout.Label(name);
+            GUILayout.BeginHorizontal("box");
+
+            EditorGUI.BeginChangeCheck();
+            _minVal = EditorGUILayout.FloatField(_minVal, GUILayout.MaxWidth(60));
+            EditorGUILayout.MinMaxSlider(ref _minVal, ref _maxVal, minLimit, maxLimit);
+            _maxVal = EditorGUILayout.FloatField(_maxVal, GUILayout.MaxWidth(60));
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(tpCamera.CameraStateList, "ChangeCameraState");
+                minVal = _minVal;
+                maxVal = _maxVal;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
+        }
+
+        #endregion
 
         [MenuItem("Invector/Basic Locomotion/Resources/New CameraState List Data")]
         static void NewCameraStateData()

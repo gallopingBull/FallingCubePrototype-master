@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Invector;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Invector;
 
 namespace Invector.vEventSystems
 {
@@ -13,7 +13,6 @@ namespace Invector.vEventSystems
         public bool getAnimatorInParent;
         [vHelpBox("Use <b>vAnimatorEvent</b> on a AnimatorState to trigger a Event below", vHelpBoxAttribute.MessageType.Info)]
         public List<vAnimatorEvent> animatorEvents;
-        public bool removeEventsOnDisable;
 
         [System.Serializable]
         public class vAnimatorEvent
@@ -26,11 +25,15 @@ namespace Invector.vEventSystems
 
             public virtual void OnTriggerEvent(string eventName)
             {
-                if (debug) Debug.Log("<color=green><b>Event " + eventName + " was called</b></color>");
+                if (debug)
+                {
+                    Debug.Log("<color=green><b>Event " + eventName + " was called</b></color>");
+                }
+
                 onTriggerEvent.Invoke(eventName);
             }
         }
-        private bool eventsRemovedByOnDisable;
+
         private bool hasValidBehaviours;
         private bool hasAnimator;
 
@@ -40,18 +43,15 @@ namespace Invector.vEventSystems
         }
 
         private void OnDisable()
-        {
-            if (removeEventsOnDisable)
-            {
-                eventsRemovedByOnDisable = true;
-                RemoveEvents();
-            }
+        {            
+            RemoveEvents();            
         }
 
         public void OnEnable()
         {
-            if (eventsRemovedByOnDisable && hasAnimator && hasValidBehaviours)
+            if (hasAnimator && hasValidBehaviours)
             {
+                RemoveEvents();
                 RegisterEvents();
             }
         }
@@ -72,19 +72,25 @@ namespace Invector.vEventSystems
                     var behaviours = animator.GetBehaviours<Invector.vEventSystems.vAnimatorEvent>();
                     for (int a = 0; a < animatorEvents.Count; a++)
                     {
-                        var hasEvent = false;                   
+                        var hasEvent = false;
                         for (int i = 0; i < behaviours.Length; i++)
                         {
                             if (behaviours[i].HasEvent(animatorEvents[a].eventName))
                             {
                                 behaviours[i].RegisterEvents(animatorEvents[a].eventName, animatorEvents[a].OnTriggerEvent);
-                                if (animatorEvents[a].debug) Debug.Log("<color=green>" + gameObject.name + " Register event : " + animatorEvents[a].eventName + "</color> in the " + animator.gameObject.name, gameObject);
+                                if (animatorEvents[a].debug)
+                                {
+                                    Debug.Log("<color=green>" + gameObject.name + " Register event : " + animatorEvents[a].eventName + "</color> in the " + animator.gameObject.name, gameObject);
+                                }
+
                                 hasValidBehaviours = true;
                                 hasEvent = true;
-                            }                           
+                            }
                         }
-                        if(!hasEvent && animatorEvents[a].debug)
+                        if (!hasEvent && animatorEvents[a].debug)
+                        {
                             Debug.LogWarning(animator.gameObject.name + " Animator doesn't have Event with name: " + animatorEvents[a].eventName, gameObject);
+                        }
                     }
                 }
                 else
@@ -96,7 +102,11 @@ namespace Invector.vEventSystems
 
         public virtual void RemoveEvents()
         {
-            if (!hasAnimator || !hasValidBehaviours) return;
+            if (!hasAnimator || !hasValidBehaviours)
+            {
+                return;
+            }
+
             if (animatorEvents.Count > 0)
             {
                 var animator = getAnimatorInParent ? GetComponentInParent<Animator>() : GetComponent<Animator>();
@@ -110,7 +120,10 @@ namespace Invector.vEventSystems
                             if (behaviours[i].HasEvent(animatorEvents[a].eventName))
                             {
                                 behaviours[i].RemoveEvents(animatorEvents[a].eventName, animatorEvents[a].OnTriggerEvent);
-                                if (animatorEvents[a].debug) Debug.Log("<color=red>" + gameObject.name + " Remove event : " + animatorEvents[a].eventName + "</color> Of the " + animator.gameObject.name, gameObject);
+                                if (animatorEvents[a].debug)
+                                {
+                                    Debug.Log("<color=red>" + gameObject.name + " Remove event : " + animatorEvents[a].eventName + "</color> Of the " + animator.gameObject.name, gameObject);
+                                }
                             }
                         }
                     }

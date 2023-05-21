@@ -26,24 +26,25 @@ namespace Invector.vEventSystems
 
             bool isEnter;
             bool isExit;
-            public void UpdateEventTrigger(float normalizedTime, List<vAnimatorStateInfos> stateInfos, int layer, float speed = 1, bool inExit = false, bool debug = false)
+            public void UpdateEventTrigger(float normalizedTime, List<vAnimatorStateInfos> stateInfos, int layer, float speed = 1,bool looping= false, bool inExit = false, bool debug = false)
             {
-                var normalizedTimeClamped = Mathf.Clamp(normalizedTime, 0, loopCount + 1f);
+                var normalizedTimeClamped = normalizedTime % 1;
                 if (!isEnter && !inExit && tagType != vAnimatorEventTriggerType.EnterStateExitByNormalized &&
-                                     tagType != vAnimatorEventTriggerType.EnterStateExitState && normalizedTimeClamped >= loopCount + (this.normalizedTime.x / speed))
+                                     tagType != vAnimatorEventTriggerType.EnterStateExitState && normalizedTimeClamped >= this.normalizedTime.x )
                 {
                     if (debug) Debug.Log("ADD TAG " + tagName + " in  " + normalizedTime);
 
                     AddTag(stateInfos, layer);
                 }
+              
                 if (!isExit && isEnter && tagType != vAnimatorEventTriggerType.EnterByNormalizedExitState &&
-                                               tagType != vAnimatorEventTriggerType.EnterStateExitState && (normalizedTimeClamped >= loopCount + (this.normalizedTime.y / speed) || inExit))
+                                               tagType != vAnimatorEventTriggerType.EnterStateExitState && (normalizedTimeClamped >= this.normalizedTime.y || inExit))
                 {
                     RemoveTag(stateInfos, layer);
                     if (debug) Debug.Log("REMOVE TAG " + tagName + " in  " + normalizedTime);
                 }
-
-                if (normalizedTime > loopCount + 1)
+              
+                if (looping && normalizedTime > loopCount + 1)
                 {
                     isEnter = false;
                     isExit = false;
@@ -67,8 +68,12 @@ namespace Invector.vEventSystems
                 }
             }
 
-            public void Init()
+            public void Init(List<vAnimatorStateInfos> stateInfos, int layer)
             {
+                if(isEnter && !isExit)
+                {
+                    RemoveTag(stateInfos, layer);
+                }
                 isEnter = false;
                 isExit = false;
                 loopCount = 0;
@@ -80,21 +85,22 @@ namespace Invector.vEventSystems
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             base.OnStateEnter(animator, stateInfo, layerIndex);
-
+           
             if (stateInfos != null)
             {
                 for (int i = 0; i < tags.Count; i++)
                 {
-                    tags[i].Init();
-
+                    tags[i].Init(stateInfos,layerIndex);
+                    if (debug) Debug.Log("Init " + tags[i].tagName + " OnStateEnter  ");
                     if (tags[i].tagType == vAnimatorEventTriggerType.EnterStateExitState || tags[i].tagType == vAnimatorEventTriggerType.EnterStateExitByNormalized)
                     {
                         if (debug) Debug.Log("ADD TAG " + tags[i].tagName + " OnStateEnter  ");
                         tags[i].AddTag(stateInfos, layerIndex);
                     }
                     else
-                        tags[i].UpdateEventTrigger(stateInfo.normalizedTime, stateInfos, layerIndex, animator.speed, false, debug);
+                        tags[i].UpdateEventTrigger(stateInfo.normalizedTime, stateInfos, layerIndex, animator.speed,stateInfo.loop, false, debug);
                 }
+               
             }
         }
 
@@ -105,7 +111,12 @@ namespace Invector.vEventSystems
                 for (int i = 0; i < tags.Count; i++)
                 {
                     if (tags[i].tagType != vAnimatorEventTriggerType.EnterStateExitState)
-                        tags[i].UpdateEventTrigger(stateInfo.normalizedTime, stateInfos, layerIndex, animator.speed, false, debug);
+                        tags[i].UpdateEventTrigger(stateInfo.normalizedTime, stateInfos, layerIndex, animator.speed, stateInfo.loop, false, debug);
+                }
+               
+                for (int a = 0; a < stateInfos.Count; a++)
+                {
+                    stateInfos[a].UpdateStateInfo(layerIndex, stateInfo.normalizedTime, stateInfo.shortNameHash);
                 }
             }
             base.OnStateUpdate(animator, stateInfo, layerIndex);
@@ -124,7 +135,7 @@ namespace Invector.vEventSystems
                     }
                     else
                     {                        
-                        tags[i].UpdateEventTrigger(stateInfo.normalizedTime, stateInfos, layerIndex, animator.speed, true, debug);
+                        tags[i].UpdateEventTrigger(stateInfo.normalizedTime, stateInfos, layerIndex, animator.speed, stateInfo.loop, true, debug);
                     }
                 }
             }

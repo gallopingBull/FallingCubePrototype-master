@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Invector.vCharacterController
 {
-    public class vThirdPersonMotor : vCharacter
+    using vEventSystems;
+    public class vThirdPersonMotor : vCharacter, vIAnimatorStateInfoController
     {
         #region Variables               
 
@@ -20,6 +22,9 @@ namespace Invector.vCharacterController
         public float rollStamina = 25f;
 
         [vEditorToolbar("Events", order = 7)]
+        public UnityEvent OnExitGround;
+        public UnityEvent OnGrounded;
+        public UnityEvent OnRoll;
         public UnityEvent OnJump;
         public UnityEvent OnStartSprinting;
         public UnityEvent OnFinishSprinting;
@@ -28,74 +33,92 @@ namespace Invector.vCharacterController
 
         #endregion
 
-        #region Layers
-        [vEditorToolbar("Layers", order = 3)]
-        [Tooltip("Layers that the character can walk on")]
-        public LayerMask groundLayer = 1 << 0;
+        #region Crouch
+        [vEditorToolbar("Crouch", order = 3)]
+        [Range(1, 2.5f)]
+        public float crouchHeightReduction = 2f;
+        [Range(1, 2f)]
+        public float crouchColliderRadius = 1.5f;
+
         [Tooltip("What objects can make the character auto crouch")]
         public LayerMask autoCrouchLayer = 1 << 0;
         [Tooltip("[SPHERECAST] ADJUST IN PLAY MODE - White Spherecast put just above the head, this will make the character Auto-Crouch if something hit the sphere.")]
-        public float headDetect = 0.95f;
-        [Tooltip("Select the layers the your character will stop moving when close to")]
-        public LayerMask stopMoveLayer;
-        [Tooltip("[RAYCAST] Stopmove Raycast Height")]
-        public float stopMoveHeight = 0.65f;
-        [Tooltip("[RAYCAST] Stopmove Raycast Distance")]
-        public float stopMoveDistance = 0.1f;
+        public float crouchHeadDetect = 0.95f;
         #endregion
 
         #region Character Variables       
-
         [vEditorToolbar("Locomotion", order = 0)]
-        [Tooltip("Turn off if you have 'in place' animations and use this values above to move the character, or use with root motion as extra speed")]
-        [vHelpBox("When 'Use RootMotion' is checked, make sure to reset all speeds to zero to use the original root motion velocity.")]
-        public bool useRootMotion = false;
+
+        [vSeparator("Movement Settings")]
+        [Tooltip("Multiply the current speed of the controller rigidbody velocity")]
+        public float speedMultiplier = 1;
+        [Tooltip("Use this to rotate the character using the World axis, or false to use the camera axis - CHECK for Isometric Camera")]
+        public bool rotateByWorld = false;
         public enum LocomotionType
         {
             FreeWithStrafe,
             OnlyStrafe,
             OnlyFree,
         }
+
+        [vHelpBox("FreeLocomotion: Rotate on any direction regardless of the camera \nStrafeLocomotion: Move always facing foward (extra directional animations)")]
         public LocomotionType locomotionType = LocomotionType.FreeWithStrafe;
 
-        public bool disableAnimations;
-        [Tooltip("While in Free Locomotion the character will lean to left/right when making turns")]
-        public bool useLeanMovement = true;
         public vMovementSpeed freeSpeed, strafeSpeed;
-        [Tooltip("Use this to rotate the character using the World axis, or false to use the camera axis - CHECK for Isometric Camera")]
-        public bool rotateByWorld = false;
-        
-        // w.i.p not ready yet
-        [HideInInspector]
-        [Tooltip("Check this to use the TurnOnSpot animations, you also need to check the option 'RotateWithCamera' in the strafe speed options")]
-        public bool turnOnSpotAnim = false;
 
+        [vSeparator("Extra Animation Settings")]
+
+        [Tooltip("Use it for debug purposes")]
+        public bool disableAnimations;
+        [Tooltip("Turn off if you have 'in place' animations and use this values above to move the character, or use with root motion as extra speed")]
+        [vHelpBox("When 'Use RootMotion' is checked, make sure to reset all speeds to zero to use the original root motion velocity.")]
+        public bool useRootMotion = false;
+        [Tooltip("While in Free Locomotion the character will lean to left/right when steering")]
+        public bool useLeanMovementAnim = true;
+        [Tooltip("Smooth value for the Lean Movement animation")]
+        [Range(0.01f, 0.1f)]
+        public float leanSmooth = 0.05f;
+        [Tooltip("Check this to use the TurnOnSpot animations while the character is stading still and rotating in place")]
+        public bool useTurnOnSpotAnim = true;
         [Tooltip("Put your Random Idle animations at the AnimatorController and select a value to randomize, 0 is disable.")]
         public float randomIdleTime = 0f;
+
+
+        /// <summary>
+        /// ignore animation root motion when input is zero
+        /// </summary>
+        internal bool ignoreAnimatorMovement;
+
+        [vSeparator("Extra Movement Settings")]
         [Tooltip("Check This to use sprint on press button to your Character run until the stamina finish or movement stops\nIf uncheck your Character will sprint as long as the SprintInput is pressed or the stamina finishes")]
         public bool useContinuousSprint = true;
         [Tooltip("Check this to sprint always in free movement")]
         public bool sprintOnlyFree = true;
-        [Range(1, 2.5f)]
-        public float crouchHeightReduction = 1.5f;
+
+        public enum CustomFixedTimeStep { Default, FPS30, FPS60, FPS75, FPS90, FPS120, FPS144 };
+
+        [vHelpBox("Set the FixedTimeStep to match the FPS of your Game, \nEx: If your game aims to run at 30fps, select FPS30 to match the FixedUpdate Physics")]
+        public CustomFixedTimeStep customFixedTimeStep = CustomFixedTimeStep.FPS60;
 
         [vEditorToolbar("Jump / Airborne", order = 3)]
 
         [vHelpBox("Jump only works via Rigidbody Physics, if you want Jump that use only RootMotion make sure to use the AnimatorTag 'CustomAction' ")]
 
-        [Header("Jump")]
+        [vSeparator("Jump")]
         [Tooltip("Use the currently Rigidbody Velocity to influence on the Jump Distance")]
         public bool jumpWithRigidbodyForce = false;
         [Tooltip("Rotate or not while airborne")]
         public bool jumpAndRotate = true;
         [Tooltip("How much time the character will be jumping")]
         public float jumpTimer = 0.3f;
+        [Tooltip("Delay to match the animation anticipation")]
+        public float jumpStandingDelay = 0.25f;
         internal float jumpCounter;
+        internal bool inJumpStarted;
         [Tooltip("Add Extra jump height, if you want to jump only with Root Motion leave the value with 0.")]
         public float jumpHeight = 4f;
 
-        [Header("Falling")]
-
+        [vSeparator("Falling")]
         [Tooltip("Speed that the character will move while airborne")]
         public float airSpeed = 5f;
         [Tooltip("Smoothness of the direction while airborne")]
@@ -106,13 +129,20 @@ namespace Invector.vCharacterController
         public float limitFallVelocity = -15f;
         [Tooltip("Turn the Ragdoll On when falling at high speed (check VerticalVelocity) - leave the value with 0 if you don't want this feature")]
         public float ragdollVelocity = -15f;
-        [Header("Fall Damage")]
+
+        [vSeparator("Fall Damage")]
         public float fallMinHeight = 6f;
         public float fallMinVerticalVelocity = -10f;
         public float fallDamage = 10f;
 
         [vEditorToolbar("Roll", order = 4)]
         public bool useRollRootMotion = true;
+        [Tooltip("Animation Transition from current animation to Roll")]
+        public float rollTransition = .25f;
+        [Range(1, 2.5f)]
+        public float rollHeightReduction = 1.6f;
+        [Range(1, 2f)]
+        public float rollColliderRadius = 1.5f;
         [Tooltip("Can control the Roll Direction")]
         public bool rollControl = true;
         [Tooltip("Speed of the Roll Movement")]
@@ -127,15 +157,27 @@ namespace Invector.vCharacterController
         [Tooltip("Use the normalized time of the animation to know when you can roll again")]
         [Range(0, 1)]
         public float timeToRollAgain = 0.75f;
+        [Tooltip("Ignore all damage while is rolling, include Damage that ignore defence")]
+        public bool noDamageWhileRolling = true;
+        [Tooltip("Ignore damage that needs to activate ragdoll")]
+        public bool noActiveRagdollWhileRolling = true;
 
         public enum GroundCheckMethod
         {
             Low, High
         }
+        public enum StopMoveCheckMethod
+        {
+            RayCast, SphereCast, CapsuleCast
+        }
+
         [vEditorToolbar("Grounded", order = 3)]
 
-        [Header("Ground")]
-
+        [vSeparator("Ground")]
+        [SerializeField]
+        [vReadOnly()] protected bool _isGrounded;
+        [Tooltip("Layers that the character can walk on")]
+        public LayerMask groundLayer = 1 << 0;
         [Tooltip("Ground Check Method To check ground Distance and ground angle\n*Simple: Use just a single Raycast\n*Normal: Use Raycast and SphereCast\n*Complex: Use SphereCastAll")]
         public GroundCheckMethod groundCheckMethod = GroundCheckMethod.High;
         [Tooltip("The length of the Ray cast to detect ground ")]
@@ -150,24 +192,55 @@ namespace Invector.vCharacterController
         [Range(0, 10)]
         public float groundMaxDistance = 0.5f;
         [Tooltip("Max angle to walk")]
+
+        [vSeparator("StopMove")]
+
+        public LayerMask stopMoveLayer;
+        [vHelpBox("Character will stop moving, ex: walls - set the layer to nothing to not use")]
+        public float stopMoveRayDistance = 1f;
+        public float stopMoveMaxHeight = 1.6f;
+        public StopMoveCheckMethod stopMoveCheckMethod = StopMoveCheckMethod.RayCast;
+
+
+        [vSeparator("Slope Limit")]
+        public bool useSlopeLimit = true;
         [Range(30, 80)]
         public float slopeLimit = 75f;
+        public float stopSlopeMargin = 20f;
+        public float slopeSidewaysSmooth = 2f;
+        public float slopeMinDistance = 0f;
+        public float slopeMaxDistance = 1.5f;
+        public float slopeLimitHeight = 0.2f;
 
-        [Header("Slide Slopes")]
+        protected float _slopeSidewaysSmooth;
+        [HideInInspector]
+        public bool steepSlopeAhead;
+
+        [vSeparator("Slide On Slopes")]
         public bool useSlide = true;
         [Tooltip("Velocity to slide down when on a slope limit ramp")]
         [Range(0, 30)]
-        public float slideDownVelocity = 7f;
+        public float slideDownVelocity = 10f;
+        [Tooltip("Smooth to slide down the controller")]
+        public float slideDownSmooth = 2f;
         [Tooltip("Velocity to slide sideways when on a slope limit ramp")]
-        [Range(0, 15)]
-        public float slideSidewaysVelocity = 5f;
-        [Range(0.1f, 1f)]
+        [Range(0, 1)]
+        public float slideSidewaysVelocity = 0.5f;
+        [Range(0f, 1f)]
         [Tooltip("Delay to start sliding once the character is standing on a slope")]
-        public float slidingEnterTime = 0.1f;
+        public float slidingEnterTime = 0.2f;
         internal float _slidingEnterTime;
+        [Range(0f, 1f)]
+        [Tooltip("Delay to rotate once the character started sliding")]
+        public float rotateSlopeEnterTime = 0.1f;
+        [Tooltip("Smooth to rotate the controller")]
+        public float rotateDownSlopeSmooth = 8f;
+        internal float _rotateSlopeEnterTime;
 
-        [Header("Step Offset")]
+        [vSeparator("Step Offset")]
         public bool useStepOffset = true;
+        [Tooltip("Layers that the character will perform a StepOffset")]
+        public LayerMask stepOffsetLayer = 1 << 0;
         [Tooltip("Offset max height to walk on steps - YELLOW Raycast in front of the legs")]
         [Range(0, 1)]
         public float stepOffsetMaxHeight = 0.5f;
@@ -177,13 +250,17 @@ namespace Invector.vCharacterController
         [Tooltip("Offset distance to walk on steps - YELLOW Raycast in front of the legs")]
         [Range(0, 1)]
         public float stepOffsetDistance = 0.1f;
-
+        internal float stopMoveWeight;
+        internal float sprintWeight;
         internal float groundDistance;
         public RaycastHit groundHit;
 
         [vEditorToolbar("Debug", order = 9)]
         [Header("--- Debug Info ---")]
         public bool debugWindow;
+        public vAnimatorStateInfos _animatorStateInfos;
+        public vAnimatorStateInfos animatorStateInfos { get => _animatorStateInfos; protected set => _animatorStateInfos = value; }
+
 
         #endregion
 
@@ -202,7 +279,23 @@ namespace Invector.vCharacterController
         }
 
         // movement bools
-        public bool isGrounded { get; set; }
+
+        public bool isGrounded
+        {
+            get
+            {
+                return _isGrounded;
+            }
+            set
+            {
+                if (_isGrounded != value)
+                {
+                    _isGrounded = value;
+                    if (_isGrounded) OnGrounded.Invoke();
+                    else OnExitGround.Invoke();
+                }
+            }
+        }
         /// <summary>
         /// use to stop update the Check Ground method and return true for IsGrounded
         /// </summary>
@@ -210,7 +303,6 @@ namespace Invector.vCharacterController
         public bool inCrouchArea { get; protected set; }
         public bool isSprinting { get; set; }
         public bool isSliding { get; protected set; }
-        public bool stopMove { get; protected set; }
         public bool autoCrouch { get; protected set; }
 
         // action bools
@@ -221,6 +313,7 @@ namespace Invector.vCharacterController
             isTurningOnSpot;
 
         internal bool customAction;
+
 
         protected void RemoveComponents()
         {
@@ -255,25 +348,28 @@ namespace Invector.vCharacterController
 
         #region Components
 
-        [HideInInspector] public  Rigidbody _rigidbody;                                                      // access the Rigidbody component
+        internal Rigidbody _rigidbody;                                                      // access the Rigidbody component
         internal PhysicMaterial frictionPhysics, maxFrictionPhysics, slippyPhysics;         // create PhysicMaterial for the Rigidbody
         internal CapsuleCollider _capsuleCollider;                                          // access CapsuleCollider information
         public PhysicMaterial currentMaterialPhysics { get; protected set; }
         #endregion
 
         #region Hide Variables
-
+        internal float defaultSpeedMultiplier = 1;
         internal float inputMagnitude;                      // sets the inputMagnitude to update the animations in the animator controller
-        internal float verticalSpeed;                       // set the verticalSpeed based on the verticalInput
-        internal float horizontalSpeed;                     // set the horizontalSpeed based on the horizontalInput       
-        internal float moveSpeed;                           // set the current moveSpeed for the MoveCharacter method
+        internal float rotationMagnitude;                   // sets the rotationMagnitude to update the animations in the animator controller
+        internal float verticalSpeed;                       // set the verticalSpeed based on the verticalInput        
+        internal float horizontalSpeed;                     // set the horizontalSpeed based on the horizontalInput
+        internal bool invertVerticalSpeed;
+        internal bool invertHorizontalSpeed;
+        internal float moveSpeed;                           // set the current moveSpeed for the MoveCharacter method        
         internal float verticalVelocity;                    // set the vertical velocity of the rigidbody
         internal float colliderRadius, colliderHeight;      // storage capsule collider extra information                       
         internal float jumpMultiplier = 1;                  // internally used to set the jumpMultiplier
         internal float timeToResetJumpMultiplier;           // internally used to reset the jump multiplier
-        internal float heightReached;                       // max height that character reached in air;
-        [HideInInspector] public bool lockMovement = false;  // lock the movement of the controller (not the animation)
-        [HideInInspector] public bool lockRotation = false; // lock the rotation of the controller (not the animation)
+        internal float heightReached;                       // max height that character reached in air;       
+        internal bool lockMovement = false;                 // lock the movement of the controller (not the animation)
+        internal bool lockRotation = false;                 // lock the rotation of the controller (not the animation)
         internal bool lockSetMoveSpeed = false;             // locks the method to update the moveset based on the locomotion type, so you can modify externally
         internal bool _isStrafing;                          // internally used to set the strafe movement
         internal bool lockInStrafe;                         // locks the controller to only used the strafe locomotion type        
@@ -283,18 +379,22 @@ namespace Invector.vCharacterController
         [HideInInspector] public bool applyingStepOffset;   // internally used to apply the StepOffset       
         protected internal bool lockAnimMovement;           // internaly used with the vAnimatorTag("LockMovement"), use on the animator to lock the movement of a specific animation clip        
         protected internal bool lockAnimRotation;           // internaly used with the vAnimatorTag("LockRotation"), use on the animator to lock a rotation of a specific animation clip
-
+        protected Vector3 lastCharacterAngle;               //Last angle of the character used to calculate rotationMagnitude;
         internal Transform rotateTarget;
-        [HideInInspector] public Vector3 input;                  // generate raw input for the controller
+        internal Vector3 input;                              // generate raw input for the controller
         internal Vector3 oldInput;                           // used internally to identify oldinput from the current input
         internal Vector3 colliderCenter;                     // storage the center of the capsule collider info                
         [HideInInspector] public Vector3 inputSmooth;        // generate smooth input based on the inputSmooth value       
         [HideInInspector] public Vector3 moveDirection;
-        internal Quaternion targetRotation = Quaternion.identity;
-        internal Quaternion rotationDirection = Quaternion.identity;
         public RaycastHit stepOffsetHit;
+        public RaycastHit slopeHitInfo;
         internal AnimatorStateInfo baseLayerInfo, underBodyInfo, rightArmInfo, leftArmInfo, fullBodyInfo, upperBodyInfo;
-
+        public int baseLayer { get { return animator.GetLayerIndex("Base Layer"); } }
+        public int underBodyLayer { get { return animator.GetLayerIndex("UnderBody"); } }
+        public int rightArmLayer { get { return animator.GetLayerIndex("RightArm"); } }
+        public int leftArmLayer { get { return animator.GetLayerIndex("LeftArm"); } }
+        public int upperBodyLayer { get { return animator.GetLayerIndex("UpperBody"); } }
+        public int fullbodyLayer { get { return animator.GetLayerIndex("FullBody"); } }
         /// <summary>
         /// Default radius of the Character Capsule
         /// </summary>
@@ -321,7 +421,10 @@ namespace Invector.vCharacterController
         ///Check if Can Apply Fall Damage and/or Enable Ragdoll when landing. <see cref="jumpMultiplier"/>  automatically return false if > 1 or if <seealso cref="customAction"/> is true
         /// </summary>
         protected virtual bool _canApplyFallDamage { get { return !blockApplyFallDamage && jumpMultiplier <= 1 && !customAction; } }
-
+        /// <summary>
+        /// For movement to walk by default. 
+        /// </summary>
+        public bool alwaysWalkByDefault { get; set; }
         /// <summary>
         /// Can Apply Fall Damage and/or Enable Ragdoll when landing;
         /// </summary>
@@ -330,6 +433,11 @@ namespace Invector.vCharacterController
         #endregion
 
         #endregion
+
+        private void Awake()
+        {
+            SetCustomFixedTimeStep();
+        }
 
         protected override void Start()
         {
@@ -391,19 +499,48 @@ namespace Invector.vCharacterController
             currentStamina = maxStamina;
             ResetJumpMultiplier();
             isGrounded = true;
+            ResetControllerSpeedMultiplier();
+        }
+
+        public virtual void SetCustomFixedTimeStep()
+        {
+            switch (customFixedTimeStep)
+            {
+                case CustomFixedTimeStep.Default:
+                    break;
+                case CustomFixedTimeStep.FPS30:
+                    Time.fixedDeltaTime = 0.03333334f;
+                    break;
+                case CustomFixedTimeStep.FPS60:
+                    Time.fixedDeltaTime = 0.01666667f;
+                    break;
+                case CustomFixedTimeStep.FPS75:
+                    Time.fixedDeltaTime = 0.01333333f;
+                    break;
+                case CustomFixedTimeStep.FPS90:
+                    Time.fixedDeltaTime = 0.01111111f;
+                    break;
+                case CustomFixedTimeStep.FPS120:
+                    Time.fixedDeltaTime = 0.008333334f;
+                    break;
+                case CustomFixedTimeStep.FPS144:
+                    Time.fixedDeltaTime = 0.006944444f;
+                    break;
+            }
         }
 
         public virtual void UpdateMotor()
         {
-            CheckHealth();
             CheckStamina();
             CheckGround();
+
+            SlideMovementBehavior();
             CheckRagdoll();
-            StopMove();
             ControlCapsuleHeight();
             ControlJumpBehaviour();
             AirControl();
             StaminaRecovery();
+            CalculateRotationMagnitude();
         }
 
         #region Health & Stamina
@@ -411,12 +548,32 @@ namespace Invector.vCharacterController
         public override void TakeDamage(vDamage damage)
         {
             // don't apply damage if the character is rolling, you can add more conditions here
-            if (currentHealth <= 0 || (!damage.ignoreDefense && isRolling))
+            if (currentHealth <= 0 || (IgnoreDamageRolling()))
             {
+                if (damage.activeRagdoll && !IgnoreDamageActiveRagdollRolling())
+                {
+                    onActiveRagdoll.Invoke(damage);
+                }
+
                 return;
             }
 
+            if (damage.activeRagdoll && IgnoreDamageActiveRagdollRolling())
+            {
+                damage.activeRagdoll = false;
+            }
+
             base.TakeDamage(damage);
+        }
+
+        protected virtual bool IgnoreDamageRolling()
+        {
+            return noDamageWhileRolling == true && isRolling == true;
+        }
+
+        protected virtual bool IgnoreDamageActiveRagdollRolling()
+        {
+            return noActiveRagdollWhileRolling == true && isRolling == true;
         }
 
         protected override void TriggerDamageReaction(vDamage damage)
@@ -433,9 +590,14 @@ namespace Invector.vCharacterController
 
         public virtual void ReduceStamina(float value, bool accumulative)
         {
+            if (customAction)
+            {
+                return;
+            }
+
             if (accumulative)
             {
-                currentStamina -= value * Time.deltaTime;
+                currentStamina -= value * Time.fixedDeltaTime;
             }
             else
             {
@@ -472,26 +634,28 @@ namespace Invector.vCharacterController
             }
         }
 
-        public virtual void DeathBehaviour()
+        public override bool isDead
         {
-            // lock the player input
-            lockAnimMovement = true;
-            // change the culling mode to render the animation until finish
-            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-            // trigger die animation            
-            if (deathBy == DeathBy.Animation || deathBy == DeathBy.AnimationWithRagdoll)
+            get => base.isDead;
+            set
             {
-                animator.SetBool("isDead", true);
+                base.isDead = value;
+                if (value)
+                {
+                    if (isGrounded)
+                    {
+                        if (_rigidbody) _rigidbody.isKinematic = true;
+                        if (_capsuleCollider) _capsuleCollider.enabled = false;
+                    }
+                }
+                else if (!ragdolled)
+                {
+                    if (_rigidbody) _rigidbody.isKinematic = false;
+                    if (_capsuleCollider) _capsuleCollider.enabled = true;
+                }
             }
         }
 
-        void CheckHealth()
-        {
-            if (isDead && currentHealth > 0)
-            {
-                isDead = false;
-            }
-        }
 
         void CheckStamina()
         {
@@ -507,7 +671,7 @@ namespace Invector.vCharacterController
         {
             if (currentStaminaRecoveryDelay > 0)
             {
-                currentStaminaRecoveryDelay -= Time.deltaTime;
+                currentStaminaRecoveryDelay -= Time.fixedDeltaTime;
             }
             else
             {
@@ -527,21 +691,46 @@ namespace Invector.vCharacterController
 
         #region Locomotion
 
+        protected virtual void CalculateRotationMagnitude()
+        {
+            var eulerDifference = this.transform.eulerAngles - lastCharacterAngle;
+            if (eulerDifference.sqrMagnitude < 0.01)
+            {
+                lastCharacterAngle = transform.eulerAngles;
+                rotationMagnitude = 0f;
+                return;
+            }
+
+            var magnitude = (eulerDifference.NormalizeAngle().y / (isStrafing ? strafeSpeed.rotationSpeed : freeSpeed.rotationSpeed));
+            rotationMagnitude = (float)System.Math.Round(magnitude, 2);
+            lastCharacterAngle = transform.eulerAngles;
+        }
+
+        public virtual void SetControllerSpeedMultiplier(float speed)
+        {
+            this.speedMultiplier = speed;
+        }
+
+        public virtual void ResetControllerSpeedMultiplier()
+        {
+            this.speedMultiplier = defaultSpeedMultiplier;
+        }
+
         public virtual void SetControllerMoveSpeed(vMovementSpeed speed)
         {
             if (isCrouching)
             {
-                moveSpeed = Mathf.Lerp(moveSpeed, speed.crouchSpeed, speed.movementSmooth * Time.deltaTime);
+                moveSpeed = Mathf.Lerp(moveSpeed, speed.crouchSpeed, speed.movementSmooth * Time.fixedDeltaTime);
                 return;
             }
 
-            if (speed.walkByDefault)
+            if (speed.walkByDefault || alwaysWalkByDefault)
             {
-                moveSpeed = Mathf.Lerp(moveSpeed, isSprinting ? speed.runningSpeed : speed.walkSpeed, speed.movementSmooth * Time.deltaTime);
+                moveSpeed = Mathf.Lerp(moveSpeed, isSprinting ? speed.runningSpeed : speed.walkSpeed, speed.movementSmooth * Time.fixedDeltaTime);
             }
             else
             {
-                moveSpeed = Mathf.Lerp(moveSpeed, isSprinting ? speed.sprintSpeed : speed.runningSpeed, speed.movementSmooth * Time.deltaTime);
+                moveSpeed = Mathf.Lerp(moveSpeed, isSprinting ? speed.sprintSpeed : speed.runningSpeed, speed.movementSmooth * Time.fixedDeltaTime);
             }
         }
 
@@ -556,22 +745,22 @@ namespace Invector.vCharacterController
             }
 
             _direction.y = 0;
-            _direction.x = Mathf.Clamp(_direction.x, -1f, 1f);
-            _direction.z = Mathf.Clamp(_direction.z, -1f, 1f);
-            // limit the input
-            if (_direction.magnitude > 1f)
-            {
-                _direction.Normalize();
-            }
-
-            Vector3 targetPosition = (useRootMotion ? animator.rootPosition : _rigidbody.position) + _direction * (stopMove ? 0 : moveSpeed) * (useRootMotion ? vTime.deltaTime : vTime.fixedDeltaTime);
+            _direction = _direction.normalized * Mathf.Clamp(_direction.magnitude, 0, 1f);
+            Vector3 targetPosition = (useRootMotion ? animator.rootPosition : _rigidbody.position) + _direction * (moveSpeed * speedMultiplier) * (useRootMotion ? vTime.deltaTime : vTime.fixedDeltaTime);
             Vector3 targetVelocity = (targetPosition - transform.position) / (useRootMotion ? vTime.deltaTime : vTime.fixedDeltaTime);
 
             bool useVerticalVelocity = true;
 
             SnapToGround(ref targetVelocity, ref useVerticalVelocity);
-            CalculateStepOffset(_direction.normalized, ref targetVelocity, ref useVerticalVelocity);
 
+            steepSlopeAhead = CheckForSlope(ref targetVelocity);
+
+            if (!steepSlopeAhead)
+            {
+                CalculateStepOffset(_direction.normalized, ref targetVelocity, ref useVerticalVelocity);
+            }
+
+            CheckStopMove(ref targetVelocity);
             if (useVerticalVelocity)
             {
                 targetVelocity.y = _rigidbody.velocity.y;
@@ -580,28 +769,89 @@ namespace Invector.vCharacterController
             _rigidbody.velocity = targetVelocity;
         }
 
+        protected virtual void CheckStopMove(ref Vector3 targetVelocity)
+        {
+            RaycastHit hit;
+            Vector3 origin = transform.position + transform.up * colliderRadiusDefault;
+            Vector3 direction = moveDirection.normalized;
+            direction = Vector3.ProjectOnPlane(direction, groundHit.normal);
+            float distance = colliderRadiusDefault + 1;
+            float targetStopWeight = 0;
+            float smooth = isStrafing ? strafeSpeed.movementSmooth : freeSpeed.movementSmooth;
+            bool checkStopMoveCondition = isGrounded && !isJumping && !isInAirborne && !applyingStepOffset && !customAction;
+
+            if (steepSlopeAhead)
+            {
+                targetStopWeight = 1f * _slopeSidewaysSmooth;
+            }
+            else if (checkStopMoveCondition && CheckStopMove(direction, out hit))
+            {
+                var angle = Vector3.Angle(direction, -hit.normal);
+                if (angle < slopeLimit)
+                {
+                    float dst = hit.distance - colliderRadiusDefault;
+                    targetStopWeight = (1.0f - dst);
+                }
+                else
+                {
+                    targetStopWeight = -0.01f;
+                }
+
+                if (debugWindow)
+                {
+                    Debug.DrawLine(origin, hit.point, Color.cyan);
+                }
+            }
+            else
+            {
+                targetStopWeight = -0.01f;
+            }
+            stopMoveWeight = Mathf.Lerp(stopMoveWeight, targetStopWeight, smooth * Time.deltaTime);
+            stopMoveWeight = Mathf.Clamp(stopMoveWeight, 0f, 1f);
+
+            targetVelocity = Vector3.LerpUnclamped(targetVelocity, Vector3.zero, stopMoveWeight);
+        }
+
+        protected virtual bool CheckStopMove(Vector3 direction, out RaycastHit hit)
+        {
+            Vector3 origin = transform.position + transform.up * colliderRadiusDefault;
+            float distance = colliderRadiusDefault + stopMoveRayDistance;
+            switch (stopMoveCheckMethod)
+            {
+                case StopMoveCheckMethod.SphereCast:
+
+                case StopMoveCheckMethod.CapsuleCast:
+                    Vector3 p1 = origin + transform.up * (slopeLimitHeight);
+                    Vector3 p2 = origin + transform.up * (stopMoveMaxHeight - _capsuleCollider.radius);
+                    return Physics.CapsuleCast(p1, p2, _capsuleCollider.radius, direction, out hit, distance, stopMoveLayer);
+                default:
+                    return Physics.Raycast(origin, direction, out hit, distance, stopMoveLayer);
+            }
+        }
+
         protected virtual void SnapToGround(ref Vector3 targetVelocity, ref bool useVerticalVelocity)
         {
-            if (!useSnapGround || !disableCheckGround)
+            if (!useSnapGround || disableCheckGround || (isRolling))
             {
                 return;
             }
 
             if (groundDistance < groundMinDistance * 0.2f || applyingStepOffset)
             {
+                // Debug.Log($"Return = ValidGroundDistance: {(groundDistance < groundMinDistance * 0.2f).ToStringColor()} inStepOffset: { (applyingStepOffset.ToStringColor())}");
                 return;
             }
 
             var snapConditions = isGrounded && groundHit.collider != null && GroundAngle() <= slopeLimit && !disableCheckGround && !isSliding && !isJumping && !customAction && input.magnitude > 0.1f && !isInAirborne;
+
+            //Debug.Log($"SnapCoditions = Grounded: { (isGrounded).ToStringColor() } GroundHIT: { (groundHit.collider != null).ToStringColor()} InSlopLimit: {(GroundAngle() <= slopeLimit).ToStringColor()} NotDisableCheckGround: { (!disableCheckGround).ToStringColor() } NotIsSliding: {(!isSliding).ToStringColor()} NotIsJumping: {(!isJumping).ToStringColor()} NotCustomAction: {(!customAction).ToStringColor()} HasMovementInput: {(input.magnitude > 0.1f).ToStringColor()} NotIsInAirBorne: {(!isInAirborne).ToStringColor()} ");
             if (snapConditions)
             {
-                var distanceToGround = Mathf.Max(0.0f, groundDistance - groundMinDistance);
-                var snapVelocity = transform.up * (-distanceToGround * snapPower / Time.deltaTime);
-
+                var distanceToGround = Mathf.Max(0.0f, groundDistance);
+                var snapVelocity = transform.up * (-distanceToGround * snapPower / Time.fixedDeltaTime);
                 targetVelocity = (targetVelocity + snapVelocity).normalized * targetVelocity.magnitude;
                 useVerticalVelocity = false;
             }
-
         }
 
         void CalculateStepOffset(Vector3 moveDir, ref Vector3 targetVelocity, ref bool useVerticalVelocity)
@@ -613,20 +863,21 @@ namespace Invector.vCharacterController
                 float height = (stepOffsetMaxHeight + 0.01f + _capsuleCollider.radius * 0.5f);
                 Vector3 pA = transform.position + transform.up * (stepOffsetMinHeight + 0.05f);
                 Vector3 pB = pA + dir.normalized * distance;
-                if (Physics.Linecast(pA, pB, out stepOffsetHit, groundLayer))
+                if (Physics.Linecast(pA, pB, out stepOffsetHit, stepOffsetLayer))
                 {
-                    Debug.DrawLine(pA, stepOffsetHit.point);
+                    if (debugWindow)
+                    {
+                        Debug.DrawLine(pA, stepOffsetHit.point);
+                    }
+
                     distance = stepOffsetHit.distance + 0.1f;
                 }
                 Ray ray = new Ray(transform.position + transform.up * height + dir.normalized * distance, Vector3.down);
 
-                if (Physics.SphereCast(ray, _capsuleCollider.radius * 0.5f, out stepOffsetHit, (stepOffsetMaxHeight - stepOffsetMinHeight), groundLayer) && stepOffsetHit.point.y > transform.position.y)
+                if (Physics.SphereCast(ray, _capsuleCollider.radius * 0.5f, out stepOffsetHit, (stepOffsetMaxHeight - stepOffsetMinHeight), stepOffsetLayer) && stepOffsetHit.point.y > transform.position.y)
                 {
                     dir = (stepOffsetHit.point) - transform.position;
                     dir.Normalize();
-                    //var v = targetVelocity;
-                    //v.y = 0;
-                    //targetVelocity = dir * v.magnitude;
                     targetVelocity = Vector3.Project(targetVelocity, dir);
                     applyingStepOffset = true;
                     useVerticalVelocity = false;
@@ -639,84 +890,38 @@ namespace Invector.vCharacterController
 
         public virtual void StopCharacterWithLerp()
         {
-            input = Vector3.Lerp(input, Vector3.zero, 2f * Time.deltaTime);
-            _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, Vector3.zero, 4f * Time.deltaTime);
-            inputMagnitude = Mathf.Lerp(inputMagnitude, 0f, 2f * Time.deltaTime);
-            moveSpeed = Mathf.Lerp(moveSpeed, 0f, 2f * Time.deltaTime);
+            isSprinting = false;
+            sprintWeight = 0f;
+            horizontalSpeed = 0f;
+            verticalSpeed = 0f;
+            moveDirection = Vector3.zero;
+            input = Vector3.Lerp(input, Vector3.zero, 2f * Time.fixedDeltaTime);
+            inputSmooth = Vector3.Lerp(inputSmooth, Vector3.zero, 2f * Time.fixedDeltaTime);
+            _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, Vector3.zero, 4f * Time.fixedDeltaTime);
+            inputMagnitude = Mathf.Lerp(inputMagnitude, 0f, 2f * Time.fixedDeltaTime);
+            moveSpeed = Mathf.Lerp(moveSpeed, 0f, 2f * Time.fixedDeltaTime);
+            animator.SetFloat(vAnimatorParameters.InputMagnitude, 0f, 0.2f, Time.fixedDeltaTime);
+            animator.SetFloat(vAnimatorParameters.InputVertical, 0f, 0.2f, Time.fixedDeltaTime);
+            animator.SetFloat(vAnimatorParameters.InputHorizontal, 0f, 0.2f, Time.fixedDeltaTime);
+            animator.SetFloat(vAnimatorParameters.RotationMagnitude, 0f, 0.2f, Time.fixedDeltaTime);
         }
 
         public virtual void StopCharacter()
         {
+            isSprinting = false;
+            sprintWeight = 0f;
+            horizontalSpeed = 0f;
+            verticalSpeed = 0f;
+            moveDirection = Vector3.zero;
             input = Vector3.zero;
+            inputSmooth = Vector3.zero;
             _rigidbody.velocity = Vector3.zero;
             inputMagnitude = 0f;
             moveSpeed = 0f;
-        }
-
-        public virtual void StopMove()
-        {
-            if (input.sqrMagnitude < 0.1)
-            {
-                return;
-            }
-
-            RaycastHit hitinfo;
-            Ray ray = new Ray(transform.position + Vector3.up * stopMoveHeight, moveDirection.normalized);
-            var hitAngle = 0f;
-            if (debugWindow)
-            {
-                Debug.DrawRay(ray.origin, ray.direction * stopMoveDistance, Color.red);
-            }
-
-            if (Physics.Raycast(ray, out hitinfo, _capsuleCollider.radius + stopMoveDistance, stopMoveLayer))
-            {
-                stopMove = true;
-                return;
-            }
-
-            if (Physics.Linecast(transform.position + Vector3.up * (_capsuleCollider.height * 0.5f), transform.position + moveDirection.normalized * (_capsuleCollider.radius + 0.2f), out hitinfo, groundLayer))
-            {
-                hitAngle = Vector3.Angle(Vector3.up, hitinfo.normal);
-                if (debugWindow)
-                {
-                    Debug.DrawLine(transform.position + Vector3.up * (_capsuleCollider.height * 0.5f), transform.position + moveDirection.normalized * (_capsuleCollider.radius + 0.2f), (hitAngle > slopeLimit) ? Color.yellow : Color.blue, 0.01f);
-                }
-
-                var targetPoint = hitinfo.point + moveDirection.normalized * _capsuleCollider.radius;
-                if ((hitAngle > slopeLimit) && Physics.Linecast(transform.position + Vector3.up * (_capsuleCollider.height * 0.5f), targetPoint, out hitinfo, groundLayer))
-                {
-                    if (debugWindow)
-                    {
-                        Debug.DrawRay(hitinfo.point, hitinfo.normal);
-                    }
-
-                    hitAngle = Vector3.Angle(Vector3.up, hitinfo.normal);
-
-                    if (hitAngle > slopeLimit && hitAngle < 85f)
-                    {
-                        if (debugWindow)
-                        {
-                            Debug.DrawLine(transform.position + Vector3.up * (_capsuleCollider.height * 0.5f), hitinfo.point, Color.red, 0.01f);
-                        }
-
-                        stopMove = true;
-                        return;
-                    }
-                    else
-                    {
-                        if (debugWindow)
-                        {
-                            Debug.DrawLine(transform.position + Vector3.up * (_capsuleCollider.height * 0.5f), hitinfo.point, Color.green, 0.01f);
-                        }
-                    }
-                }
-            }
-            else if (debugWindow)
-            {
-                Debug.DrawLine(transform.position + Vector3.up * (_capsuleCollider.height * 0.5f), transform.position + moveDirection.normalized * (_capsuleCollider.radius * 0.2f), Color.blue, 0.01f);
-            }
-
-            stopMove = false;
+            animator.SetFloat(vAnimatorParameters.InputMagnitude, 0f, 0.25f, Time.fixedDeltaTime);
+            animator.SetFloat(vAnimatorParameters.InputVertical, 0f, 0.25f, Time.fixedDeltaTime);
+            animator.SetFloat(vAnimatorParameters.InputHorizontal, 0f, 0.25f, Time.fixedDeltaTime);
+            animator.SetFloat(vAnimatorParameters.RotationMagnitude, 0f, 0.25f, Time.fixedDeltaTime);
         }
 
         public virtual void RotateToPosition(Vector3 position)
@@ -732,14 +937,21 @@ namespace Invector.vCharacterController
 
         public virtual void RotateToDirection(Vector3 direction, float rotationSpeed)
         {
-            if (lockAnimRotation || customAction || (!jumpAndRotate && !isGrounded) || isSliding || ragdolled)
+            if (lockAnimRotation || customAction || (!jumpAndRotate && !isGrounded) || ragdolled || isSliding)
             {
                 return;
             }
 
             direction.y = 0f;
-            Vector3 desiredForward = Vector3.RotateTowards(transform.forward, direction.normalized, rotationSpeed * Time.deltaTime, .1f);
-            Quaternion _newRotation = Quaternion.LookRotation(desiredForward);
+            if (direction.normalized.magnitude == 0)
+            {
+                direction = transform.forward;
+            }
+
+            var euler = transform.rotation.eulerAngles.NormalizeAngle();
+            var targetEuler = Quaternion.LookRotation(direction.normalized).eulerAngles.NormalizeAngle();
+            euler.y = Mathf.LerpAngle(euler.y, targetEuler.y, rotationSpeed * Time.fixedDeltaTime);
+            Quaternion _newRotation = Quaternion.Euler(euler);
             transform.rotation = _newRotation;
         }
 
@@ -762,7 +974,7 @@ namespace Invector.vCharacterController
                 return;
             }
 
-            jumpCounter -= Time.deltaTime;
+            jumpCounter -= Time.fixedDeltaTime;
             if (jumpCounter <= 0)
             {
                 jumpCounter = 0;
@@ -772,6 +984,11 @@ namespace Invector.vCharacterController
             var vel = _rigidbody.velocity;
             vel.y = jumpHeight * jumpMultiplier;
             _rigidbody.velocity = vel;
+        }
+
+        public virtual void SetJumpMultiplier(float jumpMultiplier)
+        {
+            this.jumpMultiplier = jumpMultiplier;
         }
 
         public virtual void SetJumpMultiplier(float jumpMultiplier, float timeToReset = 1f)
@@ -799,11 +1016,12 @@ namespace Invector.vCharacterController
         protected IEnumerator ResetJumpMultiplierRoutine()
         {
 
-            while (timeToResetJumpMultiplier > 0 && jumpMultiplier != 1)
+            while (timeToResetJumpMultiplier > 0 && jumpMultiplier != 1 && (isJumping || !isGrounded))
             {
-                timeToResetJumpMultiplier -= Time.deltaTime;
+                timeToResetJumpMultiplier -= Time.fixedDeltaTime;
                 yield return null;
             }
+            timeToResetJumpMultiplier = 0;
             jumpMultiplier = 1;
         }
 
@@ -818,11 +1036,11 @@ namespace Invector.vCharacterController
                 heightReached = transform.position.y;
             }
 
-            inputSmooth = Vector3.Lerp(inputSmooth, input, airSmooth * Time.deltaTime);
+            inputSmooth = Vector3.Lerp(inputSmooth, input, airSmooth * Time.fixedDeltaTime);
 
             if (jumpWithRigidbodyForce && !isGrounded)
             {
-                _rigidbody.AddForce(moveDirection * airSpeed * Time.deltaTime, ForceMode.VelocityChange);
+                _rigidbody.AddForce(moveDirection * airSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
                 return;
             }
 
@@ -830,11 +1048,11 @@ namespace Invector.vCharacterController
             moveDirection.x = Mathf.Clamp(moveDirection.x, -1f, 1f);
             moveDirection.z = Mathf.Clamp(moveDirection.z, -1f, 1f);
 
-            Vector3 targetPosition = _rigidbody.position + (moveDirection * airSpeed) * Time.deltaTime;
-            Vector3 targetVelocity = (targetPosition - transform.position) / Time.deltaTime;
+            Vector3 targetPosition = _rigidbody.position + (moveDirection * airSpeed) * Time.fixedDeltaTime;
+            Vector3 targetVelocity = (targetPosition - transform.position) / Time.fixedDeltaTime;
 
             targetVelocity.y = _rigidbody.velocity.y;
-            _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, targetVelocity, airSmooth * Time.deltaTime);
+            _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, targetVelocity, airSmooth * Time.fixedDeltaTime);
         }
 
         protected virtual bool jumpFwdCondition
@@ -872,21 +1090,25 @@ namespace Invector.vCharacterController
 
         public virtual bool CanExitCrouch()
         {
-            // radius of SphereCast
-            float radius = _capsuleCollider.radius * 0.9f;
-            // Position of SphereCast origin stating in base of capsule
-            Vector3 pos = transform.position + Vector3.up * ((colliderHeight * 0.5f) - colliderRadius);
-            // ray for SphereCast
-            Ray ray2 = new Ray(pos, Vector3.up);
-            // sphere cast around the base of capsule for check ground distance
-            if (Physics.SphereCast(ray2, radius, out groundHit, headDetect - (colliderRadius * 0.1f), autoCrouchLayer))
+            if (isCrouching)
             {
-                return false;
+                // radius of SphereCast
+                float radius = _capsuleCollider.radius * 0.9f;
+                // Position of SphereCast origin stating in base of capsule
+                Vector3 pos = transform.position + Vector3.up * ((colliderHeight * 0.5f) - colliderRadius);
+                // ray for SphereCast
+                Ray ray2 = new Ray(pos, Vector3.up);
+                // sphere cast around the base of capsule for check ground distance
+                if (Physics.SphereCast(ray2, radius, out groundHit, crouchHeadDetect - (colliderRadius * 0.1f), autoCrouchLayer))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         protected virtual void AutoCrouchExit(Collider other)
@@ -910,7 +1132,14 @@ namespace Invector.vCharacterController
 
         #region Roll Methods
 
-        internal bool canRollAgain { get { return isRolling && baseLayerInfo.normalizedTime >= timeToRollAgain; } }
+        internal bool canRollAgain
+        {
+            get
+            {
+
+                return isRolling && animatorStateInfos.GetCurrentNormalizedTime(0) >= timeToRollAgain;
+            }
+        }
 
         protected virtual void RollBehavior()
         {
@@ -930,8 +1159,8 @@ namespace Invector.vCharacterController
 
             // movement
             Vector3 deltaPosition = useRollRootMotion ? new Vector3(animator.deltaPosition.x, 0f, animator.deltaPosition.z) : transform.forward * Time.deltaTime;
-            Vector3 v = (deltaPosition * (rollSpeed > 0 ? rollSpeed : 1f)) / Time.deltaTime;
-            if (rollUseGravity && baseLayerInfo.normalizedTime >= rollUseGravityTime)
+            Vector3 v = ((deltaPosition * (rollSpeed > 0 ? rollSpeed : 1f)) / Time.deltaTime) * (1f - stopMoveWeight);
+            if (rollUseGravity && animator.GetNormalizedTime(baseLayer) >= rollUseGravityTime)
             {
                 v.y = _rigidbody.velocity.y;
             }
@@ -946,7 +1175,7 @@ namespace Invector.vCharacterController
         protected virtual void CheckGround()
         {
             CheckGroundDistance();
-            Sliding();
+            SlideOnSteepSlope();
             ControlMaterialPhysics();
 
             if (isDead || customAction || disableCheckGround || isSliding)
@@ -962,7 +1191,7 @@ namespace Invector.vCharacterController
                 isGrounded = true;
                 if (!useSnapGround && !applyingStepOffset && !isJumping && groundDistance > 0.05f && extraGravity != 0)
                 {
-                    _rigidbody.AddForce(transform.up * (extraGravity * 2 * Time.deltaTime), ForceMode.VelocityChange);
+                    _rigidbody.AddForce(transform.up * (extraGravity * 2 * Time.fixedDeltaTime), ForceMode.VelocityChange);
                 }
 
                 heightReached = transform.position.y;
@@ -971,22 +1200,19 @@ namespace Invector.vCharacterController
             {
                 if (groundDistance >= groundMaxDistance)
                 {
-                    if (!isRolling)
-                    {
-                        isGrounded = false;
-                    }
+                    isGrounded = false;
 
                     // check vertical velocity
                     verticalVelocity = _rigidbody.velocity.y;
                     // apply extra gravity when falling
                     if (!applyingStepOffset && !isJumping && extraGravity != 0)
                     {
-                        _rigidbody.AddForce(transform.up * extraGravity * Time.deltaTime, ForceMode.VelocityChange);
+                        _rigidbody.AddForce(transform.up * extraGravity * Time.fixedDeltaTime, ForceMode.VelocityChange);
                     }
                 }
                 else if (!applyingStepOffset && !isJumping && extraGravity != 0)
                 {
-                    _rigidbody.AddForce(transform.up * (extraGravity * 2 * Time.deltaTime), ForceMode.VelocityChange);
+                    _rigidbody.AddForce(transform.up * (extraGravity * 2 * Time.fixedDeltaTime), ForceMode.VelocityChange);
                 }
             }
         }
@@ -1008,9 +1234,6 @@ namespace Invector.vCharacterController
             }
         }
 
-
-
-
         private void ControlMaterialPhysics()
         {
             // change the physics material to very slip when not grounded
@@ -1024,11 +1247,10 @@ namespace Invector.vCharacterController
             {
                 targetMaterialPhysics = frictionPhysics;
             }
-            else if (targetMaterialPhysics != slippyPhysics && isSliding)
+            else if (targetMaterialPhysics != slippyPhysics && (isSliding || !isGrounded))
             {
                 targetMaterialPhysics = slippyPhysics;
             }
-
 
             if (currentMaterialPhysics != targetMaterialPhysics)
             {
@@ -1109,12 +1331,57 @@ namespace Invector.vCharacterController
             {
                 surfaceRot = Quaternion.FromToRotation(transform.up, hit.normal) * transform.localRotation;
             }
-            transform.rotation = Quaternion.Lerp(transform.rotation, surfaceRot, 10f * Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, surfaceRot, 10f * Time.fixedDeltaTime);
         }
 
-        protected virtual void Sliding()
+        protected bool CheckForSlope(ref Vector3 targetVelocity)
         {
-            if (useSlide && groundDistance <= groundMinDistance && GroundAngle() > slopeLimit && !disableCheckGround)
+            if (debugWindow)
+            {
+                Debug.DrawLine(transform.position + Vector3.up * (_capsuleCollider.height * slopeLimitHeight), transform.position + moveDirection.normalized *
+                    (steepSlopeAhead ? _capsuleCollider.radius + slopeMaxDistance : _capsuleCollider.radius + slopeMinDistance), Color.red, 0.01f);
+            }
+
+            if (!useSlopeLimit || moveDirection.magnitude == 0f || targetVelocity.magnitude == 0f)
+            {
+                _slopeSidewaysSmooth = 1f;
+                return false;
+            }
+
+            // DYNAMIC LINE
+            if (Physics.Linecast(transform.position + Vector3.up * (_capsuleCollider.height * slopeLimitHeight), transform.position + moveDirection.normalized *
+                (steepSlopeAhead ? _capsuleCollider.radius + slopeMaxDistance : _capsuleCollider.radius + slopeMinDistance), out slopeHitInfo, groundLayer))
+            {
+                var hitAngle = Vector3.Angle(Vector3.up, slopeHitInfo.normal);
+
+                if (hitAngle > slopeLimit && hitAngle < 85f)
+                {
+                    var normal = slopeHitInfo.normal;
+                    normal.y = 0f;
+                    var normalAngle = targetVelocity.normalized.AngleFormOtherDirection(-normal.normalized);
+                    var dir = Quaternion.AngleAxis(normalAngle.y > 0f ? 90f : -90, Vector3.up) * normal.normalized * targetVelocity.magnitude;
+
+                    if (Mathf.Abs(normalAngle.y) > stopSlopeMargin)
+                    {
+                        _slopeSidewaysSmooth = Mathf.Clamp(_slopeSidewaysSmooth - Time.deltaTime * slopeSidewaysSmooth, 0f, 1f);
+                    }
+                    else
+                    {
+                        _slopeSidewaysSmooth = 1f;
+                    }
+
+                    targetVelocity = Vector3.Lerp(dir, Vector3.zero, _slopeSidewaysSmooth);
+                    return true;
+                }
+            }
+
+            _slopeSidewaysSmooth = 1f;
+            return false;
+        }
+
+        protected virtual void SlideOnSteepSlope()
+        {
+            if (useSlide && isGrounded && GroundAngle() > slopeLimit && !disableCheckGround)
             {
                 if (_slidingEnterTime <= 0f || isSliding)
                 {
@@ -1122,52 +1389,75 @@ namespace Invector.vCharacterController
                     normal.y = 0f;
                     var dir = Vector3.ProjectOnPlane(normal.normalized, groundHit.normal).normalized;
 
-                    if (Physics.Raycast(transform.position + Vector3.up * groundMinDistance, dir, groundMaxDistance, groundLayer))
-                    {
-                        isSliding = false;
-                    }
-                    else
+                    if (!Physics.Raycast(transform.position + Vector3.up * groundMinDistance, dir, groundMaxDistance, groundLayer))
                     {
                         isSliding = true;
-                        SlideMovementBehavior();
                     }
+                    //else
+                    //{
+                    //    isSliding = true;
+                    //}
                 }
                 else
                 {
-                    _slidingEnterTime -= Time.deltaTime;
+                    _slidingEnterTime -= Time.fixedDeltaTime;
                 }
             }
             else
             {
-                _slidingEnterTime = slidingEnterTime;
+                _rotateSlopeEnterTime = rotateSlopeEnterTime;
+                _slidingEnterTime = isGrounded ? slidingEnterTime : 0f;
                 isSliding = false;
             }
         }
 
         protected virtual void SlideMovementBehavior()
         {
+            if (!isSliding)
+            {
+                return;
+            }
+
             var normal = groundHit.normal;
             normal.y = 0f;
+
             var dir = Vector3.ProjectOnPlane(normal.normalized, groundHit.normal).normalized;
-            _rigidbody.velocity = dir * slideDownVelocity;
-            dir.y = 0f;
-
-            Vector3 desiredForward = Vector3.RotateTowards(transform.forward, dir, 10f * Time.deltaTime, 0f);
-            Quaternion _newRotation = Quaternion.LookRotation(desiredForward);
-            _rigidbody.MoveRotation(_newRotation);
-
-            var rightMovement = transform.InverseTransformDirection(moveDirection);
-            rightMovement.y = 0f;
-            rightMovement.z = 0f;
-            rightMovement = transform.TransformDirection(rightMovement);
-
-            _rigidbody.AddForce(rightMovement * slideSidewaysVelocity, ForceMode.VelocityChange);
 
             if (debugWindow)
             {
-                Debug.DrawRay(transform.position, Vector3.ProjectOnPlane(normal.normalized, groundHit.normal).normalized, Color.blue);
-                Debug.DrawRay(transform.position, Quaternion.AngleAxis(90, groundHit.normal) * Vector3.ProjectOnPlane(normal.normalized, groundHit.normal).normalized, Color.red);
-                Debug.DrawRay(transform.position, transform.TransformDirection(rightMovement.normalized * 2f), Color.green);
+                Debug.DrawRay(transform.position, dir * slideDownVelocity);
+            }
+
+            _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, dir * slideDownVelocity, slideDownSmooth * Time.fixedDeltaTime);
+            dir.y = 0f;
+
+            if (_rotateSlopeEnterTime <= 0f)
+            {
+                Vector3 desiredForward = Vector3.RotateTowards(transform.forward, dir, rotateDownSlopeSmooth * Time.fixedDeltaTime, 0f);
+                Quaternion _newRotation = Quaternion.LookRotation(desiredForward);
+                _rigidbody.MoveRotation(_newRotation);
+
+                var rightMovement = transform.InverseTransformDirection(moveDirection);
+                rightMovement.y = 0f;
+                rightMovement.z = 0f;
+                rightMovement = transform.TransformDirection(rightMovement);
+                if (debugWindow)
+                {
+                    Debug.DrawRay(transform.position, rightMovement * slideSidewaysVelocity, Color.blue);
+                }
+
+                _rigidbody.AddForce(rightMovement * slideSidewaysVelocity, ForceMode.VelocityChange);
+
+                if (debugWindow)
+                {
+                    Debug.DrawRay(transform.position, Vector3.ProjectOnPlane(normal.normalized, groundHit.normal).normalized, Color.blue);
+                    Debug.DrawRay(transform.position, Quaternion.AngleAxis(90, groundHit.normal) * Vector3.ProjectOnPlane(normal.normalized, groundHit.normal).normalized, Color.red);
+                    Debug.DrawRay(transform.position, transform.TransformDirection(rightMovement.normalized * 2f), Color.green);
+                }
+            }
+            else
+            {
+                _rotateSlopeEnterTime -= Time.fixedDeltaTime;
             }
         }
 
@@ -1177,10 +1467,17 @@ namespace Invector.vCharacterController
 
         public virtual void ControlCapsuleHeight()
         {
-            if (isCrouching || isRolling)
+            if (isCrouching && !isRolling)
             {
                 _capsuleCollider.center = colliderCenter / crouchHeightReduction;
                 _capsuleCollider.height = colliderHeight / crouchHeightReduction;
+                _capsuleCollider.radius = colliderRadius * crouchColliderRadius;
+            }
+            else if (isRolling || isRolling && isCrouching)
+            {
+                _capsuleCollider.center = colliderCenter / rollHeightReduction;
+                _capsuleCollider.height = colliderHeight / rollHeightReduction;
+                _capsuleCollider.radius = colliderRadius * rollColliderRadius;
             }
             else
             {
@@ -1248,20 +1545,22 @@ namespace Invector.vCharacterController
 
         public override void ResetRagdoll()
         {
-            StopCharacter();
+            onDisableRagdoll.Invoke();
             verticalVelocity = 0f;
             ragdolled = false;
             _rigidbody.WakeUp();
-
             _rigidbody.useGravity = true;
             _rigidbody.isKinematic = false;
             _capsuleCollider.isTrigger = false;
+            _capsuleCollider.enabled = true;
         }
 
         public override void EnableRagdoll()
         {
+            StopCharacter();
             animator.SetFloat("InputHorizontal", 0f);
             animator.SetFloat("InputVertical", 0f);
+            animator.SetFloat("InputMagnitude", 0f);
             animator.SetFloat("VerticalVelocity", 0f);
             ragdolled = true;
             _capsuleCollider.isTrigger = true;
@@ -1286,9 +1585,10 @@ namespace Invector.vCharacterController
                     " \n" +
                     "FPS " + fps.ToString("#,##0 fps") + "\n" +
                     "Health = " + currentHealth.ToString() + "\n" +
-                    "Input Vertical = " + input.z.ToString("0.0") + "\n" +
-                    "Input Horizontal = " + input.x.ToString("0.0") + "\n" +
+                    "Input Vertical = " + inputSmooth.z.ToString("0.0") + "\n" +
+                    "Input Horizontal = " + inputSmooth.x.ToString("0.0") + "\n" +
                     "Input Magnitude = " + inputMagnitude.ToString("0.0") + "\n" +
+                    "Rotation Magnitude = " + rotationMagnitude.ToString("0.0") + "\n" +
                     "Vertical Velocity = " + verticalVelocity.ToString("0.00") + "\n" +
                     "Current MoveSpeed = " + moveSpeed.ToString("0.00") + "\n" +
                     "Ground Distance = " + groundDistance.ToString("0.00") + "\n" +
@@ -1297,10 +1597,11 @@ namespace Invector.vCharacterController
                     "Is Strafing = " + BoolToRichText(isStrafing) + "\n" +
                     "Is Trigger = " + BoolToRichText(_capsuleCollider.isTrigger) + "\n" +
                     "Use Gravity = " + BoolToRichText(_rigidbody.useGravity) + "\n" +
+                    "Is Kinematic = " + BoolToRichText(_rigidbody.isKinematic) + "\n" +
                     "Lock Movement = " + BoolToRichText(lockMovement) + "\n" +
-                    "Lock Movement = " + BoolToRichText(lockAnimMovement) + "\n" +
-                    "Lock Rotation = " + BoolToRichText(lockAnimRotation) + "\n" +
-                    "Stop Move = " + BoolToRichText(stopMove) + "\n" +
+                    "Lock AnimMov = " + BoolToRichText(lockAnimMovement) + "\n" +
+                    "Lock Rotation = " + BoolToRichText(lockRotation) + "\n" +
+                    "Lock AnimRot = " + BoolToRichText(lockAnimRotation) + "\n" +
                     "--- Actions Bools ---" + "\n" +
                     "Is Sliding = " + BoolToRichText(isSliding) + "\n" +
                     "Is Sprinting = " + BoolToRichText(isSprinting) + "\n" +
@@ -1326,13 +1627,7 @@ namespace Invector.vCharacterController
                 // debug auto crouch
                 Vector3 posHead = transform.position + Vector3.up * ((colliderHeight * 0.5f) - colliderRadius);
                 Ray ray1 = new Ray(posHead, Vector3.up);
-                Gizmos.DrawWireSphere(ray1.GetPoint((headDetect - (colliderRadius * 0.1f))), colliderRadius * 0.9f);
-                // debug stopmove            
-                Ray ray3 = new Ray(transform.position + new Vector3(0, stopMoveHeight, 0), transform.forward);
-                Debug.DrawRay(ray3.origin, ray3.direction * (_capsuleCollider.radius + stopMoveDistance), Color.blue);
-                // debug slopelimit            
-                Ray ray4 = new Ray(transform.position + new Vector3(0, colliderHeight / 3.5f, 0), transform.forward);
-                Debug.DrawRay(ray4.origin, ray4.direction * 1f, Color.cyan);
+                Gizmos.DrawWireSphere(ray1.GetPoint((crouchHeadDetect - (colliderRadius * 0.1f))), colliderRadius * 0.9f);
             }
 
         }

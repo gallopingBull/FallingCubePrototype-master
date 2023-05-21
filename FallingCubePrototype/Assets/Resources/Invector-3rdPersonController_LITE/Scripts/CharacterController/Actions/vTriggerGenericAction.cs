@@ -35,6 +35,7 @@ namespace Invector.vCharacterController.vActions
         public float doubleButtomTime = 0.25f;
 
         [vEditorToolbar("Trigger", order = 2)]
+        public string actionName = "Action";
         public string actionTag = "Action";
         [vHelpBox("Disable this trigger OnStart")]
         public bool disableOnStart = false;
@@ -45,7 +46,7 @@ namespace Invector.vCharacterController.vActions
         [vHelpBox("It will only use the trigger if the forward of the character is close to the forward of this transform")]
         public bool activeFromForward;
         [vHelpBox("Max angle between character forward and trigger forward to active trigger"), Range(5, 180)]
-        public float forwardAngle = 30;
+        public float forwardAngle = 55;
         [vHelpBox("Rotate Character to the Forward Rotation of this Trigger")]
         public bool useTriggerRotation;
         [vHelpBox("Destroy this Trigger after pressing the Input or AutoAction or finishing the Action")]
@@ -61,16 +62,22 @@ namespace Invector.vCharacterController.vActions
             "don't forget to add a vAnimatorTag to your State")]
         public string playAnimation;
 
+        public float crossFadeTransition = 0.25f;
+
+        public int animatorLayer = 0;
+
         [vHelpBox("Check the Exit Time of your animation (if it doesn't loop) and insert here. \n\n" +
-            "For example if your Exit Time is 0.8 and the Transition Duration is 0.2 you need to insert 0.5 or lower as the final value. " +
+            "For example if your Exit Time is 0.82 you need to insert 0.82" +
             "\n\nAlways check with the Debug of the GenericAction if your animation is finishing correctly, " +
             "otherwise the controller won't reset to the default physics and collision.", vHelpBoxAttribute.MessageType.Warning)]
+        [Tooltip("You can use this to make a persistent action, and finish the action calling FinishAction method of the vGenericAction  component in your character")]
+        public bool endActionManualy = false;
+        [vHideInInspector("endActionManualy",invertValue =true)]
         public float endExitTimeAnimation = 0.8f;
         [vHelpBox("Use a ActionState value to apply special conditions for your AnimatorController transitions")]
         public int animatorActionState = 0;
         [vHelpBox("Reset the ActionState parameter to 0 after playing the animation")]
-        public bool resetAnimatorActionState = true;
-        public bool useAnimatorMatchTarget = true;
+        public bool resetAnimatorActionState = true;        
         [vHelpBox("Use a empty transform as reference for the MatchTarget")]
         public Transform matchTarget;
         [vHelpBox("Select the bone you want to use as reference to the Match Target")]       
@@ -80,22 +87,7 @@ namespace Invector.vCharacterController.vActions
         public bool useLocalZ = true;      
         public AnimationCurve matchPositionXZCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(.5f, 1), new Keyframe(1, 1));   
         public AnimationCurve matchPositionYCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(.5f, 1), new Keyframe(1, 1));      
-        public AnimationCurve matchRotationCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(.5f, 1), new Keyframe(1, 1));
-
-        [vHelpBox("Check what positions XYZ you want the matchTarget to work")]
-        [Header("Animator Match target system")]  
-        [vHelpBox("<b>These properties are related to the animator's matchtarget system</b>.\n<i> To use our new system curve based, <color=red>uncheck the UseAnimatorMatchTarget</color></i>\n <b>This properties will be removed in next update</b>",messageType:vHelpBoxAttribute.MessageType.Info)]
-        [Space(30)]
-
-        [FormerlySerializedAs("matchTargetMask")]
-        public Vector3 matchPos;
-        [vHelpBox("Rotate Weight for your character to use the matchTarget rotation")]
-        [Range(0, 1f)]
-        public float matchRot;      
-        [vHelpBox("Time of the animation to start the MatchTarget goes from 0 to 1")]
-        public float startMatchTarget;
-        [vHelpBox("Time of the animation to end the MatchTarget goes from 0 to 1")]
-        public float endMatchTarget;
+        public AnimationCurve matchRotationCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(.5f, 1), new Keyframe(1, 1));       
 
         [vEditorToolbar("Events", order = 3)]
 
@@ -166,5 +158,5 @@ namespace Invector.vCharacterController.vActions
     {
 
     }
-
+  
 }

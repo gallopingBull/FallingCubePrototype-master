@@ -6,17 +6,43 @@ namespace Invector
     [vClassHeader("MESSAGE RECEIVER", "Use this component with the vMessageSender to call Events.")]
     public class vMessageReceiver : vMonoBehaviour
     {
-        public OnReceiveMessageEvent defaultListener;
+        public static event OnReceiveMessage onReceiveGlobalMessage;
         public List<vMessageListener> messagesListeners;
-
+        [System.Serializable]
+        public delegate void OnReceiveMessage(string name, string message = null);
         [System.Serializable]
         public class OnReceiveMessageEvent : UnityEngine.Events.UnityEvent<string> { }
 
+        public event OnReceiveMessage onReceiveMessage;
+        private void Start()
+        {
+            for (int i = 0; i < messagesListeners.Count; i++)
+            {
+                vMessageListener messageListener = messagesListeners[i];
+                if (messageListener.receiveFromGlobal)
+                {
+                    onReceiveGlobalMessage -= messageListener.OnReceiveMessage;
+                    onReceiveGlobalMessage += messageListener.OnReceiveMessage;
+                }
+                else
+                {
+                    onReceiveMessage -= messageListener.OnReceiveMessage;
+                    onReceiveMessage += messageListener.OnReceiveMessage;
+                }
+            }
+        }
         [System.Serializable]
         public class vMessageListener
         {
             public string Name;
+            public bool receiveFromGlobal;
             public OnReceiveMessageEvent onReceiveMessage;
+
+            public void OnReceiveMessage(string name, string message = null)
+            {
+                if (Name.Equals(name)) onReceiveMessage.Invoke(string.IsNullOrEmpty(message) ? string.Empty : message);
+
+            }
             public vMessageListener(string name)
             {
                 this.Name = name;
@@ -61,32 +87,29 @@ namespace Invector
         }
 
         /// <summary>
+        /// Call Action without message
+        /// </summary>
+        /// <param name="name">message name</param>
+        public void Send(string name)
+        {
+            if (this.enabled == false) return;
+            onReceiveMessage?.Invoke(name, string.Empty);
+        }
+
+        /// <summary>
         /// Call Action with message
         /// </summary>
         /// <param name="name">message name</param>
         /// <param name="message">message value</param>
         public void Send(string name, string message)
         {
-            if (messagesListeners.Exists(l => l.Name.Equals(name)))
-            {
-                var messageListener = messagesListeners.Find(l => l.Name.Equals(name));
-                messageListener.onReceiveMessage.Invoke(message);
-            }
-            else defaultListener.Invoke(message);
+            if (this.enabled == false) return;
+            onReceiveMessage?.Invoke(name, message);
         }
 
-        /// <summary>
-        /// Call Action without message
-        /// </summary>
-        /// <param name="name">message name</param>
-        public void Send(string name)
+        public static void SendGlobal(string name, string message = null)
         {
-            if (messagesListeners.Exists(l => l.Name.Equals(name)))
-            {
-                var messageListener = messagesListeners.Find(l => l.Name.Equals(name));
-                messageListener.onReceiveMessage.Invoke(string.Empty);
-            }
-            else defaultListener.Invoke(string.Empty);
+            onReceiveGlobalMessage?.Invoke(name, message);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Invector.vEventSystems
         {
             public enum vAnimatorEventTriggerType
             {
-                NormalizedTime,EnterState,ExitState
+                NormalizedTime, EnterState, ExitState
             }
             public string eventName = "New Event";
             public vAnimatorEventTriggerType eventTriggerType = vAnimatorEventTriggerType.NormalizedTime;
@@ -24,13 +24,20 @@ namespace Invector.vEventSystems
                 var normalizedTimeClamped = Mathf.Clamp(normalizedTime, 0, loopCount + 1f);
                 if (normalizedTimeClamped >= loopCount + this.normalizedTime)
                 {
-                    if (onTriggerEvent != null) onTriggerEvent(eventName);
+                    if (onTriggerEvent != null)
+                    {
+                        onTriggerEvent(eventName);
+                    }
+
                     loopCount++;
                 }
             }
             public void TriggerEvent()
             {
-                if (onTriggerEvent != null) onTriggerEvent(eventName);
+                if (onTriggerEvent != null)
+                {
+                    onTriggerEvent(eventName);
+                }
             }
             public void Init()
             {
@@ -64,13 +71,15 @@ namespace Invector.vEventSystems
                 _events[i].onTriggerEvent -= onTriggerEvent;
             }
         }
-       
+
         override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        {          
+        {
             for (int i = 0; i < eventTriggers.Count; i++)
             {
                 if (eventTriggers[i].eventTriggerType == vAnimatorEventTrigger.vAnimatorEventTriggerType.EnterState)
+                {
                     eventTriggers[i].TriggerEvent();
+                }
                 else if (eventTriggers[i].eventTriggerType == vAnimatorEventTrigger.vAnimatorEventTriggerType.NormalizedTime)
                 {
                     hasNormalizedEvents = true;
@@ -79,13 +88,21 @@ namespace Invector.vEventSystems
                 }
             }
         }
-  
+
         override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (!stateInfo.loop && stateInfo.normalizedTime > 1 || !hasNormalizedEvents) return;
+            if (!stateInfo.loop && stateInfo.normalizedTime > 1 || !hasNormalizedEvents)
+            {
+                return;
+            }
+
             for (int i = 0; i < eventTriggers.Count; i++)
+            {
                 if (eventTriggers[i].eventTriggerType == vAnimatorEventTrigger.vAnimatorEventTriggerType.NormalizedTime)
+                {
                     eventTriggers[i].UpdateEventTrigger(stateInfo.normalizedTime);
+                }
+            }
         }
 
         override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -93,7 +110,9 @@ namespace Invector.vEventSystems
             for (int i = 0; i < eventTriggers.Count; i++)
             {
                 if (eventTriggers[i].eventTriggerType == vAnimatorEventTrigger.vAnimatorEventTriggerType.ExitState)
+                {
                     eventTriggers[i].TriggerEvent();
+                }
             }
         }
     }

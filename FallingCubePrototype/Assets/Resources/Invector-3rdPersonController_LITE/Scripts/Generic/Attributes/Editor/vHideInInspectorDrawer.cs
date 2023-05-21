@@ -32,16 +32,16 @@ namespace Invector
                     else
                     {
 
-                        EditorGUI.PropertyField(position, property, true);
+                        EditorGUI.PropertyField(position, property,label, true);
                     }
                 }
                 if (!_attribute.hideProperty)
                 {                  
-                    EditorGUI.PropertyField(position, property, true);
+                    EditorGUI.PropertyField(position, property, label, true);
                 }                
             }
             else
-                EditorGUI.PropertyField(position, property, true);
+                EditorGUI.PropertyField(position, property, label, true);
             EditorGUI.EndProperty();
         }
 

@@ -5,7 +5,7 @@ namespace Invector
     [System.Serializable]
     public class OnDead : UnityEngine.Events.UnityEvent<GameObject> { }
     public interface vIHealthController : vIDamageReceiver
-    {
+    {      
         /// <summary>
         /// Event called when <seealso cref="currentHealth"/>  is zero or less
         /// </summary>
@@ -46,8 +46,9 @@ namespace Invector
         /// Reset's current health to max health
         /// </summary>
         void ResetHealth();
+      
     }
-
+  
     public static class vHealthControllerHelper
     {
         static vIHealthController GetHealthController(this GameObject gameObject)

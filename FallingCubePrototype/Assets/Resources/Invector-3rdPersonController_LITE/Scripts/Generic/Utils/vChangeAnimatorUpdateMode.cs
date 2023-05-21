@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Invector;
+using UnityEngine;
 
 public class vChangeAnimatorUpdateMode : MonoBehaviour
 {
@@ -18,16 +19,22 @@ public class vChangeAnimatorUpdateMode : MonoBehaviour
     public void ChangeToUnscaledTime()
     {
         if (Time.timeScale == 0)
+        {
+            vTime.useUnscaledTime = true;
             animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+        }
+          
     }
 
     public void ChangeToAnimatePhysics()
     {
         animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+        vTime.useUnscaledTime = false;
     }
 
     public void ChangeToInitialState()
     {
         animator.updateMode = initialState;
+        vTime.useUnscaledTime =initialState== AnimatorUpdateMode.UnscaledTime ?true:false;
     }
 }

@@ -22,7 +22,6 @@ namespace Invector.vCharacterController
         public bool showCursorOnStart = false;
         [vHelpBox("PC only - use it to toggle between run/walk", vHelpBoxAttribute.MessageType.Info)]
         public KeyCode toggleWalk = KeyCode.CapsLock;
-        private bool _toogleWalk;
 
         [Header("Movement Input")]
         public GenericInput horizontalInput = new GenericInput("Horizontal", "LeftAnalogHorizontal", "Horizontal");
@@ -30,13 +29,13 @@ namespace Invector.vCharacterController
         public GenericInput sprintInput = new GenericInput("LeftShift", "LeftStickClick", "LeftStickClick");
         public GenericInput crouchInput = new GenericInput("C", "Y", "Y");
         public GenericInput strafeInput = new GenericInput("Tab", "RightStickClick", "RightStickClick");
-        public GenericInput jumpInput = new GenericInput("Space", "X", "X");        
+        public GenericInput jumpInput = new GenericInput("Space", "X", "X");
         public GenericInput rollInput = new GenericInput("Q", "B", "B");
-        
+
         [HideInInspector] public bool lockInput;
 
         [vEditorToolbar("Camera Settings")]
-        public bool lockCameraInput;        
+        public bool lockCameraInput;
         public bool invertCameraInputVertical, invertCameraInputHorizontal;
         [vEditorToolbar("Inputs")]
         [Header("Camera Input")]
@@ -140,8 +139,8 @@ namespace Invector.vCharacterController
 
         protected virtual IEnumerator CharacterInit()
         {
-            yield return new WaitForEndOfFrame();
             FindCamera();
+            yield return new WaitForEndOfFrame();
             FindHUD();
         }
 
@@ -156,13 +155,36 @@ namespace Invector.vCharacterController
 
         public virtual void FindCamera()
         {
-            if (tpCamera == null)
+            var tpCameras = FindObjectsOfType<vCamera.vThirdPersonCamera>();
+
+            if (tpCameras.Length > 1)
             {
-                tpCamera = FindObjectOfType<vCamera.vThirdPersonCamera>();
-                if (tpCamera && tpCamera.mainTarget != transform)
+                tpCamera = System.Array.Find(tpCameras, tp => !tp.isInit);
+
+                if (tpCamera == null)
                 {
-                    tpCamera.SetMainTarget(this.transform);
+                    tpCamera = tpCameras[0];
                 }
+
+                if (tpCamera != null)
+                {
+                    for (int i = 0; i < tpCameras.Length; i++)
+                    {
+                        if (tpCamera != tpCameras[i])
+                        {
+                            Destroy(tpCameras[i].gameObject);
+                        }
+                    }
+                }
+            }
+            else if (tpCameras.Length == 1)
+            {
+                tpCamera = tpCameras[0];
+            }
+
+            if (tpCamera && tpCamera.mainTarget != transform)
+            {
+                tpCamera.SetMainTarget(this.transform);
             }
         }
 
@@ -170,7 +192,7 @@ namespace Invector.vCharacterController
 
         protected virtual void LateUpdate()
         {
-            if (cc == null || Time.timeScale == 0)
+            if (cc == null)
             {
                 return;
             }
@@ -247,11 +269,11 @@ namespace Invector.vCharacterController
             lockInput = value;
             if (value)
             {
-                cc.input = Vector2.zero;
-                cc.isSprinting = false;
-                cc.animator.SetFloat("InputHorizontal", 0, 0.25f, Time.deltaTime);
-                cc.animator.SetFloat("InputVertical", 0, 0.25f, Time.deltaTime);
-                cc.animator.SetFloat("InputMagnitude", 0, 0.25f, Time.deltaTime);
+                //cc.input = Vector2.zero;
+                //cc.isSprinting = false;
+                //cc.animator.SetFloat("InputHorizontal", 0, 0.25f, Time.deltaTime);
+                //cc.animator.SetFloat("InputVertical", 0, 0.25f, Time.deltaTime);
+                //cc.animator.SetFloat("InputMagnitude", 0, 0.25f, Time.deltaTime);
             }
         }
 
@@ -423,15 +445,15 @@ namespace Invector.vCharacterController
                 cc.input.z = verticallInput.GetAxisRaw();
             }
 
-            if(Input.GetKeyDown(toggleWalk))
+            if (Input.GetKeyDown(toggleWalk))
             {
-                _toogleWalk = !_toogleWalk;
-                SetWalkByDefault(_toogleWalk);
+                cc.alwaysWalkByDefault = !cc.alwaysWalkByDefault;
             }
 
             cc.ControlKeepDirection();
         }
 
+        protected virtual bool rotateToLockTargetConditions => tpCamera && tpCamera.lockTarget && cc.isStrafing && !cc.isRolling && !cc.isJumping && !cc.customAction;
         public virtual void ControlRotation()
         {
             if (cameraMain && !lockUpdateMoveDirection)
@@ -442,7 +464,7 @@ namespace Invector.vCharacterController
                 }
             }
 
-            if (tpCamera != null && tpCamera.lockTarget && cc.isStrafing)
+            if (rotateToLockTargetConditions)
             {
                 cc.RotateToPosition(tpCamera.lockTarget.position);          // rotate the character to a specific target
             }
@@ -468,51 +490,57 @@ namespace Invector.vCharacterController
             }
         }
 
-        public void SetCameraRotation()
+        protected virtual void CrouchInput()
         {
-            //check if camera is facing correct angle
-            //_camera.transform.rotation.eulerAngles.y does not equal -90 or 90; -270 or 270
-            //set camera angles to one of those values
-        
-            if ((cameraMain.transform.rotation.eulerAngles.y < -130 &&
-               cameraMain.transform.rotation.eulerAngles.y > -230) || 
-               (cc.transform.rotation.eulerAngles.y > 130 && 
-               cc.transform.rotation.eulerAngles.y < 230))
+            cc.AutoCrouch();
 
+            if (crouchInput.useInput && crouchInput.GetButtonDown())
             {
-                print("faceing wrong direction ");
-                if ((cameraMain.transform.rotation.eulerAngles.y < -270 &&
-                cameraMain.transform.rotation.eulerAngles.y > -240))
-                {
-                    print("already in correct angle = return");
-                    return;
-                }
-                print("faceing wrong direction");
-                tpCamera.RotateCamera(90, 0);
-                return;
+                cc.Crouch();
             }
-
-            if ((cameraMain.transform.rotation.eulerAngles.y < 40 &&
-              cameraMain.transform.rotation.eulerAngles.y > -40)
-              || (cc.transform.rotation.eulerAngles.y > 250 &&
-              cc.transform.rotation.eulerAngles.y < 50))
-
-            {
-                print("faceing wrong direction other side");
-                tpCamera.RotateCamera(90, 0);
-                return;
-            }
-           
-    else
-    {
-        print("reset Angle");
-        tpCamera.ResetAngle();
-    }
-
-            //tpCamera.ResetAngle();
         }
 
-        public void SetDragMovement()
+        /// <summary>
+        /// Conditions to trigger the Jump animation & behavior
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool JumpConditions()
+        {
+            return !cc.inJumpStarted && !cc.customAction && !cc.isCrouching && cc.isGrounded && cc.GroundAngle() < cc.slopeLimit && cc.currentStamina >= cc.jumpStamina && !cc.isJumping && !cc.isRolling;
+        }
+
+        /// <summary>
+        /// Input to trigger the Jump 
+        /// </summary>
+        protected virtual void JumpInput()
+        {
+            if (jumpInput.GetButtonDown() && JumpConditions())
+            {
+                cc.Jump(true);
+            }
+        }
+
+        /// <summary>
+        /// Conditions to trigger the Roll animation & behavior
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool RollConditions()
+        {
+            return (!cc.isRolling || cc.canRollAgain) && cc.isGrounded && cc.input != Vector3.zero && !cc.customAction && cc.currentStamina > cc.rollStamina && !cc.isJumping && !cc.isSliding;
+        }
+
+        /// <summary>
+        /// Input to trigger the Roll
+        /// </summary>
+        protected virtual void RollInput()
+        {
+            if (rollInput.GetButtonDown() && RollConditions())
+            {
+                cc.Roll();
+            }
+        }
+
+          public void SetDragMovement()
         {
             #region copied codeto make character's drag anim look correct - grabbed from vPushActionController.cs
             cc.animator.SetFloat(vAnimatorParameters.InputHorizontal, 0);
@@ -533,56 +561,6 @@ namespace Invector.vCharacterController
             if (playAnim)
             {
                 animator.PlayInFixedTime("StopPushAndPull");
-            }
-        }
-
-        protected virtual void CrouchInput()
-        {
-            cc.AutoCrouch();
-
-            if (crouchInput.useInput && crouchInput.GetButtonDown())
-            {
-                cc.Crouch();
-            }
-        }
-
-        /// <summary>
-        /// Conditions to trigger the Jump animation & behavior
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool JumpConditions()
-        {
-            return !cc.customAction && !cc.isCrouching && cc.isGrounded && cc.GroundAngle() < cc.slopeLimit && cc.currentStamina >= cc.jumpStamina && !cc.isJumping && !cc.isRolling;
-        }
-
-        /// <summary>
-        /// Input to trigger the Jump 
-        /// </summary>
-        protected virtual void JumpInput()
-        {
-            if (jumpInput.GetButtonDown() && JumpConditions())
-            {
-                cc.Jump(true);
-            }
-        }
-            
-        /// <summary>
-        /// Conditions to trigger the Roll animation & behavior
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool RollConditions()
-        {
-            return (!cc.isRolling || cc.canRollAgain) && cc.input != Vector3.zero && !cc.customAction && cc.isGrounded && cc.currentStamina > cc.rollStamina && !cc.isJumping;
-        }
-
-        /// <summary>
-        /// Input to trigger the Roll
-        /// </summary>
-        protected virtual void RollInput()
-        {
-            if (rollInput.GetButtonDown() && RollConditions())
-            {
-                cc.Roll();
             }
         }
 
@@ -616,13 +594,15 @@ namespace Invector.vCharacterController
 
             var zoom = cameraZoomInput.GetAxis();
 
-            if (!cc.isDragging)
-                tpCamera.RotateCamera(X, Y);
-            if (!lockCameraInput) tpCamera.Zoom(zoom);
+            tpCamera.RotateCamera(X, Y);
+            if (!lockCameraInput)
+            {
+                tpCamera.Zoom(zoom);
+            }
         }
 
         public virtual void UpdateCameraStates()
-        {          
+        {
             // CAMERA STATE - you can change the CameraState here, the bool means if you want lerp of not, make sure to use the same CameraState String that you named on TPCameraListData
             if (ignoreTpCamera)
             {
@@ -674,9 +654,20 @@ namespace Invector.vCharacterController
             }
         }
 
-        public virtual void ResetCameraAngle()
+        public virtual void ResetCameraAngleSmooth()
         {
-            if (tpCamera) tpCamera.ResetAngle();
+            if (tpCamera)
+            {
+                tpCamera.ResetAngle();
+            }
+        }
+
+        public virtual void ResetCameraAngleWithoutSmooth()
+        {
+            if (tpCamera)
+            {
+                tpCamera.ResetAngleWithoutSmooth();
+            }
         }
 
         public virtual void ChangeCameraStateWithLerp(string cameraState)

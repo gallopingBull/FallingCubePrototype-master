@@ -17,10 +17,10 @@ public class vRemoveParent : MonoBehaviour
 
     public void RemoveParentOfOtherTransform(Transform target)
     {
-        target.parent = null;
+        target.SetParent(null);
     }
     public void RemoveParent()
     {
-        transform.parent = null;
+        transform.SetParent(null);
     }
 }

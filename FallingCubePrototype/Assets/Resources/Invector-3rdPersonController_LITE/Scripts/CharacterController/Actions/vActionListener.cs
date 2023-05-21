@@ -18,8 +18,10 @@ namespace Invector.vCharacterController.vActions
     /// </summary>
     public interface IActionReceiver : IActionController
     {
-        void OnReceiveAction(vTriggerGenericAction genericAction);
+        void OnReceiveAction(vTriggerGenericAction actionInfo);
     }
+
+   
     /// <summary>
     /// Used to register  the event <see cref="vCharacter.onActionEnter"/> in the <see cref="vCharacter"/>. Ps.Need implementation  
     /// </summary>
@@ -110,9 +112,10 @@ namespace Invector.vCharacterController.vActions
 
 
     }
+    
     [System.Serializable]
     public class vOnActionHandle : UnityEngine.Events.UnityEvent<vTriggerGenericAction>
     {
 
-    }
+    }   
 }

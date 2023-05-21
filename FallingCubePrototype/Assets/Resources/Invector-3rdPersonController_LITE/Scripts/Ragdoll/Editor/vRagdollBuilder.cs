@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using System;
 using System.Collections;
-using System;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 
 namespace Invector.vCharacterController
 {
@@ -52,7 +52,7 @@ namespace Invector.vCharacterController
         Vector3 worldUp = Vector3.up;
         Vector3 worldForward = Vector3.forward;
 
-        public bool flipForward = false;       
+        public bool flipForward = false;
         class BoneInfo
         {
             public string name;
@@ -99,7 +99,9 @@ namespace Invector.vCharacterController
             foreach (BoneInfo bone in bones)
             {
                 if (bone.anchor == null)
+                {
                     return String.Format("{0} has not been assigned yet.\n", bone.name);
+                }
             }
 
             return "";
@@ -123,7 +125,10 @@ namespace Invector.vCharacterController
         void CalculateAxes()
         {
             if (head != null && root != null)
+            {
                 up = CalculateDirectionAxis(root.InverseTransformPoint(head.position));
+            }
+
             if (rightElbow != null && root != null)
             {
                 Vector3 removed, temp;
@@ -133,7 +138,9 @@ namespace Invector.vCharacterController
 
             forward = Vector3.Cross(right, up);
             if (flipForward)
+            {
                 forward = -forward;
+            }
         }
 
         void Update()
@@ -158,10 +165,16 @@ namespace Invector.vCharacterController
             if (Selection.activeGameObject != null && Selection.activeGameObject.transform.GetComponent<Animator>() != null)
             {
                 animator = Selection.activeGameObject.transform.GetComponent<Animator>();
+                animator.Rebind();
             }
             if (animator != null && avatarType == vRagdollAvatarType.Human)
+            {
                 GetHumanBones();
-            else GetGenericBones();
+            }
+            else
+            {
+                GetGenericBones();
+            }
 
             if (root)
             {
@@ -225,7 +238,11 @@ namespace Invector.vCharacterController
 
         void GetGenericBones()
         {
-            if (!genericTemplate && Selection.activeObject) return;
+            if (!genericTemplate && Selection.activeObject)
+            {
+                return;
+            }
+
             try
             {
                 var rootTransform = Selection.activeTransform;
@@ -259,7 +276,12 @@ namespace Invector.vCharacterController
         void OnWizardCreate()
         {
             //if(Selection.activeGameObject!=null)
-            Selection.activeGameObject.AddComponent<vRagdoll>();
+            var hasRagdoll = Selection.activeGameObject.GetComponent<vRagdoll>();
+            if (!hasRagdoll)
+            {
+                Selection.activeGameObject.AddComponent<vRagdoll>();
+            }
+
             Selection.activeGameObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             Cleanup();
             BuildCapsules();
@@ -268,7 +290,7 @@ namespace Invector.vCharacterController
 
             BuildBodies();
             BuildJoints();
-            CalculateMass();         
+            CalculateMass();
         }
 
         BoneInfo FindBone(string name)
@@ -276,7 +298,9 @@ namespace Invector.vCharacterController
             foreach (BoneInfo bone in bones)
             {
                 if (bone.name == name)
+                {
                     return bone;
+                }
             }
             return null;
         }
@@ -302,11 +326,17 @@ namespace Invector.vCharacterController
             bone.radiusScale = radiusScale;
 
             if (FindBone(parent) != null)
+            {
                 bone.parent = FindBone(parent);
+            }
             else if (name.StartsWith("Left"))
+            {
                 bone.parent = FindBone("Left " + parent);
+            }
             else if (name.StartsWith("Right"))
+            {
                 bone.parent = FindBone("Right " + parent);
+            }
 
             bone.parent.children.Add(bone);
             bones.Add(bone);
@@ -317,7 +347,9 @@ namespace Invector.vCharacterController
             foreach (BoneInfo bone in bones)
             {
                 if (bone.colliderType != typeof(CapsuleCollider))
+                {
                     continue;
+                }
 
                 int direction;
                 float distance;
@@ -341,13 +373,17 @@ namespace Invector.vCharacterController
                         }
 
                         if (distance > 0)
+                        {
                             distance = bounds.max[direction];
+                        }
                         else
+                        {
                             distance = bounds.min[direction];
+                        }
                     }
                 }
 
-                CapsuleCollider collider = (CapsuleCollider)bone.anchor.gameObject.AddComponent<CapsuleCollider>();
+                CapsuleCollider collider = bone.anchor.gameObject.AddComponent<CapsuleCollider>();
                 collider.direction = direction;
 
                 Vector3 center = Vector3.zero;
@@ -363,15 +399,21 @@ namespace Invector.vCharacterController
             foreach (BoneInfo bone in bones)
             {
                 if (!bone.anchor)
+                {
                     continue;
+                }
 
                 Component[] joints = bone.anchor.GetComponentsInChildren(typeof(Joint));
                 foreach (Joint joint in joints)
+                {
                     DestroyImmediate(joint);
+                }
 
                 Component[] bodies = bone.anchor.GetComponentsInChildren(typeof(Rigidbody));
                 foreach (Rigidbody body in bodies)
+                {
                     DestroyImmediate(body);
+                }
 
                 Component[] colliders = bone.anchor.GetComponentsInChildren(typeof(Collider));
                 foreach (Collider collider in colliders)
@@ -391,7 +433,11 @@ namespace Invector.vCharacterController
             {
                 bone.anchor.gameObject.AddComponent<Rigidbody>();
                 var hasDamageReceiver = bone.anchor.gameObject.GetComponent<vDamageReceiver>();
-                if (!hasDamageReceiver) bone.anchor.gameObject.AddComponent<vDamageReceiver>();
+                if (!hasDamageReceiver)
+                {
+                    bone.anchor.gameObject.AddComponent<vDamageReceiver>();
+                }
+
                 bone.anchor.GetComponent<Rigidbody>().mass = bone.density;
                 bone.anchor.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
                 // set layer "BodyPart" to each bone 
@@ -404,9 +450,11 @@ namespace Invector.vCharacterController
             foreach (BoneInfo bone in bones)
             {
                 if (bone.parent == null)
+                {
                     continue;
+                }
 
-                CharacterJoint joint = (CharacterJoint)bone.anchor.gameObject.AddComponent<CharacterJoint>();
+                CharacterJoint joint = bone.anchor.gameObject.AddComponent<CharacterJoint>();
                 bone.joint = joint;
 
                 // Setup connection and axis
@@ -454,9 +502,13 @@ namespace Invector.vCharacterController
             foreach (BoneInfo bone in bones)
             {
                 if (proportionalMass)
+                {
                     bone.anchor.GetComponent<Rigidbody>().mass = 10;
+                }
                 else
+                {
                     bone.anchor.GetComponent<Rigidbody>().mass *= massScale;
+                }
             }
 
             // Recalculate allChildMass by summing all bodies
@@ -468,9 +520,14 @@ namespace Invector.vCharacterController
             // Calculate longest axis
             direction = 0;
             if (Mathf.Abs(point[1]) > Mathf.Abs(point[0]))
+            {
                 direction = 1;
+            }
+
             if (Mathf.Abs(point[2]) > Mathf.Abs(point[direction]))
+            {
                 direction = 2;
+            }
 
             distance = point[direction];
         }
@@ -482,9 +539,14 @@ namespace Invector.vCharacterController
             CalculateDirection(point, out direction, out distance);
             Vector3 axis = Vector3.zero;
             if (distance > 0)
+            {
                 axis[direction] = 1.0F;
+            }
             else
+            {
                 axis[direction] = -1.0F;
+            }
+
             return axis;
         }
 
@@ -492,9 +554,15 @@ namespace Invector.vCharacterController
         {
             int direction = 0;
             if (Mathf.Abs(point[1]) < Mathf.Abs(point[0]))
+            {
                 direction = 1;
+            }
+
             if (Mathf.Abs(point[2]) < Mathf.Abs(point[direction]))
+            {
                 direction = 2;
+            }
+
             return direction;
         }
 
@@ -502,9 +570,15 @@ namespace Invector.vCharacterController
         {
             int direction = 0;
             if (Mathf.Abs(point[1]) > Mathf.Abs(point[0]))
+            {
                 direction = 1;
+            }
+
             if (Mathf.Abs(point[2]) > Mathf.Abs(point[direction]))
+            {
                 direction = 2;
+            }
+
             return direction;
         }
 
@@ -520,11 +594,17 @@ namespace Invector.vCharacterController
             }
 
             if (smallest == 0 && largest == 1)
+            {
                 return 2;
+            }
             else if (smallest == 0 && largest == 2)
+            {
                 return 1;
+            }
             else
+            {
                 return 0;
+            }
         }
 
         Bounds Clip(Bounds bounds, Transform relativeTo, Transform clipTransform, bool below)
@@ -570,12 +650,12 @@ namespace Invector.vCharacterController
 
                 // Middle spine bounds
                 bounds = Clip(GetBreastBounds(root), root, middleSpine, false);
-                box = (BoxCollider)root.gameObject.AddComponent<BoxCollider>();
+                box = root.gameObject.AddComponent<BoxCollider>();
                 box.center = bounds.center;
                 box.size = bounds.size;
 
                 bounds = Clip(GetBreastBounds(middleSpine), middleSpine, middleSpine, true);
-                box = (BoxCollider)middleSpine.gameObject.AddComponent<BoxCollider>();
+                box = middleSpine.gameObject.AddComponent<BoxCollider>();
                 box.center = bounds.center;
                 box.size = bounds.size;
             }
@@ -591,7 +671,7 @@ namespace Invector.vCharacterController
                 Vector3 size = bounds.size;
                 size[SmallestComponent(bounds.size)] = size[LargestComponent(bounds.size)] / 2.0F;
 
-                BoxCollider box = (BoxCollider)root.gameObject.AddComponent<BoxCollider>();
+                BoxCollider box = root.gameObject.AddComponent<BoxCollider>();
                 box.center = bounds.center;
                 box.size = size;
             }
@@ -600,12 +680,14 @@ namespace Invector.vCharacterController
         void AddHeadCollider()
         {
             if (head.GetComponent<Collider>())
+            {
                 Destroy(head.GetComponent<Collider>());
+            }
 
             float radius = Vector3.Distance(root.InverseTransformPoint(rightArm.transform.position), root.InverseTransformPoint(leftArm.transform.position));
             radius /= 4;
 
-            SphereCollider sphere = (SphereCollider)head.gameObject.AddComponent<SphereCollider>();
+            SphereCollider sphere = head.gameObject.AddComponent<SphereCollider>();
             sphere.radius = radius;
             Vector3 center = Vector3.zero;
 
@@ -613,9 +695,14 @@ namespace Invector.vCharacterController
             float distance;
             CalculateDirection(head.InverseTransformPoint(root.position), out direction, out distance);
             if (distance > 0)
+            {
                 center[direction] = -radius;
+            }
             else
+            {
                 center[direction] = radius;
+            }
+
             sphere.center = center;
         }
 
