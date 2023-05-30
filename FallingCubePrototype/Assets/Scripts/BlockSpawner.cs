@@ -170,6 +170,7 @@ public class BlockSpawner : MonoBehaviour
     private int GetRandomSpawnPosition()
     {
         int tmpLoc = Random.Range(0, SpawnLocs.Length);
+        // TODO: this is a hacky fix. find better solutions for this null check.
         Debug.Log($"is lastSpawnLocs null: {lastSpawnLocs}");
         if (lastSpawnLocs == null)
             return 0;
@@ -252,7 +253,7 @@ public class BlockSpawner : MonoBehaviour
         {
             if (!init)
             {
-                print("cube i was landing on gone - erade old cube");
+                print("cube i was landing on is gone - erase old cube");
                 GameObject _tmpCube;
                 _tmpCube = tmpCube;
                 tmpCube = null;
