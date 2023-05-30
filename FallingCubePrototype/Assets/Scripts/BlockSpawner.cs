@@ -36,7 +36,7 @@ public class BlockSpawner : MonoBehaviour
     private GameObject player;
 
     public int randLoc;
-    private Queue<int> lastSpawnLocs;
+    public Queue<int> lastSpawnLocs;
     public bool CheckColor = false;
 
     private int MAXCubeSpawnAmmount;
@@ -170,6 +170,9 @@ public class BlockSpawner : MonoBehaviour
     private int GetRandomSpawnPosition()
     {
         int tmpLoc = Random.Range(0, SpawnLocs.Length);
+        Debug.Log($"is lastSpawnLocs null: {lastSpawnLocs}");
+        if (lastSpawnLocs == null)
+            return 0;
         if (lastSpawnLocs.Contains(tmpLoc) || (tmpLoc == playerSpawnPoint && init))
         {
 
