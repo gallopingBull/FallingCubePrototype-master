@@ -674,7 +674,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8172144758383271543}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0, w: -1}
   m_LocalPosition: {x: 0, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -682,7 +682,7 @@ Transform:
   - {fileID: 8172144758527017191}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -180.00002, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -360, z: 0}
 --- !u!95 &8172144758383271545
 Animator:
   serializedVersion: 3
@@ -1338,6 +1338,7 @@ MonoBehaviour:
   handTarget: {fileID: 8172144759078351479}
   draggableTags:
   - FreeClimb
+  - Block
   draggableWall:
     serializedVersion: 2
     m_Bits: 1
@@ -1359,12 +1360,12 @@ MonoBehaviour:
   offsetHandPositionL: {x: 0, y: -0.05, z: -0.05}
   offsetHandPositionR: {x: 0, y: -0.05, z: -0.05}
   animatorStateHierarchy: Base Layer.Actions.FreeClimb
-  debugRays: 0
+  debugRays: 1
   debugClimbMovement: 1
-  debugClimbUp: 0
-  debugClimbJump: 0
-  debugBaseRotation: 0
-  debugHandIK: 0
+  debugClimbUp: 1
+  debugClimbJump: 1
+  debugBaseRotation: 1
+  debugHandIK: 1
   onEnterClimb:
     m_PersistentCalls:
       m_Calls:
