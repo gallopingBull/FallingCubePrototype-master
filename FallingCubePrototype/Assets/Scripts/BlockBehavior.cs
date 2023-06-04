@@ -385,8 +385,8 @@ public class BlockBehavior : MonoBehaviour
         //GetComponent<BoxCollider>().enabled = false;
     }
 
-    public void ExplosionAlert() { 
-    
+    public void ExplosionAlert() 
+    { 
         switch(colorIndex) {
             //red
             case 0:
@@ -407,11 +407,11 @@ public class BlockBehavior : MonoBehaviour
         }
     }
 
-    //public method to call IENumerator DestoryCube()
     public void DestroyCube()
     {
         StartCoroutine("DestoryCube");
     }
+    
     private IEnumerator DestoryCube()
     {
         EnableExplosion(); // activates explosion warning fx
