@@ -123,10 +123,11 @@ public class GrabMechanic : MonoBehaviour
     // check if player is in proximity of a cube
     private void CubeDetection()
     {
+        var layerMask = new LayerMask();
         m_HitDetect = Physics.BoxCast(m_Collider.bounds.center,
             transform.localScale * (BoxColliderSize * .15f),
             transform.forward, out m_Hit,
-            transform.rotation, m_MaxDistance);
+            transform.rotation, m_MaxDistance, layerMask);
 
         if (m_HitDetect)
         {

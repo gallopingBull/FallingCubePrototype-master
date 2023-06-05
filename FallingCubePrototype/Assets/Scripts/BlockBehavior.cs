@@ -411,7 +411,7 @@ public class BlockBehavior : MonoBehaviour
     {
         StartCoroutine("DestoryCube");
     }
-    
+
     private IEnumerator DestoryCube()
     {
         EnableExplosion(); // activates explosion warning fx
