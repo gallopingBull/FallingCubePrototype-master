@@ -19,6 +19,7 @@ public class GrabMechanic : MonoBehaviour
     public float HeightOffset = 0;
     private Collider m_Collider;
     private RaycastHit m_Hit;
+    [SerializeField] private LayerMask layerMask;
 
     [HideInInspector]
     public GameObject targetCube;
@@ -123,7 +124,7 @@ public class GrabMechanic : MonoBehaviour
     // check if player is in proximity of a cube
     private void CubeDetection()
     {
-        var layerMask = new LayerMask();
+
         m_HitDetect = Physics.BoxCast(m_Collider.bounds.center,
             transform.localScale * (BoxColliderSize * .15f),
             transform.forward, out m_Hit,

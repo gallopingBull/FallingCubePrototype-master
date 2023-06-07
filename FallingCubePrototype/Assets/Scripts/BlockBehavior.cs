@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class BlockBehavior : MonoBehaviour
@@ -53,7 +51,8 @@ public class BlockBehavior : MonoBehaviour
     private bool m_HitDetect;
 
     public float BoxColliderSize = 1.5f;
-    private Collider m_Collider;
+    private Collider _blockCollider;
+    public Collider ClimbingCollider;
     private RaycastHit m_Hit;
 
     private float fallDrag;
@@ -78,7 +77,7 @@ public class BlockBehavior : MonoBehaviour
             velocity = (transform.position - prevVel) / Time.deltaTime;
             prevVel = transform.position;
 
-            m_HitDetect = Physics.BoxCast(m_Collider.bounds.center,
+            m_HitDetect = Physics.BoxCast(_blockCollider.bounds.center,
                 transform.localScale * BoxColliderSize,
                 -transform.up, out m_Hit,
                 transform.rotation, m_MaxDistance);
@@ -218,8 +217,8 @@ public class BlockBehavior : MonoBehaviour
                 rb.mass = 1;
                 rb.isKinematic =false ;
                 rb.useGravity = true;
-
-                //GetComponent<BoxCollider>().enabled = true;
+            
+                ClimbingCollider.enabled = false;
                 state = _state;
 
                 break;
@@ -267,6 +266,8 @@ public class BlockBehavior : MonoBehaviour
                     GetComponent<AudioSource>().loop = false;
 
                 }
+
+                ClimbingCollider.enabled = true;
                 break;
             default:
                 break;
@@ -278,7 +279,8 @@ public class BlockBehavior : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rend = GetComponent<Renderer>();
         curColor = rend.material.color;
-        m_Collider = GetComponent<Collider>();
+        _blockCollider = GetComponent<Collider>();
+        //_climbingCollider = GetComponentInChildren<Collider>();
     }
 
     private void EnableRB()
