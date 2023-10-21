@@ -211,81 +211,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   removeOnStart: 1
---- !u!1 &8172144758007699900
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8172144758007699901}
-  - component: {fileID: 8172144758007699903}
-  - component: {fileID: 8172144758007699902}
-  m_Layer: 5
-  m_Name: promo
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &8172144758007699901
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8172144758007699900}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 8172144758230737325}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 15, y: 0}
-  m_SizeDelta: {x: 250, y: 100}
-  m_Pivot: {x: 1, y: 0}
---- !u!222 &8172144758007699903
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8172144758007699900}
-  m_CullTransparentMesh: 0
---- !u!114 &8172144758007699902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8172144758007699900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f75e2b1809ad796469251378de80ccb1, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 1
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &8172144758049098214
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,8 +400,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 8172144759602886508}
-  - {fileID: 8172144759467243567}
-  - {fileID: 8172144758007699901}
   m_Father: {fileID: 8172144759215246401}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -656,10 +579,10 @@ GameObject:
   - component: {fileID: 8172144758383271549}
   - component: {fileID: 8172144758383271548}
   - component: {fileID: 8172144758383271539}
-  - component: {fileID: 8172144758383271538}
   - component: {fileID: 8172144758383271537}
   - component: {fileID: 8172144758383271547}
   - component: {fileID: 8172144758383271546}
+  - component: {fileID: 22436966}
   m_Layer: 8
   m_Name: vBasicController_Character_Augmented_Male_01
   m_TagString: Player
@@ -716,10 +639,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openCloseEvents: 0
   openCloseWindow: 1
-  selectedToolbar: 8
+  selectedToolbar: 0
   _isDead: 0
   _currentHealth: 1
-  isImmortal: 0
+  isImmortal: 1
   fillHealthOnStart: 0
   maxHealth: 100
   healthRecovery: 0
@@ -979,7 +902,7 @@ MonoBehaviour:
   stepOffsetMaxHeight: 0.5
   stepOffsetMinHeight: 0
   stepOffsetDistance: 0.1
-  debugWindow: 0
+  debugWindow: 1
   _animatorStateInfos:
     debug: 0
     animator: {fileID: 0}
@@ -1093,7 +1016,7 @@ MonoBehaviour:
     isUnityInput: 0
     keyboard: Space
     keyboardAxis: 0
-    joystick: X
+    joystick: A
     joystickAxis: 0
     mobile: X
     mobileAxis: 0
@@ -1156,7 +1079,7 @@ MonoBehaviour:
     lastTimeTheButtonWasPressed: 0
     inButtomTimer: 0
   cameraZoomInput:
-    useInput: 1
+    useInput: 0
     isAxisInUse: 0
     isUnityInput: 0
     keyboard: Mouse ScrollWheel
@@ -1263,163 +1186,6 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
---- !u!114 &8172144758383271538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8172144758383271543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 782781719e3ab5d478f1229efabf72f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  openCloseEvents: 0
-  openCloseWindow: 1
-  selectedToolbar: 0
-  moveUsingRootMotion: 1
-  climbSpeed: 1
-  autoClimbEdge: 1
-  climbEdgeInput:
-    useInput: 1
-    isAxisInUse: 0
-    isUnityInput: 0
-    keyboard: E
-    keyboardAxis: 0
-    joystick: A
-    joystickAxis: 0
-    mobile: A
-    mobileAxis: 0
-    joystickAxisInvert: 0
-    keyboardAxisInvert: 0
-    mobileAxisInvert: 0
-    timeButtonWasPressed: 0
-    lastTimeTheButtonWasPressed: 0
-    inButtomTimer: 0
-  enterExitInput:
-    useInput: 1
-    isAxisInUse: 0
-    isUnityInput: 0
-    keyboard: Space
-    keyboardAxis: 0
-    joystick: X
-    joystickAxis: 0
-    mobile: X
-    mobileAxis: 0
-    joystickAxisInvert: 0
-    keyboardAxisInvert: 0
-    mobileAxisInvert: 0
-    timeButtonWasPressed: 0
-    lastTimeTheButtonWasPressed: 0
-    inButtomTimer: 0
-  climbJumpInput:
-    useInput: 1
-    isAxisInUse: 0
-    isUnityInput: 0
-    keyboard: Space
-    keyboardAxis: 0
-    joystick: X
-    joystickAxis: 0
-    mobile: X
-    mobileAxis: 0
-    joystickAxisInvert: 0
-    keyboardAxisInvert: 0
-    mobileAxisInvert: 0
-    timeButtonWasPressed: 0
-    lastTimeTheButtonWasPressed: 0
-    inButtomTimer: 0
-  cameraState: Default
-  climbStaminaCost: 0
-  jumpClimbStaminaCost: 0
-  staminaRecoveryDelay: 1.5
-  minSurfaceAngle: 30
-  maxSurfaceAngle: 160
-  handTarget: {fileID: 8172144759078351479}
-  draggableTags:
-  - FreeClimb
-  - Block
-  draggableWall:
-    serializedVersion: 2
-    m_Bits: 1
-  obstacle:
-    serializedVersion: 2
-    m_Bits: 4294579913
-  climbEnterSpeed: 2
-  climbEnterMaxDistance: 1
-  lastPointDistanceH: 0.4
-  lastPointDistanceVUp: 0.1
-  lastPointDistanceVDown: 1.25
-  offsetHandTarget: 0
-  offsetBase: 0.35
-  climbUpMinThickness: 0.3
-  climbUpMinSpace: 0.5
-  climbJumpDistance: 2
-  climbJumpDepth: 2
-  climbUpHeight: 2
-  offsetHandPositionL: {x: 0, y: -0.05, z: -0.05}
-  offsetHandPositionR: {x: 0, y: -0.05, z: -0.05}
-  animatorStateHierarchy: Base Layer.Actions.FreeClimb
-  debugRays: 1
-  debugClimbMovement: 1
-  debugClimbUp: 1
-  debugClimbJump: 1
-  debugBaseRotation: 1
-  debugHandIK: 1
-  onEnterClimb:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onExitClimb:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
 --- !u!114 &8172144758383271537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1451,7 +1217,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8172144758383271543}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6eac9781f5b0e0b4ba6d7bf2fbda58e9, type: 3}
   m_Name: 
@@ -1461,7 +1227,7 @@ MonoBehaviour:
   HeightOffset: 1.45
   layerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 262144
   targetCube: {fileID: 0}
 --- !u!114 &8172144758383271546
 MonoBehaviour:
@@ -1470,48 +1236,121 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8172144758383271543}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aaf5e6f314306ab4a854a0fe2dc0d042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   enableMovement: 0
   pushPoint: {fileID: 0}
---- !u!1 &8172144758469083086
-GameObject:
+--- !u!114 &22436966
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8172144758469083087}
-  m_Layer: 0
-  m_Name: Missing Prefab (Dummy)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &8172144758469083087
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8172144758469083086}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 8172144759467243567}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_GameObject: {fileID: 8172144758383271543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21f1ee9d3faec644abaad9ef0a5ff0d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  openCloseEvents: 0
+  openCloseWindow: 1
+  selectedToolbar: 0
+  moveUsingRootMotion: 1
+  climbSpeed: 1
+  autoClimbEdge: 1
+  climbEdgeInput:
+    useInput: 1
+    isAxisInUse: 0
+    isUnityInput: 0
+    keyboard: E
+    keyboardAxis: 0
+    joystick: RB
+    joystickAxis: 0
+    mobile: A
+    mobileAxis: 0
+    joystickAxisInvert: 0
+    keyboardAxisInvert: 0
+    mobileAxisInvert: 0
+    timeButtonWasPressed: 0
+    lastTimeTheButtonWasPressed: 0
+    inButtomTimer: 0
+  enterExitInput:
+    useInput: 1
+    isAxisInUse: 0
+    isUnityInput: 0
+    keyboard: Space
+    keyboardAxis: 0
+    joystick: LB
+    joystickAxis: 0
+    mobile: X
+    mobileAxis: 0
+    joystickAxisInvert: 0
+    keyboardAxisInvert: 0
+    mobileAxisInvert: 0
+    timeButtonWasPressed: 0
+    lastTimeTheButtonWasPressed: 0
+    inButtomTimer: 0
+  climbJumpInput:
+    useInput: 1
+    isAxisInUse: 0
+    isUnityInput: 0
+    keyboard: Space
+    keyboardAxis: 0
+    joystick: A
+    joystickAxis: 0
+    mobile: X
+    mobileAxis: 0
+    joystickAxisInvert: 0
+    keyboardAxisInvert: 0
+    mobileAxisInvert: 0
+    timeButtonWasPressed: 0
+    lastTimeTheButtonWasPressed: 0
+    inButtomTimer: 0
+  cameraState: Default
+  climbStaminaCost: 0
+  jumpClimbStaminaCost: 0
+  staminaRecoveryDelay: 1.5
+  minSurfaceAngle: 30
+  maxSurfaceAngle: 160
+  handTarget: {fileID: 8172144759078351479}
+  draggableTags:
+  - FreeClimb
+  draggableWall:
+    serializedVersion: 2
+    m_Bits: 1
+  obstacle:
+    serializedVersion: 2
+    m_Bits: 136705
+  climbEnterSpeed: 2
+  climbEnterMaxDistance: 1
+  lastPointDistanceH: 0.4
+  lastPointDistanceVUp: 0.2
+  lastPointDistanceVDown: 1.25
+  offsetHandTarget: -0.2
+  offsetBase: 0.35
+  climbUpMinThickness: 0.3
+  climbUpMinSpace: 0.5
+  climbJumpDistance: 2
+  climbJumpDepth: 2
+  climbUpHeight: 2
+  offsetHandPositionL: {x: 0, y: -0.05, z: -0.05}
+  offsetHandPositionR: {x: 0, y: -0.05, z: -0.05}
+  animatorStateHierarchy: Base Layer.Actions.FreeClimb
+  debugRays: 1
+  debugClimbMovement: 1
+  debugClimbUp: 1
+  debugClimbJump: 1
+  debugBaseRotation: 1
+  debugHandIK: 1
+  onEnterClimb:
+    m_PersistentCalls:
+      m_Calls: []
+  onExitClimb:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8172144758473296698
 GameObject:
   m_ObjectHideFlags: 0
@@ -2329,37 +2168,6 @@ MonoBehaviour:
   OnStep:
     m_PersistentCalls:
       m_Calls: []
---- !u!1 &8172144759467243566
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8172144759467243567}
-  m_Layer: 0
-  m_Name: Missing Prefab
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8172144759467243567
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8172144759467243566}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 8172144758469083087}
-  m_Father: {fileID: 8172144758230737325}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8172144759570783166
 GameObject:
   m_ObjectHideFlags: 0
@@ -2985,14 +2793,14 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 95017302718396200, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
---- !u!4 &8176683152408202736 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4539183793719292, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
-  m_PrefabInstance: {fileID: 8172144758939847180}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8176656947754099432 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4530470363785444, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
+  m_PrefabInstance: {fileID: 8172144758939847180}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8176683152408202736 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4539183793719292, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
   m_PrefabInstance: {fileID: 8172144758939847180}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8176327580665825452 stripped

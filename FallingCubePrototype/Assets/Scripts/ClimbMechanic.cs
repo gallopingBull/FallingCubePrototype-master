@@ -8,7 +8,8 @@ public class ClimbMechanic : vFreeClimb
 {
     protected override void Update()
     {
-        Debug.Log($"RT: {Input.GetAxis("RT")}");
+        //Debug.Log($"inDrag: {dragInfo.inDrag}");    
+        //Debug.Log($"checkConditions: {CheckClimbCondictions()}");
         if (Input.GetAxis("RT") == 1 && CheckClimbCondictions())
         {
             input = new Vector3(TP_Input.horizontalInput.GetAxis(), 0, TP_Input.verticallInput.GetAxis());
@@ -26,5 +27,11 @@ public class ClimbMechanic : vFreeClimb
             TP_Input.cc.animator.SetFloat(vAnimatorParameters.InputHorizontal, 0);
             TP_Input.cc.animator.SetFloat(vAnimatorParameters.InputVertical, 0);
         }
+    }
+
+    protected override void EnterClimb()
+    {
+        Debug.Log("EnterClimb");
+        base.EnterClimb();
     }
 }
