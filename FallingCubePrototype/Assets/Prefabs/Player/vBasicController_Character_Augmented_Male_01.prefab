@@ -1459,6 +1459,9 @@ MonoBehaviour:
   m_MaxDistance: 0.53
   BoxColliderSize: 0.44
   HeightOffset: 1.45
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   targetCube: {fileID: 0}
 --- !u!114 &8172144758383271546
 MonoBehaviour:
@@ -2982,11 +2985,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 95017302718396200, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
---- !u!4 &8176327580665825452 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4904651149197984, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
-  m_PrefabInstance: {fileID: 8172144758939847180}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8176683152408202736 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4539183793719292, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
@@ -2995,5 +2993,10 @@ Transform:
 --- !u!4 &8176656947754099432 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4530470363785444, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
+  m_PrefabInstance: {fileID: 8172144758939847180}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8176327580665825452 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4904651149197984, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
   m_PrefabInstance: {fileID: 8172144758939847180}
   m_PrefabAsset: {fileID: 0}

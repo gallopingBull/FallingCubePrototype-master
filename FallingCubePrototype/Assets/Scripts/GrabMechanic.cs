@@ -43,17 +43,19 @@ public class GrabMechanic : MonoBehaviour
 
     private void InputHandler()
     {
-        if (Input.GetAxis("RT") == 1 && EnableGrab)
+        if (Input.GetAxis("RB") == 1 && EnableGrab)
         {
             if (!isGrabbing)
             {
+                Debug.Log("Grabbing");
                 Grab();
             }
         }
-        if (Input.GetAxis("RT") == 0 || !EnableGrab)
+        if (Input.GetAxis("RB") == 0 || !EnableGrab)
         {
             if (isGrabbing)
             {
+                Debug.Log("Releasing");
                 Release();
             }
         }
@@ -189,8 +191,6 @@ public class GrabMechanic : MonoBehaviour
             transform.position.z);
         return pos; 
     }
-
-
 
     private void OnDrawGizmos()
     {
