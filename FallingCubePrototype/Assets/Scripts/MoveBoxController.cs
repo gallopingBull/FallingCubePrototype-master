@@ -42,25 +42,6 @@ public class MoveBoxController : MonoBehaviour
         }  
     }
 
-    // use this only to assign initial push point position
-    public void SetPushPointPosition()
-    {
-        Vector3 _tmpPos;
-        _tmpPos = new Vector3(target.transform.position.x, target.transform.position.y + 2, target.transform.position.z);
-        pushPoint.transform.position = _tmpPos;
-    }
-
-
-    public void ParentToPushPoint()
-    {
-        transform.SetParent(pushPoint.transform, true);
-        target.transform.SetParent (pushPoint.transform, true);
-    }
-    public void DeParentToPushPoint()
-    {
-        transform.parent = null;
-        target.transform.parent = null;
-    }
 
     private void Movecube()
     {
@@ -83,7 +64,6 @@ public class MoveBoxController : MonoBehaviour
         // 2-5 for final float (strength factor)
         pushPoint.GetComponent<Rigidbody>().MovePosition(pushPoint.transform.position + _direction * Time.deltaTime * 6f); 
     }
-
 
     private void GetDirection(Vector3 _camForward, Vector3 _camRight, float _z, float _h)
     {
@@ -132,7 +112,27 @@ public class MoveBoxController : MonoBehaviour
 
         finalDir = new Vector3(-(Mathf.Round(tmpDir.x)), tmpDir.y, -(Mathf.Round(tmpDir.z)));
         _direction = finalDir;
-    }           
+    }
+
+    // use this only to assign initial push point position
+    public void SetPushPointPosition()
+    {
+        Vector3 _tmpPos;
+        _tmpPos = new Vector3(target.transform.position.x, target.transform.position.y + 2, target.transform.position.z);
+        pushPoint.transform.position = _tmpPos;
+    }
+
+    public void ParentToPushPoint()
+    {
+        transform.SetParent(pushPoint.transform, true);
+        target.transform.SetParent(pushPoint.transform, true);
+    }
+
+    public void DeParentToPushPoint()
+    {
+        transform.parent = null;
+        target.transform.parent = null;
+    }
 
     // small delay before player movement is enabled again
     private IEnumerator EnableMovement()

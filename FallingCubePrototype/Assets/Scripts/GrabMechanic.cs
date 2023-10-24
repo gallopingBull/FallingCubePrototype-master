@@ -184,7 +184,7 @@ public class GrabMechanic : MonoBehaviour
     }
 
     // returns player position
-    private Vector3 GetPosition()
+    private Vector3 GetPlayerPosition()
     {
         Vector3 pos = new Vector3(transform.position.x, 
             transform.position.y + HeightOffset, 
@@ -195,7 +195,7 @@ public class GrabMechanic : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Vector3 tmpPos = GetPosition();
+        Vector3 tmpPos = GetPlayerPosition();
         //Check if there has been a hit yet
         if (m_HitDetect)
         {
