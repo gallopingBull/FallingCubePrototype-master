@@ -9,38 +9,50 @@ using UnityEngine;
 
 public class MoveCubeMechanic : MonoBehaviour
 {
-
-    public Camera camera;
-    private Vector3 lastCameraForward;
-
+    public float moveDistance = 1f; // Distance the cube moves with each step
 
     void Update()
     {
-        lastCameraForward = camera.transform.forward;
-        lastCameraForward.y = 0; // Ensure no vertical movement
-        lastCameraForward.Normalize();
-        Debug.Log($"lastCameraForward{lastCameraForward}");
-        // Get the horizontal and vertical input axis
+        // if camera moves, stop moving cube and wait for
+        // camera to stop moving before moving cube again with new camera position.
+
+        // Get input for movement
         float horizontalInput = Input.GetAxis("LeftAnalogHorizontal");
         float verticalInput = Input.GetAxis("LeftAnalogVertical");
 
-        // Calculate the movement direction based on the camera's forward vector
-        Vector3 movement = (horizontalInput * Vector3.right + verticalInput * lastCameraForward).normalized;
-        // Check if the movement is diagonal and restrict it to orthogonal movement
-        if (Mathf.Abs(movement.x) > 0.1f && Mathf.Abs(movement.z) > 0.1f)
+        // Get the forward and right vectors of the camera without vertical component
+        Vector3 cameraForward = Camera.main.transform.forward;
+        cameraForward.y = 0f;
+        cameraForward.Normalize();
+
+        Vector3 cameraRight = Camera.main.transform.right;
+        cameraRight.y = 0f;
+        cameraRight.Normalize();
+
+        // Calculate movement direction based on camera orientation
+        Vector3 moveDirection = cameraForward * verticalInput + cameraRight * horizontalInput;
+
+        // Ensure movement only along the X or Z axis, not diagonally
+        if (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.z))
         {
-            // Diagonal movement is not allowed, restrict to either horizontal or vertical movement
-            movement.x = Mathf.Round(movement.x);
-            movement.z = 0;
+            moveDirection.z = 0f;
         }
         else
         {
-            // Round the movement values to ensure whole number coordinates
-            movement.x = Mathf.Round(movement.x);
-            movement.z = Mathf.Round(movement.z);
+            moveDirection.x = 0f;
         }
 
-        // Move the cube based on the calculated movement
-        transform.Translate(movement * .1f);
+        moveDirection.Normalize();
+
+        // Calculate target position based on the current position and move distance
+        Vector3 targetPosition = transform.position + new Vector3(
+            Mathf.RoundToInt(moveDirection.x),
+            0f,
+            Mathf.RoundToInt(moveDirection.z)
+        ) * moveDistance *.025f;
+
+        // Move the cube to the target position
+        transform.position = targetPosition;
     }
 }
+
