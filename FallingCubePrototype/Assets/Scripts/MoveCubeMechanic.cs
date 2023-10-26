@@ -49,7 +49,7 @@ public class MoveCubeMechanic : MonoBehaviour
             Mathf.RoundToInt(moveDirection.x),
             0f,
             Mathf.RoundToInt(moveDirection.z)
-        ) * moveDistance *.025f;
+        ) * moveDistance *.05f;
 
         // Move the cube to the target position
         transform.position = targetPosition;
