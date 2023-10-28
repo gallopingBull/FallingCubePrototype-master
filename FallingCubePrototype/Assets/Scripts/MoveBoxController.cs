@@ -13,7 +13,7 @@ public class MoveBoxController : MonoBehaviour
     private GameObject target;
     private GameObject _camera; 
     private Vector3 _direction;
-
+    public float moveDistance = 1f; // Distance the cube moves with each step
     public GameObject pushPoint;
     #endregion
 
@@ -42,13 +42,16 @@ public class MoveBoxController : MonoBehaviour
         }  
     }
 
-
     private void Movecube()
     {
         //multiply input value by .60f to make stick less sensitive
         //when moving cubes, otherwise cube movement glitches out
-        var h = GetComponent<vThirdPersonInput>().cc.input.x * 1f/*.60f*/; 
-        var z = GetComponent<vThirdPersonInput>().cc.input.z * 1f/*.60f*/;
+        var h = GetComponent<vThirdPersonInput>().cc.input.x;
+        var z = GetComponent<vThirdPersonInput>().cc.input.z;
+
+        // Stop moving cube if camera is rotating
+        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)
+            return;
 
         Vector3 camF = _camera.transform.forward;
         Vector3 camR = _camera.transform.right;
@@ -58,60 +61,30 @@ public class MoveBoxController : MonoBehaviour
 
         camF = camF.normalized;
         camR = camR.normalized;
-  
-        GetDirection(camF, camR, z, h);
-        ///
-        // 2-5 for final float (strength factor)
-        pushPoint.GetComponent<Rigidbody>().MovePosition(pushPoint.transform.position + _direction * Time.deltaTime * 6f); 
-    }
 
-    private void GetDirection(Vector3 _camForward, Vector3 _camRight, float _z, float _h)
-    {
-        Vector3 tmpDir;
-        Vector3 finalDir;
+        // Calculate movement direction based on camera orientation
+        Vector3 moveDirection = camF * z + camR * h;
 
-        #region
-        if (pushPoint.transform.position.x % 2 == 0)
+        // Ensure movement only along the X or Z axis, not diagonally
+        if (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.z))
         {
-            //moving on Z
-            if (Mathf.Round(pushPoint.transform.position.z) % 2 == 0)
-            {
-                print("1");
-                print("can move up on z axis");
-                tmpDir = (_camForward * _z + _camRight * _h);
-            }
-            else
-            {
-                print("2");
-                tmpDir = (_camForward * 0 + _camRight * _h);
-            }
+            moveDirection.z = 0f;
         }
-
-        else if (pushPoint.transform.position.z % 2 == 0)
-        {
-            //moving on x
-            if (Mathf.Round(pushPoint.transform.position.x) % 2 == 0)
-            {
-                print("can move up on x axis");
-                tmpDir = (_camForward * _z + _camRight * _h);
-            }
-            else
-            {
-                print("3");
-                tmpDir = (_camForward * _z + _camRight * 0);
-            }
-        }
-
         else
         {
-            print("4");
-            return;
+            moveDirection.x = 0f;
         }
 
-        #endregion  
+        moveDirection.Normalize();
 
-        finalDir = new Vector3(-(Mathf.Round(tmpDir.x)), tmpDir.y, -(Mathf.Round(tmpDir.z)));
-        _direction = finalDir;
+        // Calculate target position based on the current position and move distance
+        Vector3 targetPosition = pushPoint.transform.position + new Vector3(
+            Mathf.RoundToInt(moveDirection.x),
+            0f,
+            Mathf.RoundToInt(moveDirection.z)
+        ) * moveDistance * .05f;
+
+        pushPoint.transform.position = targetPosition;
     }
 
     // use this only to assign initial push point position

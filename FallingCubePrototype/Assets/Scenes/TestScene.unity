@@ -1719,7 +1719,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &235057615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1727,12 +1727,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 235057614}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23297aa8539ec444dbff1088f40d325d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 1543431609}
+  moveDistance: 1
 --- !u!65 &235057616
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6016,6 +6016,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableMovement: 0
+  moveDistance: 1
   pushPoint: {fileID: 0}
 --- !u!114 &677829595
 MonoBehaviour:
@@ -13358,11 +13359,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!20 &1543431609 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 6384442380670601755, guid: 5476b2cd56e2dff45bd450de5502d8eb, type: 3}
-  m_PrefabInstance: {fileID: 1259799031}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1548092018
 GameObject:
   m_ObjectHideFlags: 0
