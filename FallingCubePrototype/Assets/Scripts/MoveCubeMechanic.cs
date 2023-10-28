@@ -13,12 +13,13 @@ public class MoveCubeMechanic : MonoBehaviour
 
     void Update()
     {
-        // if camera moves, stop moving cube and wait for
-        // camera to stop moving before moving cube again with new camera position.
-
         // Get input for movement
         float horizontalInput = Input.GetAxis("LeftAnalogHorizontal");
         float verticalInput = Input.GetAxis("LeftAnalogVertical");
+
+        // Stop moving cube if camera is rotating
+        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)
+            return;
 
         // Get the forward and right vectors of the camera without vertical component
         Vector3 cameraForward = Camera.main.transform.forward;
