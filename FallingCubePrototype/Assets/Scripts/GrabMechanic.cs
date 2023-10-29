@@ -70,7 +70,7 @@ public class GrabMechanic : MonoBehaviour
             GetComponent<MoveBoxController>().EnableBoxMovement();
 
             // get forward axis and set player position and rotation to directly face cube at set distance
-            SetPlayerPositionAndRotation();
+            //SetPlayerPositionAndRotation();
             
             // disable player rotation and camera rotation doesnt affect the player's rotation
             GetComponent<vThirdPersonInput>().cc.GetComponent<vThirdPersonMotor>().lockRotation = true;
