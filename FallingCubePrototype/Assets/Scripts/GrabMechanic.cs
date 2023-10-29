@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Invector.vCharacterController; 
+﻿using Invector.vCharacterController; 
 using UnityEngine;
 
 public class GrabMechanic : MonoBehaviour
@@ -123,6 +121,7 @@ public class GrabMechanic : MonoBehaviour
             GetComponent<MoveBoxController>().EnableBoxMovement();
         }
     }
+    
     // check if player is in proximity of a cube
     private void CubeDetection()
     {

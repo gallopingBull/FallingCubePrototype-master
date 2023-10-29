@@ -7,7 +7,7 @@ public class BlockBehavior : MonoBehaviour
     {
         falling, grounded, dragging, init
     }
-    ///
+
     //Cube Member Variables
     #region variables
     public States state;

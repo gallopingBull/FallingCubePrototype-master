@@ -12660,7 +12660,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh16516
+  m_Name: pb_Mesh16530
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -18538,6 +18538,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 122294796}
     m_Modifications:
+    - target: {fileID: 22436966, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
+      propertyPath: openCloseWindow
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 22436966, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
       propertyPath: climbEnterMaxDistance
       value: 1
