@@ -10,9 +10,8 @@ public class MoveBoxController : MonoBehaviour
     [HideInInspector]
     public bool enableMovement;
 
-    private GameObject target;
+    private Transform target;
     private GameObject _camera; 
-    private Vector3 _direction;
     public float moveDistance = 1f; // Distance the cube moves with each step
     public Transform pushPoint;
 
@@ -48,9 +47,9 @@ public class MoveBoxController : MonoBehaviour
             Movecube();
 
            //clamp x and z position to prevent cube from falling off grid/map
-           target.transform.transform.position = new Vector3(Mathf.Clamp(target.transform.position.x, -2, 2), 
-               target.transform.position.y,
-               Mathf.Clamp(target.transform.position.z, -2f, 2f)); 
+           target.transform.position = new Vector3(Mathf.Clamp(target.position.x, -2, 2), 
+               target.position.y,
+               Mathf.Clamp(target.position.z, -2f, 2f)); 
            
            pushPoint.transform.position = new Vector3(Mathf.Clamp(pushPoint.position.x, -2f, 2f),
                pushPoint.position.y,
@@ -103,20 +102,20 @@ public class MoveBoxController : MonoBehaviour
     public void SetPushPointPosition()
     {
         Vector3 _tmpPos;
-        _tmpPos = new Vector3(target.transform.position.x, target.transform.position.y + 2, target.transform.position.z);
+        _tmpPos = new Vector3(target.position.x, target.position.y + 2, target.position.z);
         pushPoint.position = _tmpPos;
     }
 
     public void ParentToPushPoint()
     {
         transform.SetParent(pushPoint, true);
-        target.transform.SetParent(pushPoint, true);
+        target.SetParent(pushPoint, true);
     }
 
     public void DeParentToPushPoint()
     {
         transform.parent = null;
-        target.transform.parent = null;
+        target.parent = null;
     }
 
     // small delay before player movement is enabled again
@@ -131,7 +130,7 @@ public class MoveBoxController : MonoBehaviour
     public void EnableBoxMovement()
     {
         if (!enableMovement)
-            target = GetComponent<GrabMechanic>().targetCube.transform.parent.parent.gameObject;
+            target = GetComponent<GrabMechanic>().targetCube.transform.parent.parent;
         else
             target = null;
 
