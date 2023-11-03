@@ -1,17 +1,86 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 // Generateclass that lets the player move cube orthonogally only. The player may not rotate the cube and the cube cannot be moved diagonally. 
 // The cube may only be set on x and y coordinates with whole numbers.
 
 
-public class MoveCubeMechanic : MonoBehaviour
+public class MoveCubeMechanic : vPushActionController
 {
     public float moveDistance = 1f; // Distance the cube moves with each step
 
-    void Update()
+    protected override void MoveInput()
+    {
+        MoveCube();
+        if (tpInput.enabled || !isPushingPulling || !pushPoint || isStoping)
+        {
+            return;
+        }
+        tpInput.CameraInput();
+        
+        inputHorizontal = tpInput.horizontalInput.GetAxis();
+        inputVertical = tpInput.verticallInput.GetAxis();
+        if (Mathf.Abs(inputHorizontal) > 0.5f)
+        {
+            inputVertical = 0;
+        }
+        else if (Mathf.Abs(inputVertical) > 0.5f)
+        {
+            inputHorizontal = 0;
+        }
+        
+        if (Mathf.Abs(inputHorizontal) < 0.8f)
+        {
+            inputHorizontal = 0;
+        }
+        
+        if (Mathf.Abs(inputVertical) < 0.8f)
+        {
+            inputVertical = 0;
+        }
+        
+        Vector3 cameraRight = cameraTransform.right;
+        cameraRight.y = 0;
+        cameraRight.Normalize();
+        Vector3 cameraForward = cameraTransform.forward;
+        cameraForward.y = 0;
+        cameraForward.Normalize();
+
+
+        inputDirection = cameraForward * inputVertical + cameraRight * inputHorizontal;
+        inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
+        
+        if (inputDirection.z > 0 && !pushPoint.canPushForward)
+        {
+            inputDirection.z = 0;
+        }
+        else if (inputDirection.z < 0 && (!pushPoint.canPushBack || isCollidingBack))
+        {
+            inputDirection.z = 0;
+        }
+        
+        if (inputDirection.x > 0 && (!pushPoint.canPushRight || isCollidingRight))
+        {
+            inputDirection.x = 0;
+        }
+        else if (inputDirection.x < 0 && (!pushPoint.canPushLeft || isCollidingLeft))
+        {
+            inputDirection.x = 0;
+        }
+        
+        inputDirection.y = 0;
+        
+        if (inputDirection.magnitude > 0.1f)
+        {
+            inputWeight = Mathf.Lerp(inputWeight, 1, Time.deltaTime * animAcceleration);
+        }
+        else
+        {
+            inputWeight = Mathf.Lerp(inputWeight, 0, Time.deltaTime * animAcceleration);
+        }
+    }
+
+
+    private void MoveCube()
     {
         // Get input for movement
         float horizontalInput = Input.GetAxis("LeftAnalogHorizontal");
@@ -50,7 +119,7 @@ public class MoveCubeMechanic : MonoBehaviour
             Mathf.RoundToInt(moveDirection.x),
             0f,
             Mathf.RoundToInt(moveDirection.z)
-        ) * moveDistance *.05f;
+        ) * moveDistance * .05f;
 
         // Move the cube to the target position
         transform.position = targetPosition;
