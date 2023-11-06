@@ -171,7 +171,7 @@ public class BlockSpawner : MonoBehaviour
     {
         int tmpLoc = Random.Range(0, SpawnLocs.Length);
         // TODO: this is a hacky fix. find better solutions for this null check.
-        Debug.Log($"is lastSpawnLocs null: {lastSpawnLocs}");
+        //Debug.Log($"is lastSpawnLocs null: {lastSpawnLocs}");
         if (lastSpawnLocs == null)
             return 0;
         if (lastSpawnLocs.Contains(tmpLoc) || (tmpLoc == playerSpawnPoint && init))
@@ -289,13 +289,13 @@ public class BlockSpawner : MonoBehaviour
             if (m_HitDetect &&CubeHit.tag == "Block")
             {
                 #region debugging prints
-                print("****----hitting block----****");
-                print("m_Hit object = " + CubeHit);
-                print("m_Hit color: " + CubeHit.GetComponent<BlockBehavior>().curColor);
-
-                print("tmpCube name = " + tmpCube.gameObject.name);
-                print("tmpCube color: " + tmpCube.GetComponent<Renderer>().material.color);
-                print("****------****");
+                //print("****----hitting block----****");
+                //print("m_Hit object = " + CubeHit);
+                //print("m_Hit color: " + CubeHit.GetComponent<BlockBehavior>().curColor);
+                //
+                //print("tmpCube name = " + tmpCube.gameObject.name);
+                //print("tmpCube color: " + tmpCube.GetComponent<Renderer>().material.color);
+                //print("****------****");
                 #endregion
 
                 //spawned cube can't land on or by similar color

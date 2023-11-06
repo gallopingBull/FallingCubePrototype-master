@@ -134,7 +134,7 @@ public class GrabMechanic : MonoBehaviour
         if (m_HitDetect)
         {
             // Output the name of the Collider your Box hit
-            // Debug.Log(gameObject.name+ " Hit : " + m_Hit.collider.name);
+            Debug.Log($"{gameObject.name} Hit : {m_Hit.collider.name}");
             if (m_Hit.collider.tag == "CubeHandle")
             {
                 //print("hittting block");
@@ -198,10 +198,11 @@ public class GrabMechanic : MonoBehaviour
         //Check if there has been a hit yet
         if (m_HitDetect)
         {
+
             //Draw a Ray forward from GameObject toward the hit
             Gizmos.DrawRay(tmpPos, (transform.forward) * m_Hit.distance);
             //Draw a cube that extends to where the hit exists
-            Gizmos.DrawWireCube(tmpPos + (transform.forward) * m_Hit.distance, transform.localScale * BoxColliderSize);
+            Gizmos.DrawWireCube(tmpPos + (transform.forward) * m_Hit.distance, transform.localScale * BoxColliderSize);   
         }
         //If there hasn't been a hit yet, draw the ray at the maximum distance
         else

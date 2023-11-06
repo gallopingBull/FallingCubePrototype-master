@@ -583,6 +583,7 @@ GameObject:
   - component: {fileID: 8172144758383271547}
   - component: {fileID: 8172144758383271546}
   - component: {fileID: 22436966}
+  - component: {fileID: 620025695}
   m_Layer: 8
   m_Name: vBasicController_Character_Augmented_Male_01
   m_TagString: Player
@@ -639,7 +640,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openCloseEvents: 0
   openCloseWindow: 1
-  selectedToolbar: 0
+  selectedToolbar: 2
   _isDead: 0
   _currentHealth: 1
   isImmortal: 1
@@ -851,7 +852,7 @@ MonoBehaviour:
   ragdollVelocity: -15
   fallMinHeight: 6
   fallMinVerticalVelocity: -10
-  fallDamage: 10
+  fallDamage: 0
   useRollRootMotion: 1
   rollTransition: 0.25
   rollHeightReduction: 1.6
@@ -1217,13 +1218,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8172144758383271543}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6eac9781f5b0e0b4ba6d7bf2fbda58e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_MaxDistance: 0.53
-  BoxColliderSize: 0.44
+  BoxColliderSize: 0.13
   HeightOffset: 1.45
   layerMask:
     serializedVersion: 2
@@ -1236,12 +1237,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8172144758383271543}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aaf5e6f314306ab4a854a0fe2dc0d042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   enableMovement: 0
+  moveDistance: 1
   pushPoint: {fileID: 0}
 --- !u!114 &22436966
 MonoBehaviour:
@@ -1351,6 +1353,82 @@ MonoBehaviour:
   onExitClimb:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &620025695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8172144758383271543}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23297aa8539ec444dbff1088f40d325d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  openCloseEvents: 0
+  openCloseWindow: 1
+  selectedToolbar: 0
+  startPushPullInput:
+    useInput: 1
+    isAxisInUse: 0
+    isUnityInput: 0
+    keyboard: E
+    keyboardAxis: 0
+    joystick: A
+    joystickAxis: 0
+    mobile: A
+    mobileAxis: 0
+    joystickAxisInvert: 0
+    keyboardAxisInvert: 0
+    mobileAxisInvert: 0
+    timeButtonWasPressed: 0
+    lastTimeTheButtonWasPressed: 0
+    inButtomTimer: 0
+  movementSpeed: {x: 1, y: 1}
+  minMovementMagnitude: 0.1
+  animAcceleration: 8
+  useLeftHandIK: 1
+  useRightHandIK: 1
+  strength: 1
+  enterCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  pushpullLayer:
+    serializedVersion: 2
+    m_Bits: 131072
+  breakActionDistance: 0.25
+  enterPositionSpeed: 0.1
+  handForwardOffset: 0
+  handSideOffset: 0
+  handSpaceDistanceX: 0.25
+  distanceBetweenObject: 0.5
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onFinish:
+    m_PersistentCalls:
+      m_Calls: []
+  onFindObject:
+    m_PersistentCalls:
+      m_Calls: []
+  onLostObject:
+    m_PersistentCalls:
+      m_Calls: []
+  pushPoint: {fileID: 0}
+  isStarted: 0
+  isStoping: 0
+  isPushingPulling: 0
+  isMoving: 0
+  isCollidingLeft: 0
+  isCollidingRight: 0
+  isCollidingBack: 0
+  inputVertical: 0
+  inputHorizontal: 0
+  inputWeight: 0
+  moveDistance: 1
 --- !u!1 &8172144758473296698
 GameObject:
   m_ObjectHideFlags: 0
