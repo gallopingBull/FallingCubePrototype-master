@@ -134,7 +134,7 @@ public class GrabMechanic : MonoBehaviour
         if (m_HitDetect)
         {
             // Output the name of the Collider your Box hit
-            Debug.Log($"{gameObject.name} Hit : {m_Hit.collider.name}");
+            //Debug.Log($"{gameObject.name} Hit : {m_Hit.collider.name}");
             if (m_Hit.collider.tag == "CubeHandle")
             {
                 //print("hittting block");

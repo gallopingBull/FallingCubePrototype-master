@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8194631352132975310}
   - component: {fileID: 8030386841297845174}
   m_Layer: 0
-  m_Name: TestBlock_Red
+  m_Name: TestBlock_Neutral
   m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,6 +163,7 @@ MonoBehaviour:
   colorIndex: 4
   isDestroying: 0
   ScoreValue: 1
+  rend: {fileID: 2604270220784131152}
   isSpawned: 1
   m_MaxDistance: 15
   BoxColliderSize: 0.5

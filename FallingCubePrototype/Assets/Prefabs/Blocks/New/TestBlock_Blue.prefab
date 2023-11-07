@@ -160,9 +160,10 @@ MonoBehaviour:
   IgnoreCubeColors:
   - {r: 1, g: 1, b: 1, a: 1}
   curColor: {r: 0, g: 0, b: 0, a: 0}
-  colorIndex: 4
+  colorIndex: 2
   isDestroying: 0
   ScoreValue: 1
+  rend: {fileID: 2604270220784131152}
   isSpawned: 1
   m_MaxDistance: 15
   BoxColliderSize: 0.5

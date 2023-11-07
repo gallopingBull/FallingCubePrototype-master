@@ -41,7 +41,8 @@ public class BlockBehavior : MonoBehaviour
     public int ScoreValue = 1;
 
     private bool enableAlarm;
-    private Renderer rend;
+    
+    [SerializeField] private Renderer rend;
 
     private bool markerEnabled;
 
@@ -277,7 +278,10 @@ public class BlockBehavior : MonoBehaviour
     private void Init()
     {   
         rb = GetComponent<Rigidbody>();
-        rend = GetComponent<Renderer>();
+        // this is only for older versions of the cube prefab
+        if (!rend)
+            rend = GetComponent<Renderer>();
+             
         curColor = rend.material.color;
         _blockCollider = GetComponent<Collider>();
         //_climbingCollider = GetComponentInChildren<Collider>();
@@ -389,6 +393,7 @@ public class BlockBehavior : MonoBehaviour
 
     public void ExplosionAlert() 
     { 
+        Debug.Log($"{gameObject.name} stepping into Explosion Alert() for colorIndex: {colorIndex}");
         switch(colorIndex) {
             //red
             case 0:
