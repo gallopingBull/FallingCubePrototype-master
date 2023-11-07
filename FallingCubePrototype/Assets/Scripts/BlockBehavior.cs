@@ -393,7 +393,7 @@ public class BlockBehavior : MonoBehaviour
 
     public void ExplosionAlert() 
     { 
-        Debug.Log($"{gameObject.name} stepping into Explosion Alert() for colorIndex: {colorIndex}");
+        //Debug.Log($"{gameObject.name} stepping into Explosion Alert() for colorIndex: {colorIndex}");
         switch(colorIndex) {
             //red
             case 0:
