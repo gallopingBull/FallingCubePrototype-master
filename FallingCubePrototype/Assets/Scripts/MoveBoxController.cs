@@ -21,7 +21,7 @@ public class MoveBoxController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _camera = GameObject.Find("vThirdPersonCamera_LITE");
+        _camera = GameObject.Find("Camera");
         pushPoint = GameObject.Find("PushPoint").GetComponent<Transform>();
     }
 
