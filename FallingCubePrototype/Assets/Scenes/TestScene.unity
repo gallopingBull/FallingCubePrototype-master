@@ -11014,17 +11014,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1637970371 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1911954803474332223, guid: 48aee2648d54ce74eaf3f950fe63c245, type: 3}
-  m_PrefabInstance: {fileID: 1911954805136648139}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 824dba8b207be5648aea87a370e6e660, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1640368678 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: f528e4334b3ce3c468fa3edc3f04156a, type: 3}
@@ -15079,10 +15068,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8172144757876154253, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
-      propertyPath: mainTarget
-      value: 
-      objectReference: {fileID: 1142572242}
     - target: {fileID: 8172144758126070653, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -15139,18 +15124,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 8172144758383271551, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
-      propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[3].m_Target
-      value: 
-      objectReference: {fileID: 562036619}
-    - target: {fileID: 8172144758383271551, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
-      propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[4].m_Target
-      value: 
-      objectReference: {fileID: 1164696867}
-    - target: {fileID: 8172144758383271551, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
-      propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[5].m_Target
-      value: 
-      objectReference: {fileID: 1637970371}
     - target: {fileID: 8172144759971561013, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

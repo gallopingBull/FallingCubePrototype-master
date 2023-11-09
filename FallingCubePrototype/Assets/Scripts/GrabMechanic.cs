@@ -45,7 +45,7 @@ public class GrabMechanic : MonoBehaviour
         {
             if (!isGrabbing)
             {
-                Debug.Log("Grabbing");
+                //Debug.Log("Grabbing");
                 Grab();
             }
         }
@@ -53,7 +53,7 @@ public class GrabMechanic : MonoBehaviour
         {
             if (isGrabbing)
             {
-                Debug.Log("Releasing");
+                //Debug.Log("Releasing");
                 Release();
             }
         }

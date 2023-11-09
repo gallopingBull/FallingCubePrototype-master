@@ -366,7 +366,7 @@ public class BlockBehavior : MonoBehaviour
 
         else
         {
-           print(m_Hit.transform.tag);
+           //print(m_Hit.transform.tag);
            LandingIndicator.transform.position = new Vector3(transform.position.x,
            Mathf.Round(m_Hit.transform.position.y + .75f),
            transform.position.z);
