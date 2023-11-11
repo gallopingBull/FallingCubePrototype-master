@@ -300,7 +300,7 @@ public class BlockSpawner : MonoBehaviour
 
                 //spawned cube can't land on or by similar color
                 //delete cube and spawn another 
-                if (tmpCube.GetComponent<Renderer>().material.color ==
+                if (tmpCube.GetComponentInChildren<Renderer>().material.color ==
                     CubeHit.GetComponent<BlockBehavior>().curColor)
                 {
                     GameObject _tmpCube;

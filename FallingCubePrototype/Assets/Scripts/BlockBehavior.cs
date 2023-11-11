@@ -211,7 +211,6 @@ public class BlockBehavior : MonoBehaviour
                 {
                     foreach (GameObject _go in DraggingDust)
                     {
-                        print("play particle");
                         _go.GetComponent<ParticleSystem>().Play();
                     }
                 }
@@ -280,7 +279,7 @@ public class BlockBehavior : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         // this is only for older versions of the cube prefab
         if (!rend)
-            rend = GetComponent<Renderer>();
+            rend = GetComponentInChildren<Renderer>();
              
         curColor = rend.material.color;
         _blockCollider = GetComponent<Collider>();
@@ -393,7 +392,7 @@ public class BlockBehavior : MonoBehaviour
 
     public void ExplosionAlert() 
     { 
-        //Debug.Log($"{gameObject.name} stepping into Explosion Alert() for colorIndex: {colorIndex}");
+        Debug.Log($"{gameObject.name}(rend: {rend.gameObject.name}) stepping into Explosion Alert() for colorIndex: {colorIndex}");
         switch(colorIndex) {
             //red
             case 0:

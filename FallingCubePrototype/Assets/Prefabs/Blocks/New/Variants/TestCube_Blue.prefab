@@ -7,13 +7,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1327316208659086689, guid: b1bdff19f3d00df47bab9190e1fcfed9, type: 3}
+      propertyPath: colorIndex
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5185480681733708799, guid: b1bdff19f3d00df47bab9190e1fcfed9, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 69f05ef4dc4ceaf4da3ac5f0eb8a8825, type: 2}
     - target: {fileID: 8131324039220165812, guid: b1bdff19f3d00df47bab9190e1fcfed9, type: 3}
       propertyPath: m_Name
-      value: TestCube_Base Variant
+      value: TestCube_Blue
       objectReference: {fileID: 0}
     - target: {fileID: 8131324039220165838, guid: b1bdff19f3d00df47bab9190e1fcfed9, type: 3}
       propertyPath: m_RootOrder
