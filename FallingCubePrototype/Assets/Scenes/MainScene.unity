@@ -6962,10 +6962,10 @@ MonoBehaviour:
   init: 1
   spawnPlayer: 0
   Blocks:
-  - {fileID: 8889844143506209256, guid: 4e95bd5d715ebcb46a3f00f10fbce31a, type: 3}
-  - {fileID: 8889844143506209256, guid: 75f94051b0b8c514da750aa867bf8d9b, type: 3}
-  - {fileID: 8889844143506209256, guid: cc6057fee43bbc349b850425507d75be, type: 3}
-  - {fileID: 8889844143506209256, guid: 7b314d12203696343b45d5cbd1d15d30, type: 3}
+  - {fileID: 6643283506773023259, guid: b8f097e2db486b44fa6687b98a95b7a0, type: 3}
+  - {fileID: 707645540003566373, guid: 8471f077cf0b9ec44af8b13f96c0f306, type: 3}
+  - {fileID: 5906468481285845076, guid: 2edfa37f59d0ac6428d6ab5f3fe5d256, type: 3}
+  - {fileID: 8131324039220165812, guid: b1bdff19f3d00df47bab9190e1fcfed9, type: 3}
   CurSpawnLoc: {fileID: 0}
   SpawnLocs:
   - {fileID: 902425823}
