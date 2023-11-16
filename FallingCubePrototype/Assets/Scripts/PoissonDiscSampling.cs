@@ -6,12 +6,11 @@ using UnityEngine;
 public class PoissonDiscSampling : MonoBehaviour
 {
     public GameObject cubePrefab;
-    public GameObject tmpCube;
     public int gridSizeX = 10;
     public int gridSizeZ = 10;
+    public int minHeight = 1;
+    public int maxHeight = 5;
     public float spacing = 2f;
-    public float minHeight = 1f;
-    public float maxHeight = 5f;
 
     void Start()
     {
@@ -24,10 +23,9 @@ public class PoissonDiscSampling : MonoBehaviour
         {
             for (int z = 0; z < gridSizeZ; z++)
             {
-                float randomHeight = Random.Range(minHeight, maxHeight);
+                int randomHeight = Random.Range(minHeight, maxHeight + 1); // Adding 1 to include the upper bound
                 Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
                 Instantiate(cubePrefab, cubePosition, Quaternion.identity);
-                //tmpCube.GetComponent<BlockBehavior>().SetGround();
             }
         }
     }
