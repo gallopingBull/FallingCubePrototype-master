@@ -167,12 +167,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cubePrefab: {fileID: 1372184888410372891, guid: 02ab994a7ca53d3498cd5bae4547a061, type: 3}
-  gridSizeX: 10
-  gridSizeZ: 10
+  gridSizeX: 6
+  gridSizeZ: 6
   minHeight: 0
-  maxHeight: 2
+  maxHeight: 4
   spacing: 2
   floatProbability: 0
+  cubes: []
 --- !u!1 &749917951
 GameObject:
   m_ObjectHideFlags: 0
