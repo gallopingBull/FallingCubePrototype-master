@@ -93,9 +93,4 @@ public class GetAdjacentBlocks : MonoBehaviour
             }
         } 
     }
-
-    private void EnableTrigger()
-    {
-        canDetect = true;
-    }
 }
