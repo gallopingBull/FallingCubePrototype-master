@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.SceneManagement;
-using Invector.vCharacterController;
+﻿using Invector.vCharacterController;
 using UnityEngine;
 
 public class CubeDeathCollision : MonoBehaviour

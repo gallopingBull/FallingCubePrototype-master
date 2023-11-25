@@ -31,7 +31,7 @@ public class BlockBehavior : MonoBehaviour
         contactSFX,
         explosionSFX;
 
-
+    [SerializeField] public ColorOption color;
     public Color[] IgnoreCubeColors;
     public Color curColor;
     [SerializeField] private int colorIndex;
@@ -60,6 +60,7 @@ public class BlockBehavior : MonoBehaviour
     #endregion
 
     #region functions 
+    
 
     // Start is called before the first frame update
     void Start()
@@ -282,9 +283,46 @@ public class BlockBehavior : MonoBehaviour
             rend = GetComponentInChildren<Renderer>();
              
         curColor = rend.material.color;
+        // InitColor();
         _blockCollider = GetComponent<Collider>();
         //_climbingCollider = GetComponentInChildren<Collider>();
     }
+
+    private void InitColor()
+    {
+        switch (color)
+        {
+            case ColorOption.Neutral:
+                Debug.Log($"{gameObject.name} is a Neutral color.");
+                colorIndex = 0;
+                curColor = rend.material.color;
+                break;
+            case ColorOption.Red:
+                Debug.Log($"{gameObject.name} is a Red color.");
+                rend.material.color = Color.red;
+                curColor = rend.material.color; 
+                colorIndex = 1;
+                break;
+            case ColorOption.Green:
+                Debug.Log($"{gameObject.name} is a Green color.");
+                rend.material.color = Color.green;
+                curColor = rend.material.color;
+                colorIndex = 2;
+                break;
+            case ColorOption.Blue:
+                Debug.Log($"{gameObject.name} is a Blue color.");
+                rend.material.color = Color.blue;
+                curColor = rend.material.color;
+                colorIndex = 3;
+                break;
+            default:
+                Debug.Log($"{gameObject.name} is a Neutral color.");
+                colorIndex = 0;
+                curColor = rend.material.color;
+                break;
+        }
+    }
+
 
     private void EnableRB()
     {
@@ -394,18 +432,22 @@ public class BlockBehavior : MonoBehaviour
     { 
         Debug.Log($"{gameObject.name}(rend: {rend.gameObject.name}) stepping into Explosion Alert() for colorIndex: {colorIndex}");
         switch(colorIndex) {
-            //red
+            //nuetral
             case 0:
+                Debug.Log($"{gameObject.name} is nuetral. this cube should not be exploding lol.");
+                break;
+            //red
+            case 1:
                 rend.material.color = Color.Lerp(curColor, Color.magenta * 5, Mathf.PingPong(Time.time, colorPingPongTime));
                 break;
 
             //green
-            case 1:
+            case 2:
                 rend.material.color = Color.Lerp(curColor, Color.yellow * 5, Mathf.PingPong(Time.time, colorPingPongTime));
                 break;
 
             //blue
-            case 2:
+            case 3:
                 rend.material.color = Color.Lerp(curColor, Color.cyan * 5, Mathf.PingPong(Time.time, colorPingPongTime));
                 break;
             default:

@@ -12,6 +12,7 @@ public class PoissonDiscSampling : MonoBehaviour
     public float floatProbability = 0.2f; // Probability of a cube floating
 
     [SerializeField] List<GameObject> cubes;
+    List<bool> spawnedLocs;
 
     void Start()
     {
@@ -45,6 +46,10 @@ public class PoissonDiscSampling : MonoBehaviour
 
                 Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
 
+                ColorOption color = (ColorOption)Random.Range(0, 4); // 0, 1, 2
+
+                // check if color is already assigned to a cube nearby.
+
                 // Check if the cube should float
                 if (Random.value < floatProbability)
                 {
@@ -52,6 +57,8 @@ public class PoissonDiscSampling : MonoBehaviour
                     cubePosition.y = floatingHeight;
                 }
 
+                // Add to CubeSpawnPosition list
+                // Spawn cube.
                 cubes.Add(Instantiate(cubePrefab, cubePosition, Quaternion.identity));
             }
         }
@@ -67,4 +74,20 @@ public class PoissonDiscSampling : MonoBehaviour
             }
         }
     }
+}
+
+// Enum to represent different colors
+public enum ColorOption
+{
+    Neutral,
+    Red,
+    Green,
+    Blue
+   
+}
+
+struct CubeSpawnPosition
+{
+    Vector3 position;
+    ColorOption color;
 }

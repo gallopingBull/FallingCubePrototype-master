@@ -6,7 +6,7 @@ public class GetAdjacentBlocks : MonoBehaviour
 {
     private GameObject parent;
     public bool canDetect;
-    public bool isDestorying; //move this to cube base "BlockBehavior"
+    public bool isDestorying; // move this to cube base "BlockBehavior"
 
     private List<GameObject> tmpTargets;
     public GameObject tmp;
