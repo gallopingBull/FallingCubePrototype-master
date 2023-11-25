@@ -5,7 +5,6 @@ public class GetAdjacentBlocks : MonoBehaviour
 {
     private GameObject parent;
     public bool canDetect;
-    public bool isDestorying; // move this to cube base "BlockBehavior"
 
     private BlockBehavior blockBehavior;
     private List<GameObject> tmpTargets;
@@ -16,7 +15,6 @@ public class GetAdjacentBlocks : MonoBehaviour
         blockBehavior = GetComponentInParent<BlockBehavior>();
         parent = transform.parent.parent.gameObject;
     }
-
 
     private void OnTriggerStay(Collider other)
     {
