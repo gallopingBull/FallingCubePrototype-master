@@ -32,7 +32,6 @@ public class BlockBehavior : MonoBehaviour
         explosionSFX;
 
     [SerializeField] public ColorOption color;
-    public Color[] IgnoreCubeColors;
     public Color curColor;
     [SerializeField] private int colorIndex;
 

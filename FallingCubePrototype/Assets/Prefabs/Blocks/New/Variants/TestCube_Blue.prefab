@@ -13,7 +13,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1327316208659086689, guid: b1bdff19f3d00df47bab9190e1fcfed9, type: 3}
       propertyPath: colorIndex
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5185480681733708799, guid: b1bdff19f3d00df47bab9190e1fcfed9, type: 3}
       propertyPath: m_Materials.Array.data[0]
