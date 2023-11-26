@@ -49,7 +49,7 @@ public class BlockBehavior : MonoBehaviour
     private bool m_HitDetect;
 
     public float BoxColliderSize = 1.5f;
-    private Collider _blockCollider;
+    private Collider cubeCollider;
     public Collider ClimbingCollider;
     private RaycastHit m_Hit;
 
@@ -76,7 +76,7 @@ public class BlockBehavior : MonoBehaviour
             velocity = (transform.position - prevVel) / Time.deltaTime;
             prevVel = transform.position;
 
-            m_HitDetect = Physics.BoxCast(_blockCollider.bounds.center,
+            m_HitDetect = Physics.BoxCast(cubeCollider.bounds.center,
                 transform.localScale * BoxColliderSize,
                 -transform.up, out m_Hit,
                 transform.rotation, m_MaxDistance);
@@ -99,11 +99,11 @@ public class BlockBehavior : MonoBehaviour
                     //Debug.Log(gameObject.name+ " Hit : " + m_Hit.collider.name);
                     EnableLandingMarker();
 
-                    if (m_Hit.distance < 1 && !GetComponent<BoxCollider>().enabled)
-                        GetComponent<BoxCollider>().enabled = true;
+                    if (m_Hit.distance < 1 && !cubeCollider.enabled)
+                        cubeCollider.enabled = true;
 
                     //Landed on other cube
-                    if (tmpYVel == 0 && GetComponent<BoxCollider>().enabled)
+                    if (tmpYVel == 0 && cubeCollider.enabled)
                     {
                         float tmpYloc = Mathf.Round(transform.position.y);
                         transform.position = new Vector3(transform.position.x, tmpYloc, transform.position.z);
@@ -123,7 +123,7 @@ public class BlockBehavior : MonoBehaviour
                     transform.position = new Vector3(transform.position.x, 0, transform.position.z);
                     EnterState(States.grounded);
 
-                    GetComponent<BoxCollider>().enabled = true;
+                    cubeCollider.enabled = true;
                 }
                 break;
 
@@ -171,7 +171,7 @@ public class BlockBehavior : MonoBehaviour
                 }
                 PlaySFX(fallingSFX);
 
-                GetComponent<BoxCollider>().enabled = false;
+                cubeCollider.enabled = false;
                 EnableRB();
                 state = _state;
 
@@ -198,7 +198,7 @@ public class BlockBehavior : MonoBehaviour
 
                 rb.mass = 1000;
                 state = _state;
-                GetComponent<BoxCollider>().enabled = true;
+                cubeCollider.enabled = true;
                 DisableRB();
 
                 break;
@@ -262,7 +262,6 @@ public class BlockBehavior : MonoBehaviour
                 {
                     GetComponent<AudioSource>().Stop();
                     GetComponent<AudioSource>().loop = false;
-
                 }
 
                 ClimbingCollider.enabled = true;
@@ -281,7 +280,7 @@ public class BlockBehavior : MonoBehaviour
              
         curColor = rend.material.color;
         //InitColor();
-        _blockCollider = GetComponent<Collider>();
+        cubeCollider = GetComponent<Collider>();
         //_climbingCollider = GetComponentInChildren<Collider>();
     }
 
@@ -334,7 +333,6 @@ public class BlockBehavior : MonoBehaviour
         rb.drag = 100;
         rb.useGravity = false;
         rb.isKinematic = true;
-
     }
 
     public void RoundCubeLocation()
@@ -349,7 +347,6 @@ public class BlockBehavior : MonoBehaviour
 
         transform.position = pos;
         rb.constraints = tmpConst;
-    
     }
 
     //Draw the BoxCast as a gizmo to show where it currently is testing. Click the Gizmos button to see this
