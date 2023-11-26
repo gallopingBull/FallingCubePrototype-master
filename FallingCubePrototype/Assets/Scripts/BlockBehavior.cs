@@ -460,9 +460,7 @@ public class BlockBehavior : MonoBehaviour
         //instantiate explosion dust for cube
 
         AudioManager._instance.PlaySFX(explosionSFX);
-        Instantiate(GetComponent<BlockBehavior>().ExplosionParticle,
-            GetComponent<Transform>().position,
-            GetComponent<Transform>().rotation);
+        Instantiate(ExplosionParticle, transform.position, transform.rotation);
 
         Destroy(gameObject);
 
