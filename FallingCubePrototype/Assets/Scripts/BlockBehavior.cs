@@ -154,7 +154,7 @@ public class BlockBehavior : MonoBehaviour
                 break;
         }
     }
-
+    
     public void EnterState(States _state)
     {
         ExitState(state);
@@ -280,7 +280,7 @@ public class BlockBehavior : MonoBehaviour
             rend = GetComponentInChildren<Renderer>();
              
         curColor = rend.material.color;
-        // InitColor();
+        //InitColor();
         _blockCollider = GetComponent<Collider>();
         //_climbingCollider = GetComponentInChildren<Collider>();
     }
@@ -422,7 +422,7 @@ public class BlockBehavior : MonoBehaviour
 
     public void ExplosionAlert() 
     { 
-        Debug.Log($"{gameObject.name}(rend: {rend.gameObject.name}) stepping into Explosion Alert() for colorIndex: {colorIndex}");
+        Debug.Log($"{gameObject.name}(rend: {rend.gameObject.name}) stepping into Explosion Alert() for color: {color}");
         switch(color) {
             //nuetral
             case ColorOption.Neutral:

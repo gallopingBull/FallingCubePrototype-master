@@ -29,7 +29,7 @@ public class BlockSpawner : MonoBehaviour
     private Collider m_Collider;
     private RaycastHit m_Hit;
 
-    public GameObject tmpCube;
+    public GameObject targetCube;
     public GameObject CubeHit;
 
     [SerializeField]
@@ -193,13 +193,13 @@ public class BlockSpawner : MonoBehaviour
     private void SpawnManager()
     {
         randLoc = GetRandomSpawnPosition();
-        int randBlock = GetRandomCubeIndex();
+        int randBlock = GetRandomCubeIndex(); // TODO: This will probably be changed to a random number color instead of using the prefab variants id.
         isSpawning = true;
 
         CurSpawnLoc = SpawnLocs[randLoc];
 
-        tmpCube = Instantiate(Blocks[randBlock], CurSpawnLoc.transform.position, transform.rotation);
-        tmpCube.gameObject.SetActive(false);
+        targetCube = Instantiate(Blocks[randBlock], CurSpawnLoc.transform.position, transform.rotation);
+        targetCube.SetActive(false);
         Invoke("CheckSpawnPosition", .5f);
     }
 
@@ -255,17 +255,17 @@ public class BlockSpawner : MonoBehaviour
             {
                 print("cube i was landing on is gone - erase old cube");
                 GameObject _tmpCube;
-                _tmpCube = tmpCube;
-                tmpCube = null;
+                _tmpCube = targetCube;
+                targetCube = null;
                 Destroy(_tmpCube);
                 SpawnManager();
                 return;
             }
             else
             {
-                if (tmpCube != null)
+                if (targetCube != null)
                 {
-                    tmpCube.gameObject.SetActive(true);
+                    targetCube.gameObject.SetActive(true);
                     //tmpCube = null;
                     print("set gameobject to true");
                 }
@@ -279,14 +279,14 @@ public class BlockSpawner : MonoBehaviour
               CubeHit.tag == "Player" && init)
             {
                 GameObject _tmpCube;
-                _tmpCube = tmpCube;
-                tmpCube = null;
+                _tmpCube = targetCube;
+                targetCube = null;
                 Destroy(_tmpCube);
                 SpawnManager();
                 return;
             }
 
-            if (m_HitDetect &&CubeHit.tag == "Block")
+            if (m_HitDetect && CubeHit.tag == "Block")
             {
                 #region debugging prints
                 //print("****----hitting block----****");
@@ -298,21 +298,21 @@ public class BlockSpawner : MonoBehaviour
                 //print("****------****");
                 #endregion
 
-                //spawned cube can't land on or by similar color
-                //delete cube and spawn another 
-                if (tmpCube.GetComponentInChildren<Renderer>().material.color ==
-                    CubeHit.GetComponent<BlockBehavior>().curColor)
+                // spawned cube can't land on or by similar color
+                // delete cube and spawn another 
+                if (targetCube.GetComponent<BlockBehavior>().color ==
+                    CubeHit.GetComponent<BlockBehavior>().color)
                 {
                     GameObject _tmpCube;
-                    _tmpCube = tmpCube;
-                    tmpCube = null;
+                    _tmpCube = targetCube;
+                    targetCube = null;
                     Destroy(_tmpCube);
                     SpawnManager();
                     return;
                 }
                 else
                 {
-                    tmpCube.gameObject.SetActive(true);
+                    targetCube.SetActive(true);
                     //tmpCube = null;
                     //print("set gameobject to true");
 
@@ -323,7 +323,7 @@ public class BlockSpawner : MonoBehaviour
             else
             {
                 //print("not hitting anything can spawn if allowed");
-                tmpCube.gameObject.SetActive(true);
+                targetCube.SetActive(true);
             }
         }
 
@@ -350,8 +350,8 @@ public class BlockSpawner : MonoBehaviour
 
     public void SpawnSingleCube(int blockIndex, Vector3 spawnLoc)
     {
-        tmpCube = Instantiate(Blocks[blockIndex], spawnLoc, transform.rotation);
-        tmpCube.gameObject.SetActive(false);
+        targetCube = Instantiate(Blocks[blockIndex], spawnLoc, transform.rotation);
+        targetCube.SetActive(false);
     }
 
     private void OnDrawGizmos()

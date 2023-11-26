@@ -21,8 +21,8 @@ public class GetAdjacentBlocks : MonoBehaviour
         if (blockBehavior.color == ColorOption.Neutral)
             return;
 
-        if (other.tag == "Block" && 
-            other.GetComponentInParent<BlockBehavior>().curColor == blockBehavior.curColor && 
+        if (other.tag == "Block" &&
+            other.GetComponentInParent<BlockBehavior>().color == blockBehavior.color && 
             !blockBehavior.isDestroying)
         {
             tmp = other.gameObject;
