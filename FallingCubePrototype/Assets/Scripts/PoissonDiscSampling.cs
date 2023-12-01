@@ -59,7 +59,10 @@ public class PoissonDiscSampling : MonoBehaviour
 
                 // Add to CubeSpawnPosition list
                 // Spawn cube.
-                cubes.Add(Instantiate(cubePrefab, cubePosition, Quaternion.identity));
+                var cube = Instantiate(cubePrefab, cubePosition, Quaternion.identity);  
+                cube.GetComponent<BlockBehavior>().InitializeCube(color);   
+
+                cubes.Add(cube);
             }
         }
     }

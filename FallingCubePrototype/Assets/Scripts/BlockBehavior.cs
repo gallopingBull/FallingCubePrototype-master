@@ -32,7 +32,7 @@ public class BlockBehavior : MonoBehaviour
         contactSFX,
         explosionSFX;
 
-    public ColorOption color; // this should be private.
+    public ColorOption color = ColorOption.Neutral; // this should be private.
 
     [HideInInspector] public bool isDestroying;
     public int ScoreValue = 1;
@@ -60,10 +60,10 @@ public class BlockBehavior : MonoBehaviour
     
 
     // Start is called before the first frame update
-    void Start()
-    {
-        EnterState(States.init);
-    }
+    //void Start()
+    //{
+    //    EnterState(States.init);
+    //}
 
     // Update is called once per frame
     void FixedUpdate()
@@ -229,6 +229,7 @@ public class BlockBehavior : MonoBehaviour
                     EnterState(States.falling);
                 else
                     EnterState(States.grounded);
+                EnterState(States.grounded);
 
                 break;
 
@@ -278,7 +279,7 @@ public class BlockBehavior : MonoBehaviour
         if (!rend)
             rend = GetComponentInChildren<Renderer>();
 
-        //InitColor();
+        SetMaterialColor();
         cubeCollider = GetComponent<Collider>();
         //_climbingCollider = GetComponentInChildren<Collider>();
     }
@@ -286,7 +287,7 @@ public class BlockBehavior : MonoBehaviour
     private void SetMaterialColor()
     {
         // Select a random color for the cube
-        color = (ColorOption)Random.Range(0, 4);
+        //color = (ColorOption)Random.Range(0, 4);
         switch (color)
         {
             case ColorOption.Neutral:
@@ -480,9 +481,11 @@ public class BlockBehavior : MonoBehaviour
 
 
     //this float is assigned to rb.mass when
-    //cube is falling
+    //cube is falling 
     private float GetNewSpeed()
     {
+        if (!GameManager.gm)
+            return 0;
         float tmpSpeed;
         if (GameManager.gm.CountdownTime > 67.5)
         {
@@ -517,6 +520,11 @@ public class BlockBehavior : MonoBehaviour
     }
 
     #region public state callers
+    public void InitializeCube(ColorOption _color)
+    {
+        color = _color;
+        EnterState(States.init);
+    }
     public void SetFalling()
     {
         EnterState(States.falling);

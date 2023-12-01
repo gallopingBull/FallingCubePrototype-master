@@ -84,7 +84,8 @@ public class GetAdjacentBlocks : MonoBehaviour
 
                 // check if this cube and the other cuber (tmp) are in game manager's target list
                 // if not add them in
-
+                if (!GameManager.gm)
+                    return;
                 GameManager.gm.AddCubeTarget(tmp);
                 GameManager.gm.AddCubeTarget(transform.parent.parent.gameObject);
 
