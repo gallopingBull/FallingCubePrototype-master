@@ -24,6 +24,7 @@ public class BlockBehavior : MonoBehaviour
     public GameObject GroundedDust;
     public GameObject ExplosionParticle;
 
+    private AudioSource audioSource;
     public AudioClip fallingSFX, 
         landingSFX, 
         grabSFX,
@@ -31,8 +32,7 @@ public class BlockBehavior : MonoBehaviour
         contactSFX,
         explosionSFX;
 
-    [SerializeField] public ColorOption color;
-    public Color curColor;
+    public ColorOption color; // this should be private.
 
     [HideInInspector] public bool isDestroying;
     public int ScoreValue = 1;
@@ -140,10 +140,10 @@ public class BlockBehavior : MonoBehaviour
             case States.dragging:
                 //print("In Dragging State"
                 
-                if (!GetComponent<AudioSource>().isPlaying)
+                if (!audioSource.isPlaying)
                 {
                     PlaySFX(dragSFX);
-                    GetComponent<AudioSource>().loop = true;
+                    audioSource.loop = true;
 
                 }
 
@@ -257,11 +257,10 @@ public class BlockBehavior : MonoBehaviour
                         }
                     }
                 }
-                if (GetComponent<AudioSource>().isPlaying ||
-                    GetComponent<AudioSource>().loop)
+                if (audioSource.isPlaying || audioSource.loop)
                 {
-                    GetComponent<AudioSource>().Stop();
-                    GetComponent<AudioSource>().loop = false;
+                    audioSource.Stop();
+                    audioSource.loop = false;
                 }
 
                 ClimbingCollider.enabled = true;
@@ -274,42 +273,39 @@ public class BlockBehavior : MonoBehaviour
     private void Init()
     {   
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();  
         // this is only for older versions of the cube prefab
         if (!rend)
             rend = GetComponentInChildren<Renderer>();
-             
-        curColor = rend.material.color;
+
         //InitColor();
         cubeCollider = GetComponent<Collider>();
         //_climbingCollider = GetComponentInChildren<Collider>();
     }
 
-    private void InitColor()
+    private void SetMaterialColor()
     {
+        // Select a random color for the cube
+        color = (ColorOption)Random.Range(0, 4);
         switch (color)
         {
             case ColorOption.Neutral:
                 Debug.Log($"{gameObject.name} is a Neutral color.");
-                curColor = rend.material.color;
                 break;
             case ColorOption.Red:
                 Debug.Log($"{gameObject.name} is a Red color.");
                 rend.material.color = Color.red;
-                curColor = rend.material.color; 
                 break;
             case ColorOption.Green:
                 Debug.Log($"{gameObject.name} is a Green color.");
                 rend.material.color = Color.green;
-                curColor = rend.material.color;
                 break;
             case ColorOption.Blue:
                 Debug.Log($"{gameObject.name} is a Blue color.");
                 rend.material.color = Color.blue;
-                curColor = rend.material.color;
                 break;
             default:
                 Debug.Log($"{gameObject.name} is a Neutral color.");
-                curColor = rend.material.color;
                 break;
         }
     }
@@ -420,7 +416,9 @@ public class BlockBehavior : MonoBehaviour
     public void ExplosionAlert() 
     { 
         Debug.Log($"{gameObject.name}(rend: {rend.gameObject.name}) stepping into Explosion Alert() for color: {color}");
-        switch(color) {
+        Color curColor = rend.material.color;
+        switch (color) 
+        {
             //nuetral
             case ColorOption.Neutral:
                 Debug.Log($"{gameObject.name} is nuetral. this cube should not be exploding lol.");
@@ -511,11 +509,11 @@ public class BlockBehavior : MonoBehaviour
 
     public void PlaySFX(AudioClip sfx)
     {
-        if (GetComponent<AudioSource>().isPlaying){
-            GetComponent<AudioSource>().Stop();
+        if (audioSource.isPlaying){
+            audioSource.Stop();
         }
 
-        GetComponent<AudioSource>().PlayOneShot(sfx);
+        audioSource.PlayOneShot(sfx);
     }
 
     #region public state callers
