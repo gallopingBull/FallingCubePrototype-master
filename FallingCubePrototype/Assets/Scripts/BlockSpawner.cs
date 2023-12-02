@@ -62,9 +62,7 @@ public class BlockSpawner : MonoBehaviour
     void FixedUpdate()
     {
         if (Input.GetKeyDown(KeyCode.K))
-        {
             Spawn();
-        }
 
         if (CheckColor && isSpawning)
         {
@@ -74,9 +72,7 @@ public class BlockSpawner : MonoBehaviour
                transform.rotation, m_MaxDistance);
         }
 
-        if (spawnPlayer &&
-            !CheckColor &&
-            !isSpawning)
+        if (spawnPlayer && !CheckColor && !isSpawning)
         {
             m_HitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
                transform.localScale * BoxColliderSize,
@@ -253,36 +249,22 @@ public class BlockSpawner : MonoBehaviour
         {
             if (!init)
             {
-                print("cube i was landing on is gone - erase old cube");
-                GameObject _tmpCube;
-                _tmpCube = targetCube;
-                targetCube = null;
-                Destroy(_tmpCube);
-                SpawnManager();
+                GetNewCube();
                 return;
             }
             else
             {
                 if (targetCube != null)
-                {
-                    targetCube.gameObject.SetActive(true);
-                    //tmpCube = null;
-                    print("set gameobject to true");
-                }
+                    targetCube.SetActive(true);
             }
         }
         else
         {
             CubeHit = null;
             CubeHit = m_Hit.transform.gameObject;
-            if (m_HitDetect &&
-              CubeHit.tag == "Player" && init)
+            if (m_HitDetect && CubeHit.tag == "Player" && init)
             {
-                GameObject _tmpCube;
-                _tmpCube = targetCube;
-                targetCube = null;
-                Destroy(_tmpCube);
-                SpawnManager();
+                GetNewCube();
                 return;
             }
 
@@ -303,28 +285,16 @@ public class BlockSpawner : MonoBehaviour
                 if (targetCube.GetComponent<BlockBehavior>().color ==
                     CubeHit.GetComponent<BlockBehavior>().color)
                 {
-                    GameObject _tmpCube;
-                    _tmpCube = targetCube;
-                    targetCube = null;
-                    Destroy(_tmpCube);
-                    SpawnManager();
+                    GetNewCube();
                     return;
                 }
                 else
-                {
                     targetCube.SetActive(true);
-                    //tmpCube = null;
-                    //print("set gameobject to true");
-
-                }
             }
-
 
             else
-            {
-                //print("not hitting anything can spawn if allowed");
                 targetCube.SetActive(true);
-            }
+
         }
 
         isSpawning = false;
@@ -348,6 +318,15 @@ public class BlockSpawner : MonoBehaviour
         #endregion 
     }
 
+    private void GetNewCube()
+    {
+        GameObject _tmpCube;
+        _tmpCube = targetCube;
+        targetCube = null;
+        Destroy(_tmpCube);
+        SpawnManager();
+    }
+    
     public void SpawnSingleCube(int blockIndex, Vector3 spawnLoc)
     {
         targetCube = Instantiate(Blocks[blockIndex], spawnLoc, transform.rotation);

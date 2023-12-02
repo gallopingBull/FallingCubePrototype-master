@@ -12,6 +12,7 @@ public class PoissonDiscSampling : MonoBehaviour
     public float floatProbability = 0.2f; // Probability of a cube floating
 
     [SerializeField] List<GameObject> cubes;
+    [SerializeField] List<SpawnData> spawnDatas;
     List<bool> spawnedLocs;
 
     void Start()
@@ -31,6 +32,7 @@ public class PoissonDiscSampling : MonoBehaviour
     void SpawnTerrainWithFloatingCubes()
     {
         cubes = new List<GameObject>();
+        spawnDatas = new List<SpawnData>();
 
         for (int x = 0; x < gridSizeX; x++)
         {
@@ -45,7 +47,6 @@ public class PoissonDiscSampling : MonoBehaviour
                 }
 
                 Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
-
                 ColorOption color = (ColorOption)Random.Range(0, 4); // 0, 1, 2
 
                 // check if color is already assigned to a cube nearby.
@@ -57,12 +58,31 @@ public class PoissonDiscSampling : MonoBehaviour
                     cubePosition.y = floatingHeight;
                 }
 
-                // Add to CubeSpawnPosition list
                 // Spawn cube.
                 var cube = Instantiate(cubePrefab, cubePosition, Quaternion.identity);  
-                cube.GetComponent<BlockBehavior>().InitializeCube(color);   
+                cube.GetComponent<BlockBehavior>().InitializeCube(color);
+                cubes.Add(cube);    
 
-                cubes.Add(cube);
+                SpawnData spawnData = new SpawnData{ position = cubePosition, color = color };
+                spawnDatas.Add(spawnData);
+
+                // traverses down the y axis and adds a cube at each position until it reaches the ground or y = 0
+                if(cubePosition.y > 0)
+                {
+                    for (int i = (int)cubePosition.y - 2; i < cubePosition.y; i = i - 2)
+                    {
+                        Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z); 
+
+                        var groundCube = Instantiate(cubePrefab, groundPos, Quaternion.identity);
+                        cube.GetComponent<BlockBehavior>().InitializeCube(ColorOption.Neutral); // this should allow some color colored cubes at some point
+                        cubes.Add(groundCube);
+
+                        SpawnData groundSpawnData = new SpawnData { position = groundPos, color = ColorOption.Neutral };
+                        spawnDatas.Add(groundSpawnData);
+                        if (i == 0)
+                            break;
+                    }
+                }
             }
         }
     }
@@ -89,8 +109,8 @@ public enum ColorOption
    
 }
 
-struct CubeSpawnPosition
+struct SpawnData
 {
-    Vector3 position;
-    ColorOption color;
+    public Vector3 position;
+    public ColorOption color;
 }
