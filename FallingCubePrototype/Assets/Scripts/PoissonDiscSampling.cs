@@ -11,8 +11,12 @@ public class PoissonDiscSampling : MonoBehaviour
     public float spacing = 2f;
     public float floatProbability = 0.2f; // Probability of a cube floating
 
+    const int maxAttempts = 10;
+    int attempts = 0;
+
     [SerializeField] List<GameObject> cubes;
     [SerializeField] List<SpawnData> spawnDatas;
+    [SerializeField] List<ColorOption> colorsUsed;
     List<bool> spawnedLocs;
 
     void Start()
@@ -47,9 +51,23 @@ public class PoissonDiscSampling : MonoBehaviour
                 }
 
                 Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
-                ColorOption color = (ColorOption)Random.Range(0, 4); // 0, 1, 2
-
-                // check if color is already assigned to a cube nearby.
+                ColorOption color = (ColorOption)Random.Range(0, 4);
+                if (color != ColorOption.Neutral)
+                {
+                    while ((CheckIfColorIsNearby(cubePosition, color) || colorsUsed.Contains(color)) && attempts < maxAttempts)
+                    {
+                        color = (ColorOption)Random.Range(0, 4);
+                        Debug.Log($"in while loop - color is {color} now - attempt: {attempts}");
+                        attempts++;
+                        if (attempts == maxAttempts)
+                        {
+                            color = ColorOption.Neutral;
+                            attempts = 0;
+                            break;
+                        }
+                    }
+                }
+                colorsUsed.Clear();
 
                 // Check if the cube should float
                 if (Random.value < floatProbability)
@@ -61,13 +79,15 @@ public class PoissonDiscSampling : MonoBehaviour
                 // Spawn cube.
                 var cube = Instantiate(cubePrefab, cubePosition, Quaternion.identity);  
                 cube.GetComponent<BlockBehavior>().InitializeCube(color);
-                cubes.Add(cube);    
+                cubes.Add(cube);
 
-                SpawnData spawnData = new SpawnData{ position = cubePosition, color = color };
+                SpawnData spawnData = new SpawnData { position = cubePosition, color = color };
                 spawnDatas.Add(spawnData);
 
+                colorsUsed.Add(color); 
+
                 // traverses down the y axis and adds a cube at each position until it reaches the ground or y = 0
-                if(cubePosition.y > 0)
+                if (cubePosition.y > 0)
                 {
                     for (int i = (int)cubePosition.y - 2; i < cubePosition.y; i = i - 2)
                     {
@@ -87,15 +107,36 @@ public class PoissonDiscSampling : MonoBehaviour
         }
     }
 
-    private void DestoryAllCubes()
+    private bool CheckIfColorIsNearby(Vector3 position, ColorOption color)
     {
-        if (cubes.Count > 0)
+        if (spawnDatas.Count == 0)
+            return false;
+        // check if color is already assigned to a cube nearby (based on x and z positions).
+        foreach (SpawnData spawnData in spawnDatas)
         {
-            foreach (GameObject cube in cubes)
+            if (spawnData.color == color)
             {
-                Destroy(cube);
+                // Compare only the x and z positions
+                Vector2 currentPos = new Vector2(position.x, position.z);
+                Vector2 spawnPos = new Vector2(spawnData.position.x, spawnData.position.z);
+
+                if (Vector2.Distance(currentPos, spawnPos) < 2)
+                    return true;
             }
         }
+        return false;
+    }
+
+    private void DestoryAllCubes()
+    {
+        if (cubes.Count == 0)
+            return;
+
+        foreach (GameObject cube in cubes)
+            Destroy(cube);
+
+        cubes.Clear();
+        spawnDatas.Clear(); 
     }
 }
 
