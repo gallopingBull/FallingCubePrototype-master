@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PoissonDiscSampling : MonoBehaviour
+public class FloorGenerator : MonoBehaviour
 {
     public GameObject cubePrefab;
     public int gridSizeX = 10;
