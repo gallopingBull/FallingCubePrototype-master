@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,6 +19,8 @@ public class FloorGenerator : MonoBehaviour
     [SerializeField] List<SpawnData> spawnDatas;
     [SerializeField] List<ColorOption> colorsUsed;
     List<bool> spawnedLocs;
+
+    static public Action OnFloorComplete { get; set; }
 
     void Start()
     {
@@ -42,21 +45,21 @@ public class FloorGenerator : MonoBehaviour
         {
             for (int z = 0; z < gridSizeZ; z++)
             {
-                int randomHeight = Random.Range(minHeight, maxHeight + 1);
+                int randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 // check if random height value is an even number, otherwise redo assignment
                 while (randomHeight % 2 != 0)
                 {
                     Debug.Log($"randomHieght is odd - {randomHeight}");
-                    randomHeight = Random.Range(minHeight, maxHeight + 1);
+                    randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 }
 
                 Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
-                ColorOption color = (ColorOption)Random.Range(0, 4);
+                ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
                 if (color != ColorOption.Neutral)
                 {
                     while ((CheckIfColorIsNearby(cubePosition, color) || colorsUsed.Contains(color)) && attempts < maxAttempts)
                     {
-                        color = (ColorOption)Random.Range(0, 4);
+                        color = (ColorOption)UnityEngine.Random.Range(0, 4);
                         Debug.Log($"in while loop - color is {color} now - attempt: {attempts}");
                         attempts++;
                         if (attempts == maxAttempts)
@@ -70,9 +73,9 @@ public class FloorGenerator : MonoBehaviour
                 colorsUsed.Clear();
 
                 // Check if the cube should float
-                if (Random.value < floatProbability)
+                if (UnityEngine.Random.value < floatProbability)
                 {
-                    float floatingHeight = maxHeight + Random.Range(1f, 5f); // Round to the nearest integer
+                    float floatingHeight = maxHeight + UnityEngine.Random.Range(1f, 5f); // Round to the nearest integer
                     cubePosition.y = floatingHeight;
                 }
 
@@ -103,6 +106,8 @@ public class FloorGenerator : MonoBehaviour
                             break;
                     }
                 }
+
+                OnFloorComplete?.Invoke();
             }
         }
     }
@@ -147,7 +152,6 @@ public enum ColorOption
     Red,
     Green,
     Blue
-   
 }
 
 struct SpawnData

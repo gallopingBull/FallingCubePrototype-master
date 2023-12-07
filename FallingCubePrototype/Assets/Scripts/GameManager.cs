@@ -75,12 +75,16 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (InitalTimerPanel != null && 
-                InitalTimerPanel.activeInHierarchy)
+            if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
             {
                 InitalTimerPanel.SetActive(false);
             }
         }
+        FloorGenerator.OnFloorComplete += StartGame;
+    }
+    private void OnDestroy()
+    {
+        FloorGenerator.OnFloorComplete -= StartGame;    
     }
 
     // Update is called once per frame

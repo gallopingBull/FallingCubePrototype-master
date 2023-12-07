@@ -194,7 +194,7 @@ public class BlockSpawner : MonoBehaviour
 
         CurSpawnLoc = SpawnLocs[randLoc];
 
-        targetCube = Instantiate(Blocks[randBlock], CurSpawnLoc.transform.position, transform.rotation);
+        targetCube = Instantiate(Blocks[0], CurSpawnLoc.transform.position, transform.rotation);
         targetCube.SetActive(false);
         Invoke("CheckSpawnPosition", .5f);
     }
@@ -231,7 +231,7 @@ public class BlockSpawner : MonoBehaviour
                     playerSpawnPoint = randLoc;
 
                     player.SetActive(true);
-                    GameManager.gm.StartGame();
+                    //GameManager.gm.StartGame();
                 }
             }
             else

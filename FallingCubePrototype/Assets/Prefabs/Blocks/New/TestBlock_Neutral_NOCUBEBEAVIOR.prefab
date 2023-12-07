@@ -129,7 +129,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1372184888410372891}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cb0c2dc3174fc045ab1a4a19dfae520, type: 3}
   m_Name: 
@@ -156,10 +156,7 @@ MonoBehaviour:
   dragSFX: {fileID: 8300000, guid: d0b3e77daf5751c468c0995a3e98f498, type: 3}
   contactSFX: {fileID: 8300000, guid: 558ecabc722fd7b4592596c05bd8cd8d, type: 3}
   explosionSFX: {fileID: 8300000, guid: c54b11585b5dd1a45b4aa37a4e5d3d9b, type: 3}
-  IgnoreCubeColors:
-  - {r: 1, g: 1, b: 1, a: 1}
-  curColor: {r: 0, g: 0, b: 0, a: 0}
-  colorIndex: 4
+  color: 0
   isDestroying: 0
   ScoreValue: 1
   rend: {fileID: 2604270220784131152}
@@ -10166,7 +10163,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDetect: 0
-  isDestorying: 0
   tmp: {fileID: 0}
 --- !u!1 &7518171094551749453
 GameObject:
@@ -20653,7 +20649,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDetect: 0
-  isDestorying: 0
   tmp: {fileID: 0}
 --- !u!1 &7518171095060760685
 GameObject:
@@ -20752,7 +20747,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDetect: 0
-  isDestorying: 0
   tmp: {fileID: 0}
 --- !u!1 &7518171095259558797
 GameObject:
@@ -50566,7 +50560,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDetect: 0
-  isDestorying: 0
   tmp: {fileID: 0}
 --- !u!1 &7518171095861747349
 GameObject:
@@ -61099,7 +61092,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDetect: 0
-  isDestorying: 0
   tmp: {fileID: 0}
 --- !u!1 &7518171095995727640
 GameObject:
@@ -80711,7 +80703,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDetect: 0
-  isDestorying: 0
   tmp: {fileID: 0}
 --- !u!1 &7518171096443749830
 GameObject:
