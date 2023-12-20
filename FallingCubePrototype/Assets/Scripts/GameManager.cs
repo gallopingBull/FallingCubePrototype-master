@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
         //StartCoroutine("Timer");
         if (!isTesting)
         {
-           
+
             Invoke("InitialCountdownTimerCaller", 1f);
         }
         else
@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
     }
     private void OnDestroy()
     {
-        FloorGenerator.OnFloorComplete -= StartGame;    
+        FloorGenerator.OnFloorComplete -= StartGame;
     }
 
     // Update is called once per frame
@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour
         {
             GetComponent<LoadScene>().LoadSceneByIndex(0);
         }
-            
+
 
         if (Score >= MAXScore)
         {
