@@ -57,32 +57,24 @@ public class GameManager : MonoBehaviour
     private GameObject GameFailedPanel;
     #endregion
 
-
     #region functions
-    // Start is called before the first frame update
+
     void Awake()
     {
         gm = this;
         //Player = GameObject.Find("ThirdPersonController_LITE");
     }
+
     private void Start()
     {
-        Debug.Log("start");
-        //StartCoroutine("Timer");
         if (!isTesting)
-        {
-
             Invoke("InitialCountdownTimerCaller", 1f);
-        }
-        else
-        {
-            if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
-            {
-                InitalTimerPanel.SetActive(false);
-            }
-        }
+        else if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
+            InitalTimerPanel.SetActive(false);
+
         FloorGenerator.OnFloorComplete += StartGame;
     }
+
     private void OnDestroy()
     {
         FloorGenerator.OnFloorComplete -= StartGame;
@@ -92,23 +84,18 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown("escape") || Input.GetButtonDown("Back"))
-        {
             GetComponent<LoadScene>().LoadSceneByIndex(0);
-        }
-
 
         if (Score >= MAXScore)
         {
             if (TimeGameMode && !gameCompleted && !gameWon)
-            {
                 GameWon();
-            }
+
             if (!isDoorOpen && !TimeGameMode)
-            {
                 OpenDoor();
-            }
         }
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
@@ -116,9 +103,7 @@ public class GameManager : MonoBehaviour
             if (isDoorOpen)
             {
                 if (!gameCompleted && !gameWon)
-                {
                     GameWon();
-                }
             }
             else
             {
@@ -136,12 +121,12 @@ public class GameManager : MonoBehaviour
 
     private void GameWon()
     {
+        print("game won!");
         GameWonPanel.SetActive(true);
         print(GameWonPanel.activeSelf);
         GameHudPanel.SetActive(false);
         gameWon = true;
         gameCompleted = true;
-        print("beath game");
     }
 
     public void FailedGame()
@@ -193,11 +178,11 @@ public class GameManager : MonoBehaviour
                 GameHudPanel.SetActive(true);
                 yield return new WaitForSeconds(1.5f);
 
-
                 StartGame();
                 break;
             }
         }
+
         StopCoroutine("InitialCountdownTimer");
     }
 
@@ -222,7 +207,6 @@ public class GameManager : MonoBehaviour
             //add a random.range on the time so it's never exatcly the same
             Invoke("EnableCubeSpawnerCaller", 3f);
         }
-
     }
 
     private void EnableCubeSpawnerCaller()
@@ -267,26 +251,21 @@ public class GameManager : MonoBehaviour
         Invoke("DestoryCubeTargets", .15f);
         //DestoryCubeTargets();
     }
+
     private void DestoryCubeTargets()
     {
-
         if (CubeTargets != null)
         {
             int _multiplier;
             if (CubeTargets.Count < 1)
-            {
                 _multiplier = 1;
-            }
             else
-            {
                 _multiplier = CubeTargets.Count;
-            }
 
             foreach (GameObject target in CubeTargets)
             {
                 if (target != null)
                 {
-
                     AddPoints(target.GetComponent<BlockBehavior>().ScoreValue, _multiplier);
                     bs.Spawn();
                     target.GetComponent<BlockBehavior>().DestroyCube();
