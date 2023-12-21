@@ -25,8 +25,8 @@ public class BlockBehavior : MonoBehaviour
     public GameObject ExplosionParticle;
 
     private AudioSource audioSource;
-    public AudioClip fallingSFX, 
-        landingSFX, 
+    public AudioClip fallingSFX,
+        landingSFX,
         grabSFX,
         dragSFX,
         contactSFX,
@@ -38,7 +38,7 @@ public class BlockBehavior : MonoBehaviour
     public int ScoreValue = 1;
 
     private bool enableAlarm;
-    
+
     [SerializeField] private Renderer rend;
 
     private bool markerEnabled;
@@ -57,7 +57,7 @@ public class BlockBehavior : MonoBehaviour
     #endregion
 
     #region functions 
-    
+
 
     // Start is called before the first frame update
     //void Start()
@@ -139,7 +139,7 @@ public class BlockBehavior : MonoBehaviour
 
             case States.dragging:
                 //print("In Dragging State"
-                
+
                 if (!audioSource.isPlaying)
                 {
                     PlaySFX(dragSFX);
@@ -154,7 +154,7 @@ public class BlockBehavior : MonoBehaviour
                 break;
         }
     }
-    
+
     public void EnterState(States _state)
     {
         ExitState(state);
@@ -213,9 +213,9 @@ public class BlockBehavior : MonoBehaviour
                     }
                 }
                 rb.mass = 1;
-                rb.isKinematic =false ;
+                rb.isKinematic = false;
                 rb.useGravity = true;
-            
+
                 ClimbingCollider.enabled = false;
                 state = _state;
 
@@ -272,9 +272,9 @@ public class BlockBehavior : MonoBehaviour
     }
 
     private void Init()
-    {   
+    {
         rb = GetComponent<Rigidbody>();
-        audioSource = GetComponent<AudioSource>();  
+        audioSource = GetComponent<AudioSource>();
         // this is only for older versions of the cube prefab
         if (!rend)
             rend = GetComponentInChildren<Renderer>();
@@ -291,22 +291,22 @@ public class BlockBehavior : MonoBehaviour
         switch (color)
         {
             case ColorOption.Neutral:
-                Debug.Log($"{gameObject.name} is a Neutral color.");
+                //Debug.Log($"{gameObject.name} is a Neutral color.");
                 break;
             case ColorOption.Red:
-                Debug.Log($"{gameObject.name} is a Red color.");
+                //Debug.Log($"{gameObject.name} is a Red color.");
                 rend.material.color = Color.red;
                 break;
             case ColorOption.Green:
-                Debug.Log($"{gameObject.name} is a Green color.");
+                //Debug.Log($"{gameObject.name} is a Green color.");
                 rend.material.color = Color.green;
                 break;
             case ColorOption.Blue:
-                Debug.Log($"{gameObject.name} is a Blue color.");
+                //Debug.Log($"{gameObject.name} is a Blue color.");
                 rend.material.color = Color.blue;
                 break;
             default:
-                Debug.Log($"{gameObject.name} is a Neutral color.");
+                //Debug.Log($"{gameObject.name} is a Neutral color.");
                 break;
         }
     }
@@ -389,10 +389,10 @@ public class BlockBehavior : MonoBehaviour
 
         else
         {
-           //print(m_Hit.transform.tag);
-           LandingIndicator.transform.position = new Vector3(transform.position.x,
-           Mathf.Round(m_Hit.transform.position.y + .75f),
-           transform.position.z);
+            //print(m_Hit.transform.tag);
+            LandingIndicator.transform.position = new Vector3(transform.position.x,
+            Mathf.Round(m_Hit.transform.position.y + .75f),
+            transform.position.z);
         }
 
         if (LandingIndicator.GetComponent<ParticleSystem>().isPaused)
@@ -414,11 +414,11 @@ public class BlockBehavior : MonoBehaviour
         //GetComponent<BoxCollider>().enabled = false;
     }
 
-    public void ExplosionAlert() 
-    { 
-        Debug.Log($"{gameObject.name}(rend: {rend.gameObject.name}) stepping into Explosion Alert() for color: {color}");
+    public void ExplosionAlert()
+    {
+        //Debug.Log($"{gameObject.name}(rend: {rend.gameObject.name}) stepping into Explosion Alert() for color: {color}");
         Color curColor = rend.material.color;
-        switch (color) 
+        switch (color)
         {
             //nuetral
             case ColorOption.Neutral:
@@ -512,7 +512,8 @@ public class BlockBehavior : MonoBehaviour
 
     public void PlaySFX(AudioClip sfx)
     {
-        if (audioSource.isPlaying){
+        if (audioSource.isPlaying)
+        {
             audioSource.Stop();
         }
 

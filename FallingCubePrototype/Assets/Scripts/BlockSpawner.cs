@@ -110,7 +110,7 @@ public class BlockSpawner : MonoBehaviour
 
             else
             {
-               
+
                 randFloat = GetNewSpawnRate();
             }
 
@@ -209,10 +209,10 @@ public class BlockSpawner : MonoBehaviour
     {
         spawnPlayer = true;
         randLoc = GetRandomSpawnPosition();
-     
+
         CurSpawnLoc = SpawnLocs[randLoc];
 
-        Invoke("CheckPlayerSpawnPosition", .1f);  
+        Invoke("CheckPlayerSpawnPosition", .1f);
     }
 
     private void CheckPlayerSpawnPosition()
@@ -300,7 +300,7 @@ public class BlockSpawner : MonoBehaviour
         isSpawning = false;
         CheckColor = false;
     }
- 
+
     public void Spawn(/*int spawnAmmount, int blockIndex, Vector3 spawnLoc*/)
     {
         SpawnManager();
@@ -326,7 +326,7 @@ public class BlockSpawner : MonoBehaviour
         Destroy(_tmpCube);
         SpawnManager();
     }
-    
+
     public void SpawnSingleCube(int blockIndex, Vector3 spawnLoc)
     {
         targetCube = Instantiate(Blocks[blockIndex], spawnLoc, transform.rotation);
@@ -343,7 +343,7 @@ public class BlockSpawner : MonoBehaviour
         {
             Gizmos.color = Color.blue;
         }
-        
+
 
         Vector3 tmpPos;
         if (CurSpawnLoc != null)
@@ -373,7 +373,7 @@ public class BlockSpawner : MonoBehaviour
                 //Draw a cube at the maximum distance
                 Gizmos.DrawWireCube(tmpPos + (-transform.up) * m_MaxDistance, transform.localScale * BoxColliderSize);
             }
-        }      
+        }
     }
     #endregion
 }

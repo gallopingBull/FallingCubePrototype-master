@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public float _time;
     private int _MAXCountdownTime;
+    static private bool countingDown = false;
     public TMP_Text Text_InitialTimer;
     public TMP_Text Text_Begin;
 
@@ -214,8 +215,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if (countingDown)
+                StopCoroutine("Timer");
             StartCoroutine("Timer");
-
             //small delay after round begins before new cubers are allowed to 
             //add a random.range on the time so it's never exatcly the same
             Invoke("EnableCubeSpawnerCaller", 3f);
@@ -230,6 +232,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Timer()
     {
+        countingDown = true;
         CountdownTime = MAXCountdownTime;
         text.text = CountdownTime.ToString();
 
@@ -241,18 +244,16 @@ public class GameManager : MonoBehaviour
             if (CountdownTime == 0 && !gameCompleted)
             {
                 if (Score >= MAXScore)
-                {
                     GameWon();
-                }
                 else
-                {
                     FailedGame();
-                }
+
+                countingDown = false;
                 break;
             }
-
-            //print("time = " + CountdownTime);
         }
+
+        countingDown = false;
         StopCoroutine("Timer");
     }
 

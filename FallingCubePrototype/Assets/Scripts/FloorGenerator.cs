@@ -34,7 +34,7 @@ public class FloorGenerator : MonoBehaviour
             DestoryAllCubes();
             SpawnTerrainWithFloatingCubes();
         }
-    }   
+    }
 
     void SpawnTerrainWithFloatingCubes()
     {
@@ -49,7 +49,7 @@ public class FloorGenerator : MonoBehaviour
                 // check if random height value is an even number, otherwise redo assignment
                 while (randomHeight % 2 != 0)
                 {
-                    Debug.Log($"randomHieght is odd - {randomHeight}");
+                    //Debug.Log($"randomHieght is odd - {randomHeight}");
                     randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 }
 
@@ -60,7 +60,7 @@ public class FloorGenerator : MonoBehaviour
                     while ((CheckIfColorIsNearby(cubePosition, color) || colorsUsed.Contains(color)) && attempts < maxAttempts)
                     {
                         color = (ColorOption)UnityEngine.Random.Range(0, 4);
-                        Debug.Log($"in while loop - color is {color} now - attempt: {attempts}");
+                        //Debug.Log($"in while loop - color is {color} now - attempt: {attempts}");
                         attempts++;
                         if (attempts == maxAttempts)
                         {
@@ -80,21 +80,21 @@ public class FloorGenerator : MonoBehaviour
                 }
 
                 // Spawn cube.
-                var cube = Instantiate(cubePrefab, cubePosition, Quaternion.identity);  
+                var cube = Instantiate(cubePrefab, cubePosition, Quaternion.identity);
                 cube.GetComponent<BlockBehavior>().InitializeCube(color);
                 cubes.Add(cube);
 
                 SpawnData spawnData = new SpawnData { position = cubePosition, color = color };
                 spawnDatas.Add(spawnData);
 
-                colorsUsed.Add(color); 
+                colorsUsed.Add(color);
 
                 // traverses down the y axis and adds a cube at each position until it reaches the ground or y = 0
                 if (cubePosition.y > 0)
                 {
                     for (int i = (int)cubePosition.y - 2; i < cubePosition.y; i = i - 2)
                     {
-                        Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z); 
+                        Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
 
                         var groundCube = Instantiate(cubePrefab, groundPos, Quaternion.identity);
                         cube.GetComponent<BlockBehavior>().InitializeCube(ColorOption.Neutral); // this should allow some color colored cubes at some point
@@ -141,7 +141,7 @@ public class FloorGenerator : MonoBehaviour
             Destroy(cube);
 
         cubes.Clear();
-        spawnDatas.Clear(); 
+        spawnDatas.Clear();
     }
 }
 
