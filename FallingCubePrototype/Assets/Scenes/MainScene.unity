@@ -6957,7 +6957,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab3ee90c2ab5fa34191f2e25dae0ed29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnableSpawner: 1
+  EnableSpawner: 0
   isSpawning: 0
   init: 1
   spawnPlayer: 0
