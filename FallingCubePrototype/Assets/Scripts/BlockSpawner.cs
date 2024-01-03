@@ -110,7 +110,6 @@ public class BlockSpawner : MonoBehaviour
 
             else
             {
-
                 randFloat = GetNewSpawnRate();
             }
 

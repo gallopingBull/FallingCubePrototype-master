@@ -188,24 +188,29 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        if (!bs.spawnPlayer)
+        if (!isTesting)
         {
-            bs.SpawnPlayerCaller();
-        }
+            if (!bs.spawnPlayer)
+            {
+                bs.SpawnPlayerCaller();
+            }
 
-        if (!Player.activeInHierarchy && bs.spawnPlayer)
-        {
-            //StartGame();
-            //return;
-        }
-        else
-        {
-            if (countingDown)
-                StopCoroutine("Timer");
-            StartCoroutine("Timer");
-            //small delay after round begins before new cubers are allowed to 
-            //add a random.range on the time so it's never exatcly the same
-            Invoke("EnableCubeSpawnerCaller", 3f);
+            if (!Player.activeInHierarchy && bs.spawnPlayer)
+            {
+                //StartGame();
+                //return;
+            }
+            else
+            {
+                if (countingDown)
+                    StopCoroutine("Timer");
+
+                StartCoroutine("Timer");
+
+                //small delay after round begins before new cubers are allowed to 
+                //add a random.range on the time so it's never exatcly the same
+                Invoke("EnableCubeSpawnerCaller", 3f);
+            }
         }
     }
 
