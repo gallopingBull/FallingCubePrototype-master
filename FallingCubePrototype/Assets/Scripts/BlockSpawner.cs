@@ -332,16 +332,6 @@ public class BlockSpawner : MonoBehaviour
         targetCube.SetActive(false);
     }
 
-    private int GetTotalCubeCount()
-    {
-        int tmpCount = 0;
-        foreach (GameObject loc in SpawnLocs)
-        {
-            tmpCount += loc.transform.childCount;
-        }
-        Debug.Log($"total cube count: {tmpCount}");
-        return tmpCount;
-    }
 
     private void OnDrawGizmos()
     {
