@@ -108,9 +108,11 @@ public class FloorGenerator : MonoBehaviour
                     }
                 }
 
-                OnFloorComplete?.Invoke();
             }
         }
+
+        Debug.Log($"{GetTotalCubeCount()} cubes spawned");
+        OnFloorComplete?.Invoke();
     }
 
     private bool CheckIfColorIsNearby(Vector3 position, ColorOption color)
@@ -133,6 +135,12 @@ public class FloorGenerator : MonoBehaviour
         }
         return false;
     }
+
+    private int GetTotalCubeCount()
+    {
+        return cubes.Count;
+    }
+
 
     private void DestoryAllCubes()
     {
