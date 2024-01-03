@@ -271,6 +271,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraController
       objectReference: {fileID: 0}
+    - target: {fileID: 4198830671536068734, guid: c04b1460606c05f42b31f163dfc3f50d, type: 3}
+      propertyPath: debugWindow
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198830671536068734, guid: c04b1460606c05f42b31f163dfc3f50d, type: 3}
+      propertyPath: selectedToolbar
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c04b1460606c05f42b31f163dfc3f50d, type: 3}
 --- !u!1001 &1703958310866601662
