@@ -141,10 +141,44 @@ public class FloorGenerator : MonoBehaviour
 
     private bool CheckIfColorIsNearby(Vector3 position, ColorOption color)
     {
+        // Define the offsets for adjacent cubes in a 3D grid
+        Vector3[] offsets = new Vector3[]
+        {
+        new Vector3(-1, -1, -1), new Vector3(-1, -1, 0), new Vector3(-1, -1, 1),
+        new Vector3(-1, 0, -1), new Vector3(-1, 0, 0), new Vector3(-1, 0, 1),
+        new Vector3(-1, 1, -1), new Vector3(-1, 1, 0), new Vector3(-1, 1, 1),
+        new Vector3(0, -1, -1), new Vector3(0, -1, 0), new Vector3(0, -1, 1),
+        new Vector3(0, 0, -1), /* skip (0, 0, 0) */ new Vector3(0, 0, 1),
+        new Vector3(0, 1, -1), new Vector3(0, 1, 0), new Vector3(0, 1, 1),
+        new Vector3(1, -1, -1), new Vector3(1, -1, 0), new Vector3(1, -1, 1),
+        new Vector3(1, 0, -1), new Vector3(1, 0, 0), new Vector3(1, 0, 1),
+        new Vector3(1, 1, -1), new Vector3(1, 1, 0), new Vector3(1, 1, 1)
+        };
+
+        // Check each adjacent cube
+        foreach (Vector3 offset in offsets)
+        {
+            Vector3 adjacentPos = position + offset;
+
+            // Check if a cube exists at the adjacent position
+            SpawnData adjacentCube = spawnDatas.Find(spawnData => spawnData.position == adjacentPos);
+            Debug.Log($"{adjacentCube.id}");
+            if (adjacentCube.color == color)
+            {
+                Debug.Log($"fail - {adjacentCube.id}Color {color} is nearby");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool CheckIfColorIsAboveOrBelow(Vector3 position, ColorOption color)
+    {
         if (spawnDatas.Count == 0)
             return false;
 
-        // check if color is already assigned to a cube nearby (based on x and z positions).
+        // check if color is already assigned to a cube above or below (based on x and z positions).
         foreach (SpawnData spawnData in spawnDatas)
         {
             if (spawnData.color == color)
@@ -155,8 +189,9 @@ public class FloorGenerator : MonoBehaviour
 
                 float distance = Vector2.Distance(currentPos, spawnPos);
                 Debug.Log($"{spawnData.id} distance :{distance}");
-                if (distance < 2)
+                if (distance < 2 /*&& Mathf.Abs(position.y - spawnData.position.y) <= 1*/)
                 {
+                    Debug.Log($"fail same {spawnData.id}Color  {color} is nearby");
                     return true;
                 }
             }
