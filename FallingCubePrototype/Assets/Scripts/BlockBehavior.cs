@@ -10,6 +10,7 @@ public class BlockBehavior : MonoBehaviour
 
     //Cube Member Variables
     #region variables
+    public int id;
     public States state;
     private Rigidbody rb;
     public Vector3 velocity;
@@ -288,6 +289,7 @@ public class BlockBehavior : MonoBehaviour
     {
         // Select a random color for the cube
         //color = (ColorOption)Random.Range(0, 4);
+        Debug.Log($"{gameObject.name} is being initialized with color: {color} in SetMaterialColor()...");
         switch (color)
         {
             case ColorOption.Neutral:
@@ -309,6 +311,7 @@ public class BlockBehavior : MonoBehaviour
                 //Debug.Log($"{gameObject.name} is a Neutral color.");
                 break;
         }
+        Debug.Log($"\t\t\t\t... but its material color is: {rend.material.color}");
     }
 
 
@@ -453,7 +456,6 @@ public class BlockBehavior : MonoBehaviour
         EnableExplosion(); // activates explosion warning fx
 
         yield return new WaitForSeconds(1.5f);
-        //instantiate explosion dust for cube
 
         AudioManager._instance.PlaySFX(explosionSFX);
         Instantiate(ExplosionParticle, transform.position, transform.rotation);
@@ -461,22 +463,6 @@ public class BlockBehavior : MonoBehaviour
         Destroy(gameObject);
 
         StopCoroutine("DestoryCube");
-
-        #region testing
-
-        /*foreach(GameObject target in tmpTargets)
-          {
-              print("destroying cube");
-              GameManager.gm.AddPoints(target.GetComponent<BlockBehavior>().ScoreValue);
-              Destroy(target);
-          }
-          tmpTargets.Clear();
-
-          //print("destroying cube");
-          GameManager.gm.AddPoints(transform.parent.parent.gameObject.GetComponent<BlockBehavior>().ScoreValue);
-          Destroy(transform.parent.parent.gameObject);
-          */
-        #endregion
     }
 
 
@@ -521,10 +507,17 @@ public class BlockBehavior : MonoBehaviour
     }
 
     #region public state callers
-    public void InitializeCube(ColorOption _color)
+    public void InitializeCube(int _id, ColorOption _color)
     {
+        id = _id;
         color = _color;
+        Debug.Log($"cube.id({id}) is being initialized with color: {color}");
+
+
         EnterState(States.init);
+        SetMaterialColor();
+        Debug.Log($"\t\t\t\t... but its material color is: {rend.material.color}");
+
     }
     public void SetFalling()
     {

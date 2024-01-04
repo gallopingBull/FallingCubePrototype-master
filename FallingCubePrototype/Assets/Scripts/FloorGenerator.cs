@@ -79,12 +79,15 @@ public class FloorGenerator : MonoBehaviour
                     cubePosition.y = floatingHeight;
                 }
 
+                int id = cubes.Count + 1;
+                SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
+
                 // Spawn cube.
                 var cube = Instantiate(cubePrefab, cubePosition, Quaternion.identity);
-                cube.GetComponent<BlockBehavior>().InitializeCube(color);
+                cube.GetComponent<BlockBehavior>().InitializeCube(id, color);
                 cubes.Add(cube);
 
-                SpawnData spawnData = new SpawnData { position = cubePosition, color = color };
+
                 spawnDatas.Add(spawnData);
 
                 colorsUsed.Add(color);
@@ -97,7 +100,7 @@ public class FloorGenerator : MonoBehaviour
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
                         var groundCube = Instantiate(cubePrefab, groundPos, Quaternion.identity);
 
-                        cube.GetComponent<BlockBehavior>().InitializeCube(ColorOption.Neutral); // this should allow some color colored cubes at some point
+                        cube.GetComponent<BlockBehavior>().InitializeCube(id, ColorOption.Neutral); // this should allow some color colored cubes at some point
                         cubes.Add(groundCube);
 
                         SpawnData groundSpawnData = new SpawnData { position = groundPos, color = ColorOption.Neutral };
@@ -170,6 +173,7 @@ public enum ColorOption
 
 struct SpawnData
 {
+    public int id;
     public Vector3 position;
     public ColorOption color;
 }
