@@ -118,6 +118,27 @@ public class FloorGenerator : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
+    private bool CheckNearbyIDsForColor(int id, ColorOption color)
+    {
+        if (spawnDatas.Count == 0)
+            return false;
+
+        // check if color is already assigned to a cube nearby (based on x and z positions).
+        foreach (SpawnData spawnData in spawnDatas)
+        {
+            if (spawnData.color == color)
+            {
+                // Compare only the x and z positions
+                Vector2 currentPos = new Vector2(spawnDatas[id].position.x, spawnDatas[id].position.z);
+                Vector2 spawnPos = new Vector2(spawnData.position.x, spawnData.position.z);
+
+                if (Vector2.Distance(currentPos, spawnPos) < 2)
+                    return true;
+            }
+        }
+        return false;
+    }
+
     private bool CheckIfColorIsNearby(Vector3 position, ColorOption color)
     {
         if (spawnDatas.Count == 0)
@@ -132,8 +153,12 @@ public class FloorGenerator : MonoBehaviour
                 Vector2 currentPos = new Vector2(position.x, position.z);
                 Vector2 spawnPos = new Vector2(spawnData.position.x, spawnData.position.z);
 
-                if (Vector2.Distance(currentPos, spawnPos) < 2)
+                float distance = Vector2.Distance(currentPos, spawnPos);
+                Debug.Log($"{spawnData.id} distance :{distance}");
+                if (distance < 2)
+                {
                     return true;
+                }
             }
         }
         return false;
