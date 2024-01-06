@@ -15,6 +15,13 @@ public class FloorGenerator : MonoBehaviour
     const int maxAttempts = 10;
     int attempts = 0;
 
+    // Define the offsets for adjacent cubes in a 3D grid
+    Vector3[] offsets = new Vector3[]
+    {
+        Vector3.forward, Vector3.back, Vector3.up,
+        Vector3.down, Vector3.right, Vector3.left
+    };
+
     [SerializeField] List<GameObject> cubes;
     [SerializeField] List<SpawnData> spawnDatas;
     [SerializeField] List<ColorOption> colorsUsed;
@@ -53,11 +60,13 @@ public class FloorGenerator : MonoBehaviour
                     randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 }
 
+                int id = cubes.Count + 1;
                 Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
                 ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
+
                 if (color != ColorOption.Neutral)
                 {
-                    while ((CheckIfColorIsNearby(cubePosition, color) || colorsUsed.Contains(color)) && attempts < maxAttempts)
+                    while ((CheckIfColorIsNearby(id, cubePosition, color) || colorsUsed.Contains(color)) && attempts < maxAttempts)
                     {
                         color = (ColorOption)UnityEngine.Random.Range(0, 4);
                         //Debug.Log($"in while loop - color is {color} now - attempt: {attempts}");
@@ -79,7 +88,7 @@ public class FloorGenerator : MonoBehaviour
                     cubePosition.y = floatingHeight;
                 }
 
-                int id = cubes.Count + 1;
+
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
 
                 // Spawn cube.
@@ -139,37 +148,26 @@ public class FloorGenerator : MonoBehaviour
         return false;
     }
 
-    private bool CheckIfColorIsNearby(Vector3 position, ColorOption color)
+    private bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
     {
-        // Define the offsets for adjacent cubes in a 3D grid
-        Vector3[] offsets = new Vector3[]
-        {
-        new Vector3(-1, -1, -1), new Vector3(-1, -1, 0), new Vector3(-1, -1, 1),
-        new Vector3(-1, 0, -1), new Vector3(-1, 0, 0), new Vector3(-1, 0, 1),
-        new Vector3(-1, 1, -1), new Vector3(-1, 1, 0), new Vector3(-1, 1, 1),
-        new Vector3(0, -1, -1), new Vector3(0, -1, 0), new Vector3(0, -1, 1),
-        new Vector3(0, 0, -1), /* skip (0, 0, 0) */ new Vector3(0, 0, 1),
-        new Vector3(0, 1, -1), new Vector3(0, 1, 0), new Vector3(0, 1, 1),
-        new Vector3(1, -1, -1), new Vector3(1, -1, 0), new Vector3(1, -1, 1),
-        new Vector3(1, 0, -1), new Vector3(1, 0, 0), new Vector3(1, 0, 1),
-        new Vector3(1, 1, -1), new Vector3(1, 1, 0), new Vector3(1, 1, 1)
-        };
+        if (spawnDatas.Count == 0)
+            return false;
+        Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
 
         // Check each adjacent cube
         foreach (Vector3 offset in offsets)
         {
-            Vector3 adjacentPos = position + offset;
-
+            Vector3 adjacentPos = position + (offset * 2); // Multiply by 2 to get the adjacent cube
+            Debug.Log($"adjacentPos: {adjacentPos}");
             // Check if a cube exists at the adjacent position
             SpawnData adjacentCube = spawnDatas.Find(spawnData => spawnData.position == adjacentPos);
-            Debug.Log($"{adjacentCube.id}");
+            Debug.Log($"adjacentCube.id: {adjacentCube.id}");
             if (adjacentCube.color == color)
             {
-                Debug.Log($"fail - {adjacentCube.id}Color {color} is nearby");
+                Debug.Log($"fail - {adjacentCube.id} and {id} the same Color {color}");
                 return true;
             }
         }
-        //TEST
         return false;
     }
 

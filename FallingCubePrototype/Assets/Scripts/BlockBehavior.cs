@@ -289,11 +289,12 @@ public class BlockBehavior : MonoBehaviour
     {
         // Select a random color for the cube
         //color = (ColorOption)Random.Range(0, 4);
-        Debug.Log($"{gameObject.name} is being initialized with color: {color} in SetMaterialColor()...");
+        Debug.Log($"{id} is being initialized with color: {color} in SetMaterialColor()...");
         switch (color)
         {
             case ColorOption.Neutral:
                 //Debug.Log($"{gameObject.name} is a Neutral color.");
+                rend.material.color = Color.white;
                 break;
             case ColorOption.Red:
                 //Debug.Log($"{gameObject.name} is a Red color.");
@@ -308,6 +309,7 @@ public class BlockBehavior : MonoBehaviour
                 rend.material.color = Color.blue;
                 break;
             default:
+                rend.material.color = Color.white;
                 //Debug.Log($"{gameObject.name} is a Neutral color.");
                 break;
         }
