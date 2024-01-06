@@ -169,7 +169,7 @@ public class FloorGenerator : MonoBehaviour
                 return true;
             }
         }
-
+        //TEST
         return false;
     }
 
