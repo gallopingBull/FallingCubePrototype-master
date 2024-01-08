@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -94,13 +95,7 @@ public class FloorGenerator : MonoBehaviour
                     cubePosition.y = floatingHeight;
                 }
 
-
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
-
-                // Spawn cube.
-                var cube = Instantiate(cubePrefab, cubePosition, Quaternion.identity);
-                cube.GetComponent<BlockBehavior>().InitializeCube(id, color);
-                cubes.Add(cube);
                 spawnDatas.Add(spawnData);
 
                 colorsUsed.Add(color);
@@ -119,15 +114,6 @@ public class FloorGenerator : MonoBehaviour
                         Debug.Log($"\t\ttraversing down {id} y position!");
                         Debug.Log($"\t\tcurrent cube count: {cubes.Count}!");
 
-                        var groundCube = Instantiate(cubePrefab, groundPos, Quaternion.identity);
-                        groundCube.GetComponent<BlockBehavior>().InitializeCube(id, ColorOption.Neutral); // this should allow some color colored cubes at some point
-                        
-                        Debug.Log($"\t\tnew spawn with:" +
-                            $"\n\t\t\t\tid: {id}" +
-                            $"\n\t\t\t\tcubePosition: {cubePosition}" +
-                            $"\n\t\t\t\tcolor: {color}");
-                        
-                        cubes.Add(groundCube);
                         spawnDatas.Add(groundSpawnData);
 
                         if (i == 0)
@@ -141,6 +127,19 @@ public class FloorGenerator : MonoBehaviour
         cubes.Sort((x, y) => x.GetComponent<BlockBehavior>().Id.CompareTo(y.GetComponent<BlockBehavior>().Id));
         Debug.Log($"{GetTotalCubeCount()} cubes spawned");
         OnFloorComplete?.Invoke();
+        StartCoroutine(SpawnCubes());
+    }
+
+    private IEnumerator SpawnCubes()
+    {
+        foreach(SpawnData data in spawnDatas)
+        {
+            yield return new WaitForSeconds(0.1f);
+            var cube = Instantiate(cubePrefab, data.position, Quaternion.identity);
+            cube.GetComponent<BlockBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
+            cubes.Add(cube);
+        }
+     
     }
 
     private bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
@@ -153,10 +152,10 @@ public class FloorGenerator : MonoBehaviour
         foreach (Vector3 offset in offsets)
         {
             Vector3 adjacentPos = position + (offset * 2); // Multiply by 2 to get the adjacent cube
-            //Debug.Log($"adjacentPos: {adjacentPos}");
+            Debug.Log($"adjacentPos: {adjacentPos}");
             // Check if a cube exists at the adjacent position
             SpawnData adjacentCube = spawnDatas.Find(spawnData => spawnData.position == adjacentPos);
-            //Debug.Log($"adjacentCube.id: {adjacentCube.id}");
+            Debug.Log($"adjacentCube.id: {adjacentCube.id}");
             if (adjacentCube.color == color)
             {
                 Debug.Log($"fail - {adjacentCube.id} and {id} the same Color {color}");
