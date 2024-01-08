@@ -111,8 +111,8 @@ public class FloorGenerator : MonoBehaviour
                         SpawnData groundSpawnData =
                         new SpawnData { id = id, position = groundPos, color = ColorOption.Neutral };
 
-                        Debug.Log($"\t\ttraversing down {id} y position!");
-                        Debug.Log($"\t\tcurrent cube count: {cubes.Count}!");
+                        //Debug.Log($"\t\ttraversing down {id} y position!");
+                        //Debug.Log($"\t\tcurrent cube count: {cubes.Count}!");
 
                         spawnDatas.Add(groundSpawnData);
 
@@ -125,7 +125,6 @@ public class FloorGenerator : MonoBehaviour
         }
         // organize cubes list by id
         cubes.Sort((x, y) => x.GetComponent<BlockBehavior>().Id.CompareTo(y.GetComponent<BlockBehavior>().Id));
-        Debug.Log($"{GetTotalCubeCount()} cubes spawned");
         OnFloorComplete?.Invoke();
         StartCoroutine(SpawnCubes());
     }
@@ -139,7 +138,7 @@ public class FloorGenerator : MonoBehaviour
             cube.GetComponent<BlockBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
             cubes.Add(cube);
         }
-     
+        Debug.Log($"{GetTotalCubeCount()} cubes spawned");
     }
 
     private bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
@@ -152,10 +151,10 @@ public class FloorGenerator : MonoBehaviour
         foreach (Vector3 offset in offsets)
         {
             Vector3 adjacentPos = position + (offset * 2); // Multiply by 2 to get the adjacent cube
-            Debug.Log($"adjacentPos: {adjacentPos}");
+            //Debug.Log($"adjacentPos: {adjacentPos}");
             // Check if a cube exists at the adjacent position
             SpawnData adjacentCube = spawnDatas.Find(spawnData => spawnData.position == adjacentPos);
-            Debug.Log($"adjacentCube.id: {adjacentCube.id}");
+            //Debug.Log($"adjacentCube.id: {adjacentCube.id}");
             if (adjacentCube.color == color)
             {
                 Debug.Log($"fail - {adjacentCube.id} and {id} the same Color {color}");
