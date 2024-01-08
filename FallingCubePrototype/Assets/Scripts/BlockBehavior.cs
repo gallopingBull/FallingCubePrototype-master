@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class BlockBehavior : MonoBehaviour
@@ -55,16 +56,31 @@ public class BlockBehavior : MonoBehaviour
     private RaycastHit m_Hit;
 
     private float fallDrag;
+
+    public int Id { 
+        get {  return id; } 
+        
+        set {
+            Debug.Log($"cuurent id({id}) changed to " + value);    
+            //if (id == value) return;
+            //OnVariableChanged?.Invoke(value);
+            id = value;
+        } 
+    }
+    
+    private Action<int> OnVariableChanged;
+    
     #endregion
 
     #region functions 
 
 
     // Start is called before the first frame update
-    //void Start()
-    //{
-    //    EnterState(States.init);
-    //}
+   void Start()
+   {
+        OnVariableChanged += OnIDChanged;   
+       //EnterState(States.init);
+   }
 
     // Update is called once per frame
     void FixedUpdate()
@@ -313,7 +329,7 @@ public class BlockBehavior : MonoBehaviour
                 //Debug.Log($"{gameObject.name} is a Neutral color.");
                 break;
         }
-        Debug.Log($"\t\t\t\t... but its material color is: {rend.material.color}");
+        //Debug.Log($"\t\t\t\t... but its material color is: {rend.material.color}");
     }
 
 
@@ -467,6 +483,10 @@ public class BlockBehavior : MonoBehaviour
         StopCoroutine("DestoryCube");
     }
 
+    private void OnIDChanged(int newValue)
+    {
+        Debug.Log($"{id} is changing to {newValue}");
+    }
 
     //this float is assigned to rb.mass when
     //cube is falling 
@@ -511,15 +531,10 @@ public class BlockBehavior : MonoBehaviour
     #region public state callers
     public void InitializeCube(int _id, ColorOption _color)
     {
-        id = _id;
-        color = _color;
         Debug.Log($"cube.id({id}) is being initialized with color: {color}");
-
-
+        Id = _id;
+        color = _color;
         EnterState(States.init);
-        SetMaterialColor();
-        Debug.Log($"\t\t\t\t... but its material color is: {rend.material.color}");
-
     }
     public void SetFalling()
     {
