@@ -12,6 +12,8 @@ public class FloorGenerator : MonoBehaviour
     public int maxHeight = 5;
     public float spacing = 2f;
     public float floatProbability = 0.2f; // Probability of a cube floating
+    public float spawnDelay = 0.01f;    
+
 
     const int maxAttempts = 10;
     int attempts = 0;
@@ -133,7 +135,7 @@ public class FloorGenerator : MonoBehaviour
     {
         foreach(SpawnData data in spawnDatas)
         {
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(spawnDelay);
             var cube = Instantiate(cubePrefab, data.position, Quaternion.identity);
             cube.GetComponent<BlockBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
             cubes.Add(cube);
