@@ -10,7 +10,7 @@ public class FloorGenerator : MonoBehaviour
     public int gridSizeZ = 10;
     public int minHeight = 1;
     public int maxHeight = 5;
-    public float spacing = 2f;
+    public float spacing = 2f; // TODO: I don't like this name - it's not really spacing, it's the size of the cube
     public float floatProbability = 0.2f; // Probability of a cube floating
     public float spawnDelay = 0.01f;
 
@@ -115,6 +115,9 @@ public class FloorGenerator : MonoBehaviour
                         id = cubes.Count;
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
 
+                        Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
+                                          $"\n\tcubePosition: {cubePosition}" +
+                                          $"\n\tcolor: {color}");
                         SpawnData groundSpawnData = new SpawnData
                         {
                             id = id,
@@ -132,7 +135,7 @@ public class FloorGenerator : MonoBehaviour
         }
 
         // organize cubes list by id
-        cubes.Sort((x, y) => x.GetComponent<BlockBehavior>().Id.CompareTo(y.GetComponent<BlockBehavior>().Id));
+        cubes.Sort((x, y) => x.GetComponent<BlockBehavior>().id.CompareTo(y.GetComponent<BlockBehavior>().id));
         OnFloorComplete?.Invoke();
         StartCoroutine(SpawnCubes());
     }
@@ -158,11 +161,11 @@ public class FloorGenerator : MonoBehaviour
         // Check each adjacent cube
         foreach (Vector3 offset in offsets)
         {
-            Vector3 adjacentPos = position + (offset * 2); // Multiply by 2 to get the adjacent cube
-            //Debug.Log($"adjacentPos: {adjacentPos}");
+            Vector3 adjacentPos = position + (offset * spacing); // Multiply by 2(spacing) to get the adjacent cube
+
             // Check if a cube exists at the adjacent position
             SpawnData adjacentCube = spawnDatas.Find(spawnData => spawnData.position == adjacentPos);
-            //Debug.Log($"adjacentCube.id: {adjacentCube.id}");
+
             if (adjacentCube.color == color)
             {
                 Debug.Log($"fail - {adjacentCube.id} and {id} the same Color {color}");

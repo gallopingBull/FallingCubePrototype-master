@@ -57,30 +57,16 @@ public class BlockBehavior : MonoBehaviour
 
     private float fallDrag;
 
-    public int Id { 
-        get {  return id; } 
-        
-        set {
-            Debug.Log($"cuurent id({id}) changed to " + value);    
-            //if (id == value) return;
-            //OnVariableChanged?.Invoke(value);
-            id = value;
-        } 
-    }
-    
-    private Action<int> OnVariableChanged;
-    
     #endregion
 
     #region functions 
 
 
     // Start is called before the first frame update
-   void Start()
-   {
-        OnVariableChanged += OnIDChanged;   
-       //EnterState(States.init);
-   }
+    void Start()
+    {
+        //EnterState(States.init);
+    }
 
     // Update is called once per frame
     void FixedUpdate()
@@ -532,7 +518,7 @@ public class BlockBehavior : MonoBehaviour
     public void InitializeCube(int _id, ColorOption _color)
     {
         Debug.Log($"cube.id({id}) is being initialized with color: {color}");
-        Id = _id;
+        id = _id;
         color = _color;
         EnterState(States.init);
     }
