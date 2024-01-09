@@ -39,7 +39,7 @@ public class FloorGenerator : MonoBehaviour
             cubesParent.transform.position = Vector3.zero;
         }
 
-        SpawnTerrainWithFloatingCubes();
+        GenerateArena();
     }
 
     void Update()
@@ -48,11 +48,11 @@ public class FloorGenerator : MonoBehaviour
         {
             StopAllCoroutines();
             DestoryAllCubes();
-            SpawnTerrainWithFloatingCubes();
+            GenerateArena();
         }
     }
 
-    void SpawnTerrainWithFloatingCubes()
+    void GenerateArena()
     {
         cubes = new List<GameObject>();
         spawnDatas = new List<SpawnData>();
@@ -61,7 +61,6 @@ public class FloorGenerator : MonoBehaviour
         {
             for (int z = 0; z < gridSizeZ; z++)
             {
-                Debug.Log($"x: {x} z: {z}");
                 int randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 // check if random height value is an even number, otherwise redo assignment
                 while (randomHeight % 2 != 0)
@@ -70,14 +69,9 @@ public class FloorGenerator : MonoBehaviour
                     randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 }
 
-                Debug.Log($"*** cubes.count: {cubes.Count} ***");
                 int id = cubes.Count;
                 Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
                 ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
-
-                Debug.Log($"Attempt new spawn with:\n\tid: {id}" +
-                    $"\n\tcubePosition: {cubePosition}" +
-                    $"\n\tcolor: {color}");
 
                 if (color != ColorOption.Neutral)
                 {
@@ -104,6 +98,10 @@ public class FloorGenerator : MonoBehaviour
                     cubePosition.y = floatingHeight;
                 }
 
+                Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
+                    $"\n\tcubePosition: {cubePosition}" +
+                    $"\n\tcolor: {color}");
+
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
                 spawnDatas.Add(spawnData);
 
@@ -117,11 +115,12 @@ public class FloorGenerator : MonoBehaviour
                         id = cubes.Count;
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
 
-                        SpawnData groundSpawnData =
-                        new SpawnData { id = id, position = groundPos, color = ColorOption.Neutral };
-
-                        //Debug.Log($"\t\ttraversing down {id} y position!");
-                        //Debug.Log($"\t\tcurrent cube count: {cubes.Count}!");
+                        SpawnData groundSpawnData = new SpawnData
+                        {
+                            id = id,
+                            position = groundPos,
+                            color = ColorOption.Neutral
+                        };
 
                         spawnDatas.Add(groundSpawnData);
 
@@ -129,9 +128,9 @@ public class FloorGenerator : MonoBehaviour
                             break;
                     }
                 }
-
             }
         }
+
         // organize cubes list by id
         cubes.Sort((x, y) => x.GetComponent<BlockBehavior>().Id.CompareTo(y.GetComponent<BlockBehavior>().Id));
         OnFloorComplete?.Invoke();
