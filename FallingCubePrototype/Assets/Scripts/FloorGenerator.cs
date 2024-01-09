@@ -12,7 +12,7 @@ public class FloorGenerator : MonoBehaviour
     public int maxHeight = 5;
     public float spacing = 2f;
     public float floatProbability = 0.2f; // Probability of a cube floating
-    public float spawnDelay = 0.01f;    
+    public float spawnDelay = 0.01f;
 
 
     const int maxAttempts = 10;
@@ -24,7 +24,7 @@ public class FloorGenerator : MonoBehaviour
         Vector3.forward, Vector3.back, Vector3.up,
         Vector3.down, Vector3.right, Vector3.left
     };
-
+    Transform cubesParent;
     [SerializeField] List<GameObject> cubes;
     [SerializeField] List<SpawnData> spawnDatas;
     [SerializeField] List<ColorOption> colorsUsed;
@@ -33,6 +33,12 @@ public class FloorGenerator : MonoBehaviour
 
     void Start()
     {
+        if (cubesParent == null)
+        {
+            cubesParent = new GameObject("Cubes").transform;
+            cubesParent.transform.position = Vector3.zero;
+        }
+
         SpawnTerrainWithFloatingCubes();
     }
 
@@ -40,6 +46,7 @@ public class FloorGenerator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            StopAllCoroutines();
             DestoryAllCubes();
             SpawnTerrainWithFloatingCubes();
         }
@@ -87,7 +94,7 @@ public class FloorGenerator : MonoBehaviour
                         }
                     }
                 }
-                
+
                 colorsUsed.Clear();
 
                 // Check if the cube should float
@@ -133,10 +140,10 @@ public class FloorGenerator : MonoBehaviour
 
     private IEnumerator SpawnCubes()
     {
-        foreach(SpawnData data in spawnDatas)
+        foreach (SpawnData data in spawnDatas)
         {
             yield return new WaitForSeconds(spawnDelay);
-            var cube = Instantiate(cubePrefab, data.position, Quaternion.identity);
+            var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
             cube.GetComponent<BlockBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
             cubes.Add(cube);
         }
