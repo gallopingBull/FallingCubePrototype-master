@@ -154,7 +154,7 @@ public class ArenaGenerator : MonoBehaviour
     {
         if (spawnDatas.Count == 0)
             return false;
-        Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
+        //Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
 
         // Check each adjacent cube
         foreach (Vector3 offset in offsets)
@@ -166,7 +166,7 @@ public class ArenaGenerator : MonoBehaviour
 
             if (adjacentCube.color == color)
             {
-                Debug.Log($"fail - {adjacentCube.id} and {id} the same Color {color}");
+                //Debug.Log($"fail - {adjacentCube.id} and {id} the same Color {color}");
                 return true;
             }
         }
