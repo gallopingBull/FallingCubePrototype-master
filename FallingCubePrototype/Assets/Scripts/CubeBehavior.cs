@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class BlockBehavior : MonoBehaviour
+public class CubeBehavior : MonoBehaviour
 {
     public enum States
     {
@@ -73,8 +73,7 @@ public class BlockBehavior : MonoBehaviour
     {
         if (state != States.init)
         {
-            //custom velocity calculation since blocbehavior doesn't
-            //use rb at times.
+            // custom velocity calculation since blocbehavior doesn't use rb at times.
             float tmpYVel = Mathf.Round(rb.velocity.y);
             velocity = (transform.position - prevVel) / Time.deltaTime;
             prevVel = transform.position;
@@ -99,7 +98,7 @@ public class BlockBehavior : MonoBehaviour
             case States.falling:
                 if (m_HitDetect)
                 {
-                    //Debug.Log(gameObject.name+ " Hit : " + m_Hit.collider.name);
+                    // Debug.Log(gameObject.name+ " Hit : " + m_Hit.collider.name);
                     EnableLandingMarker();
 
                     if (m_Hit.distance < 1 && !cubeCollider.enabled)
@@ -120,7 +119,7 @@ public class BlockBehavior : MonoBehaviour
                         new Vector3(transform.position.x, 0, transform.position.z);
                 }
 
-                //block has reached first row
+                // block has reached first row
                 if (transform.position.y < .5f)
                 {
                     transform.position = new Vector3(transform.position.x, 0, transform.position.z);
@@ -136,12 +135,12 @@ public class BlockBehavior : MonoBehaviour
                 if ((!m_HitDetect || m_Hit.distance > .75) && transform.position.y != 0)
                 {
                     EnterState(States.falling);
-                    //print(gameObject.name + " should start falling");
+                    //Debug.Log(gameObject.name + " should start falling");
                 }
                 break;
 
             case States.dragging:
-                //print("In Dragging State"
+                //Debug.Log("In Dragging State"
 
                 if (!audioSource.isPlaying)
                 {
@@ -164,7 +163,7 @@ public class BlockBehavior : MonoBehaviour
         switch (_state)
         {
             case States.falling:
-                //print("set state to falling");
+                //Debug.Log("set state to falling");
                 if (ExhaustTrail != null)
                 {
                     foreach (GameObject go in ExhaustTrail)
@@ -191,7 +190,7 @@ public class BlockBehavior : MonoBehaviour
 
                 if (GroundedDust != null)
                 {
-                    //print("play landing paritcle");
+                    //Debug.Log("play landing paritcle");
                     GroundedDust.GetComponent<ParticleSystem>().Play();
                 }
                 if (state == States.falling)
@@ -284,14 +283,13 @@ public class BlockBehavior : MonoBehaviour
 
         SetMaterialColor();
         cubeCollider = GetComponent<Collider>();
-        //_climbingCollider = GetComponentInChildren<Collider>();
     }
 
     private void SetMaterialColor()
     {
         // Select a random color for the cube
-        //color = (ColorOption)Random.Range(0, 4);
-        Debug.Log($"{id} is being initialized with color: {color} in SetMaterialColor()...");
+        //color = (ColorOption)Random.Range(0, 4); // Do I need this?
+        //Debug.Log($"{id} is being initialized with color: {color} in SetMaterialColor()...");
         switch (color)
         {
             case ColorOption.Neutral:
@@ -315,7 +313,6 @@ public class BlockBehavior : MonoBehaviour
                 //Debug.Log($"{gameObject.name} is a Neutral color.");
                 break;
         }
-        //Debug.Log($"\t\t\t\t... but its material color is: {rend.material.color}");
     }
 
 
@@ -324,8 +321,8 @@ public class BlockBehavior : MonoBehaviour
         rb.mass = /*.01f*/10000000;
         fallDrag = GetNewSpeed();
         rb.drag = fallDrag/*2*/;
-        //2 is the fastest
-        //4 is the slowest
+        // 2 is the fastest
+        // 4 is the slowest
         rb.isKinematic = false;
         rb.useGravity = true;
     }
@@ -353,27 +350,27 @@ public class BlockBehavior : MonoBehaviour
         rb.constraints = tmpConst;
     }
 
-    //Draw the BoxCast as a gizmo to show where it currently is testing. Click the Gizmos button to see this
+    // Draw the BoxCast as a gizmo to show where it currently is testing. Click the Gizmos button to see this
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
 
-        //Check if there has been a hit yet
+        // Check if there has been a hit yet
         if (m_HitDetect)
         {
-            //Draw a Ray forward from GameObject toward the hit
+            // Draw a Ray forward from GameObject toward the hit
             Gizmos.DrawRay(transform.position, (-transform.up) * m_Hit.distance);
 
             //Draw a cube that extends to where the hit exists
             Gizmos.DrawWireCube(transform.position + (-transform.up) * m_Hit.distance, transform.localScale * BoxColliderSize);
         }
-        //If there hasn't been a hit yet, draw the ray at the maximum distancepull push
+        // If there hasn't been a hit yet, draw the ray at the maximum distancepull push
         else
         {
-            //Draw a Ray forward from GameObject toward the maximum distance
+            // Draw a Ray forward from GameObject toward the maximum distance
             Gizmos.DrawRay(transform.position, (-transform.up) * m_MaxDistance);
 
-            //Draw a cube at the maximum distance
+            // Draw a cube at the maximum distance
             Gizmos.DrawWireCube(transform.position + (-transform.up) * m_MaxDistance, transform.localScale * BoxColliderSize);
         }
     }
@@ -385,7 +382,7 @@ public class BlockBehavior : MonoBehaviour
         Vector3 tmpLoc = new Vector3(m_Hit.transform.position.x,
                        m_Hit.transform.position.y,
                        m_Hit.transform.position.z);
-        //print(m_Hit.transform.name);
+        //Debug.log(m_Hit.transform.name);
 
         if (m_Hit.transform.tag != "Player")
         {
@@ -396,16 +393,15 @@ public class BlockBehavior : MonoBehaviour
 
         else
         {
-            //print(m_Hit.transform.tag);
+            //Debug.log(m_Hit.transform.tag);
             LandingIndicator.transform.position = new Vector3(transform.position.x,
             Mathf.Round(m_Hit.transform.position.y + .75f),
             transform.position.z);
         }
 
         if (LandingIndicator.GetComponent<ParticleSystem>().isPaused)
-        {
             LandingIndicator.GetComponent<ParticleSystem>().Play();
-        }
+
     }
 
     private void DisableLandingMarker()
@@ -418,7 +414,6 @@ public class BlockBehavior : MonoBehaviour
     public void EnableExplosion()
     {
         enableAlarm = true;
-        //GetComponent<BoxCollider>().enabled = false;
     }
 
     public void ExplosionAlert()
@@ -469,11 +464,6 @@ public class BlockBehavior : MonoBehaviour
         StopCoroutine("DestoryCube");
     }
 
-    private void OnIDChanged(int newValue)
-    {
-        Debug.Log($"{id} is changing to {newValue}");
-    }
-
     //this float is assigned to rb.mass when
     //cube is falling 
     private float GetNewSpeed()
@@ -517,7 +507,7 @@ public class BlockBehavior : MonoBehaviour
     #region public state callers
     public void InitializeCube(int _id, ColorOption _color)
     {
-        Debug.Log($"cube.id({id}) is being initialized with color: {color}");
+        //Debug.Log($"cube.id({id}) is being initialized with color: {color}");
         id = _id;
         color = _color;
         EnterState(States.init);

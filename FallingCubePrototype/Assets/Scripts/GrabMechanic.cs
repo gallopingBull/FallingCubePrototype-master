@@ -62,12 +62,12 @@ public class GrabMechanic : MonoBehaviour
     private void Grab()
     {
         if (targetCube != null && 
-            !targetCube.transform.parent.parent.GetComponent<BlockBehavior>().isDestroying)
+            !targetCube.transform.parent.parent.GetComponent<CubeBehavior>().isDestroying)
         {
             // change state 
             // reset movement/rb variables
 
-            GetComponent<MoveBoxController>().EnableBoxMovement();
+            GetComponent<MoveCubeController>().EnableBoxMovement();
 
             // get forward axis and set player position and rotation to directly face cube at set distance
             //SetPlayerPositionAndRotation();
@@ -81,10 +81,10 @@ public class GrabMechanic : MonoBehaviour
 
             //print(targetCube.name);
             //print(targetCube.transform.parent.parent.name);
-            targetCube.transform.parent.GetComponentInParent<BlockBehavior>().SetDragging();
+            targetCube.transform.parent.GetComponentInParent<CubeBehavior>().SetDragging();
 
-            GetComponent<MoveBoxController>().SetPushPointPosition();
-            GetComponent<MoveBoxController>().ParentToPushPoint();
+            GetComponent<MoveCubeController>().SetPushPointPosition();
+            GetComponent<MoveCubeController>().ParentToPushPoint();
 
             isGrabbing = true;
         }
@@ -95,17 +95,17 @@ public class GrabMechanic : MonoBehaviour
         //player can ONLY release cube if it's reach 
         //a whole number (-1, 0, 1) on the  X/Z axis 
         if (targetCube != null && 
-            !targetCube.transform.parent.parent.GetComponent<BlockBehavior>().isDestroying)
+            !targetCube.transform.parent.parent.GetComponent<CubeBehavior>().isDestroying)
         {
             
             // change state 
             // reset movement/rb variables
 
-            GetComponent<MoveBoxController>().DeParentToPushPoint();
+            GetComponent<MoveCubeController>().DeParentToPushPoint();
 
-            targetCube.transform.parent.GetComponentInParent<BlockBehavior>().RoundCubeLocation();
+            targetCube.transform.parent.GetComponentInParent<CubeBehavior>().RoundCubeLocation();
             targetCube.transform.parent.parent.eulerAngles = Vector3.zero;
-            targetCube.transform.parent.GetComponentInParent<BlockBehavior>().SetGround();
+            targetCube.transform.parent.GetComponentInParent<CubeBehavior>().SetGround();
 
             // ***need to clean this up*** \\
             // these two functions reset drag settings and stop push animation
@@ -118,7 +118,7 @@ public class GrabMechanic : MonoBehaviour
             // ***need to clean this up*** \\
 
             isGrabbing = false;
-            GetComponent<MoveBoxController>().EnableBoxMovement();
+            GetComponent<MoveCubeController>().EnableBoxMovement();
         }
     }
     

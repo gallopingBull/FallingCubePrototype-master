@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockSpawner : MonoBehaviour
+public class CubeSpawner : MonoBehaviour
 {
     #region variables
     public bool EnableSpawner = false;
@@ -281,8 +281,8 @@ public class BlockSpawner : MonoBehaviour
 
                 // spawned cube can't land on or by similar color
                 // delete cube and spawn another 
-                if (targetCube.GetComponent<BlockBehavior>().color ==
-                    CubeHit.GetComponent<BlockBehavior>().color)
+                if (targetCube.GetComponent<CubeBehavior>().color ==
+                    CubeHit.GetComponent<CubeBehavior>().color)
                 {
                     GetNewCube();
                     return;

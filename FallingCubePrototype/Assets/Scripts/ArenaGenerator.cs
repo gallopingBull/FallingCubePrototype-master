@@ -133,7 +133,7 @@ public class ArenaGenerator : MonoBehaviour
         }
 
         // organize cubes list by id
-        cubes.Sort((x, y) => x.GetComponent<BlockBehavior>().id.CompareTo(y.GetComponent<BlockBehavior>().id));
+        cubes.Sort((x, y) => x.GetComponent<CubeBehavior>().id.CompareTo(y.GetComponent<CubeBehavior>().id));
         OnFloorComplete?.Invoke();
         StartCoroutine(SpawnCubes());
     }
@@ -144,7 +144,7 @@ public class ArenaGenerator : MonoBehaviour
         {
             yield return new WaitForSeconds(spawnDelay);
             var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
-            cube.GetComponent<BlockBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
+            cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
             cubes.Add(cube);
         }
         Debug.Log($"{GetTotalCubeCount()} cubes spawned");

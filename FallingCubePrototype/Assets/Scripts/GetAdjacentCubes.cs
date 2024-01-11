@@ -1,32 +1,32 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class GetAdjacentBlocks : MonoBehaviour
+public class GetAdjacentCubes : MonoBehaviour
 {
     private GameObject parent;
     public bool canDetect;
 
-    private BlockBehavior blockBehavior;
+    private CubeBehavior cubeBehavior;
     private List<GameObject> tmpTargets;
     public GameObject tmp;
 
     private void Awake()
     {
-        blockBehavior = GetComponentInParent<BlockBehavior>();
+        cubeBehavior = GetComponentInParent<CubeBehavior>();
         parent = transform.parent.parent.gameObject;
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (blockBehavior.color == ColorOption.Neutral)
+        if (cubeBehavior.color == ColorOption.Neutral)
             return;
 
         if (other.tag == "Block" &&
-            other.GetComponentInParent<BlockBehavior>().color == blockBehavior.color && 
-            !blockBehavior.isDestroying)
+            other.GetComponentInParent<CubeBehavior>().color == cubeBehavior.color &&
+            !cubeBehavior.isDestroying)
         {
             tmp = other.gameObject;
-            if (blockBehavior.state == BlockBehavior.States.grounded && CheckPosition())
+            if (cubeBehavior.state == CubeBehavior.States.grounded && CheckPosition())
             {
                 DestoryAdjacentCubes();
             }
@@ -69,16 +69,16 @@ public class GetAdjacentBlocks : MonoBehaviour
         print("z = " + transform.parent.parent.gameObject.transform.position.z);
         print("*************");
         */
-        #endregion 
-        
+        #endregion
+
         //if other block hasnt been destoryed yet
         if (tmp == null)
             return;
 
-        blockBehavior.isDestroying = true;
-        if (tmp.tag == "Block" && blockBehavior.isDestroying)
+        cubeBehavior.isDestroying = true;
+        if (tmp.tag == "Block" && cubeBehavior.isDestroying)
         {
-            if (tmp.GetComponentInParent<BlockBehavior>().state == BlockBehavior.States.grounded)
+            if (tmp.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
             {
                 //print("Destroying " + tmp.name + " from " + transform.parent.parent.gameObject.name);
 
@@ -90,6 +90,6 @@ public class GetAdjacentBlocks : MonoBehaviour
                 GameManager.gm.AddCubeTarget(transform.parent.parent.gameObject);
 
             }
-        } 
+        }
     }
 }

@@ -15,9 +15,9 @@ public class CubeDeathCollision : MonoBehaviour
     private bool CanDestroyPlayer(GameObject go)
     {
         return (go.tag == "Player" &&
-            GetComponentInParent<BlockBehavior>().state ==
-            BlockBehavior.States.falling &&
-            !GetComponentInParent<BlockBehavior>().isDestroying &&
+            GetComponentInParent<CubeBehavior>().state ==
+            CubeBehavior.States.falling &&
+            !GetComponentInParent<CubeBehavior>().isDestroying &&
             !GameManager.gm.gameCompleted);
     }
 }

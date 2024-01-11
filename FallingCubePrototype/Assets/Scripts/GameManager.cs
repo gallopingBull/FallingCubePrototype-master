@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     private GameObject ObjectiveGate;
 
     [SerializeField]
-    private BlockSpawner bs;
+    private CubeSpawner bs;
 
     [SerializeField]
     private GameObject InitalTimerPanel;
@@ -250,7 +250,7 @@ public class GameManager : MonoBehaviour
     {
         if (!CubeTargets.Contains(target))
         {
-            target.GetComponent<BlockBehavior>().PlaySFX(target.GetComponent<BlockBehavior>().contactSFX);
+            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
             CubeTargets.Add(target);
         }
         Invoke("DestoryCubeTargets", .15f);
@@ -271,9 +271,9 @@ public class GameManager : MonoBehaviour
             {
                 if (target != null)
                 {
-                    AddPoints(target.GetComponent<BlockBehavior>().ScoreValue, _multiplier);
+                    AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
                     bs.Spawn();
-                    target.GetComponent<BlockBehavior>().DestroyCube();
+                    target.GetComponent<CubeBehavior>().DestroyCube();
                 }
             }
         }
