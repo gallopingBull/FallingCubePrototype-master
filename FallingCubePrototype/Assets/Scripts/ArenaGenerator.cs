@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FloorGenerator : MonoBehaviour
+public class ArenaGenerator : MonoBehaviour
 {
     public GameObject cubePrefab;
     public int gridSizeX = 10;
@@ -13,7 +13,6 @@ public class FloorGenerator : MonoBehaviour
     public float spacing = 2f; // TODO: I don't like this name - it's not really spacing, it's the size of the cube
     public float floatProbability = 0.2f; // Probability of a cube floating
     public float spawnDelay = 0.01f;
-
 
     const int maxAttempts = 10;
     int attempts = 0;
@@ -78,7 +77,6 @@ public class FloorGenerator : MonoBehaviour
                     while ((CheckIfColorIsNearby(id, cubePosition, color) || colorsUsed.Contains(color)) && attempts < maxAttempts)
                     {
                         color = (ColorOption)UnityEngine.Random.Range(0, 4);
-                        //Debug.Log($"in while loop - color is {color} now - attempt: {attempts}");
                         attempts++;
                         if (attempts == maxAttempts)
                         {
@@ -98,10 +96,10 @@ public class FloorGenerator : MonoBehaviour
                     cubePosition.y = floatingHeight;
                 }
 
-                Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
-                    $"\n\tcubePosition: {cubePosition}" +
-                    $"\n\tcolor: {color}");
-
+                //Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
+                //    $"\n\tcubePosition: {cubePosition}" +
+                //    $"\n\tcolor: {color}");
+                //
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
                 spawnDatas.Add(spawnData);
 
@@ -115,9 +113,9 @@ public class FloorGenerator : MonoBehaviour
                         id = cubes.Count;
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
 
-                        Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
-                                          $"\n\tcubePosition: {cubePosition}" +
-                                          $"\n\tcolor: {color}");
+                        //Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
+                        //                  $"\n\tcubePosition: {cubePosition}" +
+                        //                  $"\n\tcolor: {color}");
                         SpawnData groundSpawnData = new SpawnData
                         {
                             id = id,
