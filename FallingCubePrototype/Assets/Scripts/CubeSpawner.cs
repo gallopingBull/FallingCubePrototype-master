@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using ProBuilder2.Common;
+using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,8 +17,8 @@ public class CubeSpawner : MonoBehaviour
 
     public GameObject[] Blocks;
 
-    public GameObject CurSpawnLoc;
-    public GameObject[] SpawnLocs;
+    public Transform CurSpawnLoc;
+    public List<Transform> SpawnLocs;
 
     private float randFloat;
 
@@ -54,6 +56,8 @@ public class CubeSpawner : MonoBehaviour
     {
         lastSpawnLocs = new Queue<int>();
         m_Collider = GetComponent<Collider>();
+        SpawnLocs = GetComponentsInChildren<Transform>().ToList();
+        SpawnLocs.RemoveAt(0); // Unity adds the parent transform to the list of children, so we remove it. 
         if (EnableSpawner)
             StartCoroutine(AutoSpawner());
     }
@@ -89,6 +93,7 @@ public class CubeSpawner : MonoBehaviour
 
     IEnumerator AutoSpawner()
     {
+
         if (init)
             MAXCubeSpawnAmmount = Random.Range(10, 15);
 
@@ -164,14 +169,13 @@ public class CubeSpawner : MonoBehaviour
 
     private int GetRandomSpawnPosition()
     {
-        int tmpLoc = Random.Range(0, SpawnLocs.Length);
+        int tmpLoc = Random.Range(0, SpawnLocs.Count);
         // TODO: this is a hacky fix. find better solutions for this null check.
         //Debug.Log($"is lastSpawnLocs null: {lastSpawnLocs}");
         if (lastSpawnLocs == null)
             return 0;
         if (lastSpawnLocs.Contains(tmpLoc) || (tmpLoc == playerSpawnPoint && init))
         {
-
             return GetRandomSpawnPosition();
         }
 
@@ -243,7 +247,7 @@ public class CubeSpawner : MonoBehaviour
 
     private void CheckSpawnPosition()
     {
-        //just in case cube is destoryed before it is landed on
+        // just in case cube is destoryed before it is landed on
         if (!m_Hit.collider)
         {
             if (!init)
