@@ -11,7 +11,7 @@ public class MoveCubeController : MonoBehaviour
     public bool enableMovement;
 
     private Transform target;
-    private GameObject _camera; 
+    private GameObject _camera;
     public float moveDistance = 1f; // Distance the cube moves with each step
     public Transform pushPoint;
 
@@ -41,20 +41,20 @@ public class MoveCubeController : MonoBehaviour
                 isPaused = true;
             }
         }
-        
+
         if (enableMovement)
         {
             Movecube();
 
-           //clamp x and z position to prevent cube from falling off grid/map
-           target.transform.position = new Vector3(Mathf.Clamp(target.position.x, -2, 2), 
-               target.position.y,
-               Mathf.Clamp(target.position.z, -2f, 2f)); 
-           
-           pushPoint.transform.position = new Vector3(Mathf.Clamp(pushPoint.position.x, -2f, 2f),
-               pushPoint.position.y,
-               Mathf.Clamp(pushPoint.position.z, -2f, 2f));
-        }  
+            //clamp x and z position to prevent cube from falling off grid/map
+            target.transform.position = new Vector3(Mathf.Clamp(target.position.x, -100, 100),
+                target.position.y,
+                Mathf.Clamp(target.position.z, -100, 100));
+
+            pushPoint.transform.position = new Vector3(Mathf.Clamp(pushPoint.position.x, -100, 100),
+                pushPoint.position.y,
+                Mathf.Clamp(pushPoint.position.z, -100, 100));
+        }
     }
 
     private void Movecube()
