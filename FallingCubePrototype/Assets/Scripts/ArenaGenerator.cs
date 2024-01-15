@@ -5,14 +5,12 @@ using UnityEngine;
 
 public class ArenaGenerator : MonoBehaviour
 {
-    public GameObject cubePrefab;
     public int gridSizeX = 10;
     public int gridSizeZ = 10;
     public int minHeight = 1;
     public int maxHeight = 5;
     public float spacing = 2f; // TODO: I don't like this name - it's not really spacing, it's the size of the cube
     public float floatProbability = 0.2f; // Probability of a cube floating
-    public float spawnDelay = 0.01f;
 
     const int maxAttempts = 10;
     int attempts = 0;
@@ -23,21 +21,13 @@ public class ArenaGenerator : MonoBehaviour
         Vector3.forward, Vector3.back, Vector3.up,
         Vector3.down, Vector3.right, Vector3.left
     };
-    Transform cubesParent;
-    [SerializeField] List<GameObject> cubes;
-    [SerializeField] List<SpawnData> spawnDatas;
+
     [SerializeField] List<ColorOption> colorsUsed;
 
     static public Action OnFloorComplete { get; set; }
 
     void Start()
     {
-        if (cubesParent == null)
-        {
-            cubesParent = new GameObject("Cubes").transform;
-            cubesParent.transform.position = Vector3.zero;
-        }
-
         GenerateArena();
     }
 
@@ -46,16 +36,13 @@ public class ArenaGenerator : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.G))
         {
             StopAllCoroutines();
-            DestoryAllCubes();
+            CubeManager.Instance.DestoryAllCubes();
             GenerateArena();
         }
     }
 
     void GenerateArena()
     {
-        cubes = new List<GameObject>();
-        spawnDatas = new List<SpawnData>();
-
         for (int x = 0; x < gridSizeX; x++)
         {
             for (int z = 0; z < gridSizeZ; z++)
@@ -68,7 +55,7 @@ public class ArenaGenerator : MonoBehaviour
                     randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 }
 
-                int id = cubes.Count;
+                int id = CubeManager.Instance.SpawnDatas.Count;
                 Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
                 ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
 
@@ -101,8 +88,7 @@ public class ArenaGenerator : MonoBehaviour
                 //    $"\n\tcolor: {color}");
                 //
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
-                //CubeManager.SpawnDatas.Add(groundSpawnData);
-                spawnDatas.Add(spawnData);
+                CubeManager.Instance.SpawnDatas.Add(spawnData);
 
                 colorsUsed.Add(color);
 
@@ -111,7 +97,7 @@ public class ArenaGenerator : MonoBehaviour
                 {
                     for (int i = (int)cubePosition.y - (int)spacing; i < cubePosition.y; i = i - (int)spacing)
                     {
-                        id = cubes.Count;
+                        id = CubeManager.Instance.SpawnDatas.Count;
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
 
                         //Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
@@ -124,8 +110,7 @@ public class ArenaGenerator : MonoBehaviour
                             color = ColorOption.Neutral
                         };
 
-                        //CubeManager.SpawnDatas.Add(groundSpawnData);
-                        spawnDatas.Add(groundSpawnData);
+                        CubeManager.Instance.SpawnDatas.Add(groundSpawnData);
 
                         if (i == 0)
                             break;
@@ -134,28 +119,13 @@ public class ArenaGenerator : MonoBehaviour
             }
         }
 
-        // organize cubes list by id
-        cubes.Sort((x, y) => x.GetComponent<CubeBehavior>().id.CompareTo(y.GetComponent<CubeBehavior>().id));
         OnFloorComplete?.Invoke();
-        //CubeManager.CallSpawnCubes();
-        StartCoroutine(SpawnCubes());
-    }
-
-    private IEnumerator SpawnCubes()
-    {
-        foreach (SpawnData data in spawnDatas)
-        {
-            yield return new WaitForSeconds(spawnDelay);
-            var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
-            cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
-            cubes.Add(cube);
-        }
-        Debug.Log($"{GetTotalCubeCount()} cubes spawned");
+        CubeManager.Instance.CallSpawnCubes();
     }
 
     private bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
     {
-        if (spawnDatas.Count == 0)
+        if (CubeManager.Instance.SpawnDatas.Count == 0)
             return false;
         //Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
 
@@ -165,7 +135,7 @@ public class ArenaGenerator : MonoBehaviour
             Vector3 adjacentPos = position + (offset * spacing); // Multiply by 2(spacing) to get the adjacent cube
 
             // Check if a cube exists at the adjacent position
-            SpawnData adjacentCube = spawnDatas.Find(spawnData => spawnData.position == adjacentPos);
+            SpawnData adjacentCube = CubeManager.Instance.SpawnDatas.Find(spawnData => spawnData.position == adjacentPos);
 
             if (adjacentCube.color == color)
             {
@@ -174,28 +144,6 @@ public class ArenaGenerator : MonoBehaviour
             }
         }
         return false;
-    }
-
-    private int GetTotalCubeCount()
-    {
-        return cubes.Count;
-    }
-
-
-    private void DestoryAllCubes()
-    {
-        if (cubes.Count == 0)
-        {
-            Debug.Log("No cubes to destroy");
-            return;
-        }
-
-        Debug.Log("Destroying cubes!");
-        foreach (GameObject cube in cubes)
-            Destroy(cube);
-
-        cubes.Clear();
-        spawnDatas.Clear();
     }
 }
 

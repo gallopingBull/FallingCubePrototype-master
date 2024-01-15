@@ -4,16 +4,33 @@ using UnityEngine;
 
 public class CubeManager : MonoBehaviour
 {
+    public static CubeManager Instance { get; private set; }
     public float spawnDelay = 0.01f;
     public GameObject cubePrefab;
 
-    [SerializeField] static List<GameObject> cubes;
-    [SerializeField] static List<SpawnData> spawnDatas;
+    [SerializeField] List<GameObject> cubes = new List<GameObject>();
+    [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
     private Transform cubesParent;
 
-    public static List<GameObject> Cubes { get => cubes; set => cubes = value; }
+    public List<GameObject> Cubes { get => cubes; set => cubes = value; }
 
-    static List<SpawnData> SpawnDatas { get => spawnDatas; set => spawnDatas = value; }
+    public List<SpawnData> SpawnDatas { get => spawnDatas; set => spawnDatas = value; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        Init();
+        Debug.Log("CubeManager initialized");
+    }
+
     private void Init()
     {
         if (cubesParent == null)
@@ -26,9 +43,6 @@ public class CubeManager : MonoBehaviour
     public void CallSpawnCubes() { StartCoroutine(SpawnCubes()); }
     private IEnumerator SpawnCubes()
     {
-        // organize cubes list by id
-        cubes.Sort((x, y) => x.GetComponent<CubeBehavior>().id.CompareTo(y.GetComponent<CubeBehavior>().id));
-
         foreach (SpawnData data in spawnDatas)
         {
             yield return new WaitForSeconds(spawnDelay);
@@ -36,6 +50,9 @@ public class CubeManager : MonoBehaviour
             cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
             cubes.Add(cube);
         }
+
+        // organize cubes list by id
+        cubes.Sort((x, y) => x.GetComponent<CubeBehavior>().id.CompareTo(y.GetComponent<CubeBehavior>().id));
         Debug.Log($"{GetTotalCubeCount()} cubes spawned");
     }
 
@@ -44,7 +61,7 @@ public class CubeManager : MonoBehaviour
         return Cubes.Count;
     }
 
-    private void DestoryAllCubes()
+    public void DestoryAllCubes()
     {
         if (Cubes.Count == 0)
         {
@@ -69,7 +86,7 @@ public enum ColorOption
     Blue
 }
 
-struct SpawnData
+public struct SpawnData
 {
     public int id;
     public Vector3 position;
