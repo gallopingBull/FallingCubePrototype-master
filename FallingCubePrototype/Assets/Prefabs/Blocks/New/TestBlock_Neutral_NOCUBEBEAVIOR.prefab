@@ -134,6 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cb0c2dc3174fc045ab1a4a19dfae520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
   state: 3
   velocity: {x: 0, y: 0, z: 0}
   colorPingPongTime: 0.35
@@ -20289,7 +20290,7 @@ GameObject:
   - component: {fileID: 7518171094906817790}
   - component: {fileID: 7518171094906817791}
   m_Layer: 2
-  m_Name: CubeKillZ
+  m_Name: CubeKillZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

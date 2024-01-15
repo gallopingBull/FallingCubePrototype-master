@@ -13013,6 +13013,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 8172144758383271549, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
+      propertyPath: debugMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8172144758383271549, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
+      propertyPath: selectedToolbar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8172144758383271551, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
+      propertyPath: selectedToolbar
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8172144758383271551, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[4].m_Target
       value: 
@@ -13032,6 +13044,14 @@ PrefabInstance:
     - target: {fileID: 8172144759971561013, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8172546696755803506, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8173090452143630484, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ec3a714e27bd79299547bee5dec1175, type: 3}

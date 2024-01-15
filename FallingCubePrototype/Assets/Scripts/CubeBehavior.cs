@@ -54,7 +54,7 @@ public class CubeBehavior : MonoBehaviour
     private Collider cubeCollider;
     public Collider ClimbingCollider;
     private RaycastHit m_Hit;
-
+    private Collider cubeKillZone;
     private float fallDrag;
 
     #endregion
@@ -131,7 +131,7 @@ public class CubeBehavior : MonoBehaviour
 
             case States.grounded:
 
-                //cube underneath this one is gone, this cube should fall
+                // cube underneath this one is gone, this cube should fall
                 if ((!m_HitDetect || m_Hit.distance > .75) && transform.position.y != 0)
                 {
                     EnterState(States.falling);
@@ -217,7 +217,7 @@ public class CubeBehavior : MonoBehaviour
                 rb.mass = 1;
                 rb.isKinematic = false;
                 rb.useGravity = true;
-
+                cubeKillZone.gameObject.SetActive(false);
                 ClimbingCollider.enabled = false;
                 state = _state;
 
@@ -265,7 +265,7 @@ public class CubeBehavior : MonoBehaviour
                     audioSource.Stop();
                     audioSource.loop = false;
                 }
-
+                cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
                 break;
             default:
@@ -283,6 +283,7 @@ public class CubeBehavior : MonoBehaviour
 
         SetMaterialColor();
         cubeCollider = GetComponent<Collider>();
+        cubeKillZone = gameObject.transform.Find("CubeKillZone").GetComponent<Collider>();
     }
 
     private void SetMaterialColor()
