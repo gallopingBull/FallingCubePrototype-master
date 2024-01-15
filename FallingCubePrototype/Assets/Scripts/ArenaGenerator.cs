@@ -101,6 +101,7 @@ public class ArenaGenerator : MonoBehaviour
                 //    $"\n\tcolor: {color}");
                 //
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
+                //CubeManager.SpawnDatas.Add(groundSpawnData);
                 spawnDatas.Add(spawnData);
 
                 colorsUsed.Add(color);
@@ -123,6 +124,7 @@ public class ArenaGenerator : MonoBehaviour
                             color = ColorOption.Neutral
                         };
 
+                        //CubeManager.SpawnDatas.Add(groundSpawnData);
                         spawnDatas.Add(groundSpawnData);
 
                         if (i == 0)
@@ -135,6 +137,7 @@ public class ArenaGenerator : MonoBehaviour
         // organize cubes list by id
         cubes.Sort((x, y) => x.GetComponent<CubeBehavior>().id.CompareTo(y.GetComponent<CubeBehavior>().id));
         OnFloorComplete?.Invoke();
+        //CubeManager.CallSpawnCubes();
         StartCoroutine(SpawnCubes());
     }
 
@@ -196,18 +199,3 @@ public class ArenaGenerator : MonoBehaviour
     }
 }
 
-// Enum to represent different colors
-public enum ColorOption
-{
-    Neutral,
-    Red,
-    Green,
-    Blue
-}
-
-struct SpawnData
-{
-    public int id;
-    public Vector3 position;
-    public ColorOption color;
-}

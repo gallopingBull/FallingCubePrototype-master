@@ -122,8 +122,8 @@ public class MoveCubeMechanic : MonoBehaviour
     private IEnumerator EnableMovement()
     {
         yield return new WaitForSeconds(1.5f);
-        if (!GetComponent<MoveCubeMechanic>().enableMovement)
-            GetComponent<MoveCubeMechanic>().enableMovement = true;
+        if (!enableMovement)
+            enableMovement = true;
         StopCoroutine("EnableMovement");
     }
 

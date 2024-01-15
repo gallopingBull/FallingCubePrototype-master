@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
+//TODO: Change class name to CeilingSpawner
 public class CubeSpawner : MonoBehaviour
 {
     #region variables
@@ -124,8 +125,8 @@ public class CubeSpawner : MonoBehaviour
         }
     }
 
-    //change rate to spawn based on current time from Gm.time
-    //as time progresses more cubes spawn
+    // change rate to spawn based on current time from Gm.time
+    // as time progresses more cubes spawn
     private float GetNewSpawnRate()
     {
         float tmpRate;
@@ -188,14 +189,16 @@ public class CubeSpawner : MonoBehaviour
         }
     }
 
-    //spawns cubes
+    // spawns cubes
     private void SpawnManager()
     {
-        randLoc = GetRandomSpawnPosition();
-        int randBlock = GetRandomCubeIndex(); // TODO: This will probably be changed to a random number color instead of using the prefab variants id.
         isSpawning = true;
 
+        randLoc = GetRandomSpawnPosition();
         CurSpawnLoc = SpawnLocs[randLoc];
+        int randBlock = GetRandomCubeIndex(); // TODO: This will probably be changed to a random number color instead of using the prefab variants id.
+                                              //ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
+
 
         targetCube = Instantiate(Blocks[0], CurSpawnLoc.transform.position, transform.rotation);
         targetCube.SetActive(false);
@@ -204,7 +207,7 @@ public class CubeSpawner : MonoBehaviour
 
     public void SpawnPlayerCaller()
     {
-        //print("spawn player caller");
+        //Debug.Log("spawn player caller");
         SpawnPlayer();
     }
 
@@ -308,17 +311,6 @@ public class CubeSpawner : MonoBehaviour
     {
         SpawnManager();
         CheckColor = true;
-
-        #region old
-        /*randLoc = GetRandomSpawnPosition();
-        int randBlock = GetRandomCubeIndex();
-
-        for (int i = 0; i < spawnAmmount; i++)
-        {
-            Instantiate(Blocks[randBlock], SpawnLocs[randLoc].gameObject.transform.position, transform.rotation);
-        }*/
-        //CheckColor = false;
-        #endregion 
     }
 
     private void GetNewCube()

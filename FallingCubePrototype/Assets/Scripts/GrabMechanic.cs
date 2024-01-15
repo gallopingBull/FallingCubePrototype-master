@@ -67,7 +67,6 @@ public class GrabMechanic : MonoBehaviour
             // change state 
             // reset movement/rb variables
 
-            GetComponent<MoveCubeMechanic>().EnableBoxMovement();
 
             // get forward axis and set player position and rotation to directly face cube at set distance
             //SetPlayerPositionAndRotation();
@@ -83,6 +82,7 @@ public class GrabMechanic : MonoBehaviour
             //print(targetCube.transform.parent.parent.name);
             targetCube.transform.parent.GetComponentInParent<CubeBehavior>().SetDragging();
 
+            GetComponent<MoveCubeMechanic>().EnableBoxMovement();
             GetComponent<MoveCubeMechanic>().SetPushPointPosition();
             GetComponent<MoveCubeMechanic>().ParentToPushPoint();
 
