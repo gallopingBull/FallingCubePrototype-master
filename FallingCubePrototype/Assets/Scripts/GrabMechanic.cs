@@ -67,7 +67,7 @@ public class GrabMechanic : MonoBehaviour
             // change state 
             // reset movement/rb variables
 
-            GetComponent<MoveCubeController>().EnableBoxMovement();
+            GetComponent<MoveCubeMechanic>().EnableBoxMovement();
 
             // get forward axis and set player position and rotation to directly face cube at set distance
             //SetPlayerPositionAndRotation();
@@ -83,8 +83,8 @@ public class GrabMechanic : MonoBehaviour
             //print(targetCube.transform.parent.parent.name);
             targetCube.transform.parent.GetComponentInParent<CubeBehavior>().SetDragging();
 
-            GetComponent<MoveCubeController>().SetPushPointPosition();
-            GetComponent<MoveCubeController>().ParentToPushPoint();
+            GetComponent<MoveCubeMechanic>().SetPushPointPosition();
+            GetComponent<MoveCubeMechanic>().ParentToPushPoint();
 
             isGrabbing = true;
         }
@@ -101,7 +101,7 @@ public class GrabMechanic : MonoBehaviour
             // change state 
             // reset movement/rb variables
 
-            GetComponent<MoveCubeController>().DeParentToPushPoint();
+            GetComponent<MoveCubeMechanic>().DeParentToPushPoint();
 
             targetCube.transform.parent.GetComponentInParent<CubeBehavior>().RoundCubeLocation();
             targetCube.transform.parent.parent.eulerAngles = Vector3.zero;
@@ -118,7 +118,7 @@ public class GrabMechanic : MonoBehaviour
             // ***need to clean this up*** \\
 
             isGrabbing = false;
-            GetComponent<MoveCubeController>().EnableBoxMovement();
+            GetComponent<MoveCubeMechanic>().EnableBoxMovement();
         }
     }
 

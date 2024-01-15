@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Invector.vCharacterController;
 using UnityEngine;
 
-public class MoveCubeController : MonoBehaviour
+public class MoveCubeMechanic : MonoBehaviour
 {
     #region variables
     [HideInInspector]
@@ -122,8 +122,8 @@ public class MoveCubeController : MonoBehaviour
     private IEnumerator EnableMovement()
     {
         yield return new WaitForSeconds(1.5f);
-        if (!GetComponent<MoveCubeController>().enableMovement)
-            GetComponent<MoveCubeController>().enableMovement = true;
+        if (!GetComponent<MoveCubeMechanic>().enableMovement)
+            GetComponent<MoveCubeMechanic>().enableMovement = true;
         StopCoroutine("EnableMovement");
     }
 
