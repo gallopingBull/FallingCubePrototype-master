@@ -16,21 +16,19 @@ public class CubeSpawner : MonoBehaviour
 
     [HideInInspector] public bool spawnPlayer;
 
-    public GameObject[] Blocks;
-
     public Transform CurSpawnLoc;
     public List<Transform> SpawnLocs;
 
     private float randFloat;
 
     [SerializeField]
-    private float m_MaxDistance = 30;
-    private bool HitDetect;
-    private bool m_HitDetect;
+    private float maxDistance = 30;
+
+    private bool hitDetect;
 
     public float BoxColliderSize = 30;
-    private Collider m_Collider;
-    private RaycastHit m_Hit;
+    private Collider collider;
+    private RaycastHit hit;
 
     public GameObject targetCube;
     public GameObject CubeHit;
@@ -56,7 +54,7 @@ public class CubeSpawner : MonoBehaviour
     void Start()
     {
         lastSpawnLocs = new Queue<int>();
-        m_Collider = GetComponent<Collider>();
+        collider = GetComponent<Collider>();
         SpawnLocs = GetComponentsInChildren<Transform>().ToList();
         SpawnLocs.RemoveAt(0); // Unity adds the parent transform to the list of children, so we remove it. 
         if (EnableSpawner)
@@ -71,18 +69,18 @@ public class CubeSpawner : MonoBehaviour
 
         if (CheckColor && isSpawning)
         {
-            m_HitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
+            hitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
                transform.localScale * BoxColliderSize,
-               -transform.up, out m_Hit,
-               transform.rotation, m_MaxDistance);
+               -transform.up, out hit,
+               transform.rotation, maxDistance);
         }
 
         if (spawnPlayer && !CheckColor && !isSpawning)
         {
-            m_HitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
+            hitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
                transform.localScale * BoxColliderSize,
-               -transform.up, out m_Hit,
-               transform.rotation, m_MaxDistance);
+               -transform.up, out hit,
+               transform.rotation, maxDistance);
         }
     }
 
@@ -153,21 +151,6 @@ public class CubeSpawner : MonoBehaviour
         return tmpRate;
     }
 
-    private int GetRandomCubeIndex()
-    {
-        //2 out of 3 cubes should be white
-        int randNum = Random.Range(0, 2);
-        if (randNum % 2 == 0)
-        {
-            //white block index
-            return 3;
-        }
-        else
-        {
-            return Random.Range(0, Blocks.Length);
-        }
-    }
-
     private int GetRandomSpawnPosition()
     {
         int tmpLoc = Random.Range(0, SpawnLocs.Count);
@@ -204,7 +187,6 @@ public class CubeSpawner : MonoBehaviour
 
         targetCube = CubeManager.Instance.Cubes.Last();
 
-        //targetCube = Instantiate(Blocks[0], CurSpawnLoc.transform.position, transform.rotation);
         targetCube.SetActive(false);
         Invoke("CheckSpawnPosition", .5f);
     }
@@ -229,14 +211,14 @@ public class CubeSpawner : MonoBehaviour
     {
         if (spawnPlayer)
         {
-            if (m_HitDetect &&
-            m_Hit.transform.gameObject.tag == "Block")
+            if (hitDetect &&
+            hit.transform.gameObject.tag == "Block")
             {
                 if (!player.activeInHierarchy)
                 {
                     spawnPlayer = false;
                     init = false;
-                    player.transform.position = m_Hit.transform.position;
+                    player.transform.position = hit.transform.position;
 
                     playerSpawnPoint = randLoc;
 
@@ -255,7 +237,7 @@ public class CubeSpawner : MonoBehaviour
     private void CheckSpawnPosition()
     {
         // just in case cube is destoryed before it is landed on
-        if (!m_Hit.collider)
+        if (!hit.collider)
         {
             if (!init)
             {
@@ -271,23 +253,23 @@ public class CubeSpawner : MonoBehaviour
         else
         {
             CubeHit = null;
-            CubeHit = m_Hit.transform.gameObject;
-            if (m_HitDetect && CubeHit.tag == "Player" && init)
+            CubeHit = hit.transform.gameObject;
+            if (hitDetect && CubeHit.tag == "Player" && init)
             {
                 GetNewCube();
                 return;
             }
 
-            if (m_HitDetect && CubeHit.tag == "Block")
+            if (hitDetect && CubeHit.tag == "Block")
             {
-                #region debugging prints
-                //print("****----hitting block----****");
-                //print("m_Hit object = " + CubeHit);
-                //print("m_Hit color: " + CubeHit.GetComponent<BlockBehavior>().curColor);
-                //
-                //print("tmpCube name = " + tmpCube.gameObject.name);
-                //print("tmpCube color: " + tmpCube.GetComponent<Renderer>().material.color);
-                //print("****------****");
+                #region debug logs
+                //Debug.Log("****----hitting block----****");
+                //Debug.Log("m_Hit object = " + CubeHit);
+                //Debug.Log("m_Hit color: " + CubeHit.GetComponent<BlockBehavior>().curColor);
+
+                //Debug.Log("tmpCube name = " + tmpCube.gameObject.name);
+                //Debug.Log("tmpCube color: " + tmpCube.GetComponent<Renderer>().material.color);
+                //Debug.Log("****------****");
                 #endregion
 
                 // spawned cube can't land on or by similar color
@@ -311,7 +293,7 @@ public class CubeSpawner : MonoBehaviour
         CheckColor = false;
     }
 
-    public void Spawn(/*int spawnAmmount, int blockIndex, Vector3 spawnLoc*/)
+    public void Spawn()
     {
         SpawnManager();
         CheckColor = true;
@@ -324,12 +306,6 @@ public class CubeSpawner : MonoBehaviour
         targetCube = null;
         Destroy(_tmpCube);
         SpawnManager();
-    }
-
-    public void SpawnSingleCube(int blockIndex, Vector3 spawnLoc)
-    {
-        targetCube = Instantiate(Blocks[blockIndex], spawnLoc, transform.rotation);
-        targetCube.SetActive(false);
     }
 
 
@@ -354,24 +330,24 @@ public class CubeSpawner : MonoBehaviour
 
 
             //Check if there has been a hit yet
-            if (m_HitDetect)
+            if (hitDetect)
             {
                 //Draw a Ray forward from GameObject toward the hit
                 Gizmos.DrawRay(tmpPos,
-                    (-transform.up) * m_Hit.distance);
+                    (-transform.up) * hit.distance);
 
                 //Draw a cube that extends to where the hit exists
-                Gizmos.DrawWireCube(tmpPos + (-transform.up) * m_Hit.distance,
+                Gizmos.DrawWireCube(tmpPos + (-transform.up) * hit.distance,
                     transform.localScale * BoxColliderSize);
             }
             //If there hasn't been a hit yet, draw the ray at the maximum distancepull push
             else
             {
                 //Draw a Ray forward from GameObject toward the maximum distance
-                Gizmos.DrawRay(tmpPos, (-transform.up) * m_MaxDistance);
+                Gizmos.DrawRay(tmpPos, (-transform.up) * maxDistance);
 
                 //Draw a cube at the maximum distance
-                Gizmos.DrawWireCube(tmpPos + (-transform.up) * m_MaxDistance, transform.localScale * BoxColliderSize);
+                Gizmos.DrawWireCube(tmpPos + (-transform.up) * maxDistance, transform.localScale * BoxColliderSize);
             }
         }
     }
