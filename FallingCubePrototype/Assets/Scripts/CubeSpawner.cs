@@ -196,11 +196,15 @@ public class CubeSpawner : MonoBehaviour
 
         randLoc = GetRandomSpawnPosition();
         CurSpawnLoc = SpawnLocs[randLoc];
-        int randBlock = GetRandomCubeIndex(); // TODO: This will probably be changed to a random number color instead of using the prefab variants id.
-        //ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
 
+        ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
+        int id = CubeManager.Instance.SpawnDatas.Count;
+        SpawnData spawnData = new SpawnData { id = id, position = CurSpawnLoc.position, color = color };
+        CubeManager.Instance.SpawnCube(spawnData);
 
-        targetCube = Instantiate(Blocks[0], CurSpawnLoc.transform.position, transform.rotation);
+        targetCube = CubeManager.Instance.Cubes.Last();
+
+        //targetCube = Instantiate(Blocks[0], CurSpawnLoc.transform.position, transform.rotation);
         targetCube.SetActive(false);
         Invoke("CheckSpawnPosition", .5f);
     }

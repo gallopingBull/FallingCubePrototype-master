@@ -40,7 +40,15 @@ public class CubeManager : MonoBehaviour
         }
     }
 
+    public void SpawnCube(SpawnData data)
+    {
+        spawnDatas.Add(data);
+        var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
+        cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
+        cubes.Add(cube);
+    }
     public void CallSpawnCubes() { StartCoroutine(SpawnCubes()); }
+
     private IEnumerator SpawnCubes()
     {
         foreach (SpawnData data in spawnDatas)
@@ -77,6 +85,7 @@ public class CubeManager : MonoBehaviour
         SpawnDatas.Clear();
     }
 }
+
 // Enum to represent different colors
 public enum ColorOption
 {
