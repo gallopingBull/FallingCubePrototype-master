@@ -13,7 +13,8 @@ public class CubeSpawner : MonoBehaviour
     private bool isSpawning = false;
     [SerializeField]
     private bool init = true;
-
+    public float yOffset = 15f; // Spawn height above the player 
+    public List<Vector2> gridPositions;
     [HideInInspector] public bool spawnPlayer;
 
     public Transform CurSpawnLoc;
@@ -55,10 +56,11 @@ public class CubeSpawner : MonoBehaviour
     {
         lastSpawnLocs = new Queue<int>();
         collider = GetComponent<Collider>();
-        SpawnLocs = GetComponentsInChildren<Transform>().ToList();
-        SpawnLocs.RemoveAt(0); // Unity adds the parent transform to the list of children, so we remove it. 
         if (EnableSpawner)
             StartCoroutine(AutoSpawner());
+
+        gridPositions = GenerateGridPositions();
+        GenerateCeilingSpawnLocations();
     }
 
     // Update is called once per frame
@@ -308,6 +310,40 @@ public class CubeSpawner : MonoBehaviour
         SpawnManager();
     }
 
+    public List<Vector2> GenerateGridPositions()
+    {
+        int gridSizeX = CubeManager.Instance.gridSizeX; // TODO: make this a variable 
+        int gridSizeZ = CubeManager.Instance.gridSizeZ; // TODO: make this a variable
+        gridPositions = new List<Vector2>();
+
+        for (int x = 0; x < gridSizeX; x++)
+        {
+            for (int z = 0; z < gridSizeZ; z++)
+            {
+                Vector2 newPos = new Vector2(x, z);
+                gridPositions.Add(newPos);
+            }
+        }
+
+        return gridPositions;
+    }
+    public void GenerateCeilingSpawnLocations()
+    {
+        SpawnLocs = new List<Transform>();
+
+        for (int x = 0; x < gridPositions.Count; x++)
+        {
+
+            GameObject loc = new GameObject();
+
+
+            loc.transform.position = new Vector3(gridPositions[x].x * 2,
+            yOffset,
+            gridPositions[x].y * 2);
+
+            SpawnLocs.Add(loc.transform);
+        }
+    }
 
     private void OnDrawGizmos()
     {

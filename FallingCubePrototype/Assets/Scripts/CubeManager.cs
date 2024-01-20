@@ -7,6 +7,8 @@ public class CubeManager : MonoBehaviour
     public static CubeManager Instance { get; private set; }
     public float spawnDelay = 0.01f;
     public GameObject cubePrefab;
+    public int gridSizeX = 10;
+    public int gridSizeZ = 10;
 
     [SerializeField] List<GameObject> cubes = new List<GameObject>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
@@ -38,6 +40,8 @@ public class CubeManager : MonoBehaviour
             cubesParent = new GameObject("Cubes").transform;
             cubesParent.transform.position = Vector3.zero;
         }
+        gridSizeX = GetComponent<ArenaGenerator>().gridSizeX;
+        gridSizeZ = GetComponent<ArenaGenerator>().gridSizeZ;
     }
 
     public void SpawnCube(SpawnData data)
