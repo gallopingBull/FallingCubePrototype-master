@@ -30,7 +30,6 @@ public class CubeManager : MonoBehaviour
             Destroy(gameObject);
         }
         Init();
-        Debug.Log("CubeManager initialized");
     }
 
     private void Init()
@@ -42,6 +41,7 @@ public class CubeManager : MonoBehaviour
         }
         gridSizeX = GetComponent<ArenaGenerator>().gridSizeX;
         gridSizeZ = GetComponent<ArenaGenerator>().gridSizeZ;
+        Debug.Log("CubeManager initialized");
     }
 
     public void SpawnCube(SpawnData data)

@@ -14,7 +14,7 @@ public class CubeSpawner : MonoBehaviour
     [SerializeField]
     private bool init = true;
     public float yOffset = 15f; // Spawn height above the player 
-    public List<Vector2> gridPositions;
+    private List<Vector2> gridPositions;
     [HideInInspector] public bool spawnPlayer;
 
     public Transform CurSpawnLoc;
@@ -54,11 +54,13 @@ public class CubeSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        ArenaGenerator.OnFloorComplete += EnableCubeSpawner;
         lastSpawnLocs = new Queue<int>();
         collider = GetComponent<Collider>();
-        if (EnableSpawner)
-            StartCoroutine(AutoSpawner());
 
+        // /if (EnableSpawner)
+        // /    StartCoroutine(AutoSpawner());
+        // /
         gridPositions = GenerateGridPositions();
         GenerateCeilingSpawnLocations();
     }
@@ -343,6 +345,11 @@ public class CubeSpawner : MonoBehaviour
 
             SpawnLocs.Add(loc.transform);
         }
+    }
+
+    void OnDestory()
+    {
+        ArenaGenerator.OnFloorComplete -= EnableCubeSpawner;
     }
 
     private void OnDrawGizmos()
