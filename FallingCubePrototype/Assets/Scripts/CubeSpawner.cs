@@ -68,6 +68,8 @@ public class CubeSpawner : MonoBehaviour
         // /
         gridPositions = GenerateGridPositions();
         GenerateCeilingSpawnLocations();
+
+        Debug.Log("CubeSpawner initialized");
     }
 
     // Update is called once per frame
@@ -76,21 +78,25 @@ public class CubeSpawner : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.K))
             Spawn();
 
-        if (CheckColor && isSpawning)
+        if (CurSpawnLoc != null)
         {
-            hitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
-               transform.localScale * BoxColliderSize,
-               -transform.up, out hit,
-               transform.rotation, maxDistance);
+            if (CheckColor && isSpawning)
+            {
+                hitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
+                   transform.localScale * BoxColliderSize,
+                   -transform.up, out hit,
+                   transform.rotation, maxDistance);
+            }
+
+            if (spawnPlayer && !CheckColor && !isSpawning)
+            {
+                hitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
+                   transform.localScale * BoxColliderSize,
+                   -transform.up, out hit,
+                   transform.rotation, maxDistance);
+            }
         }
 
-        if (spawnPlayer && !CheckColor && !isSpawning)
-        {
-            hitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
-               transform.localScale * BoxColliderSize,
-               -transform.up, out hit,
-               transform.rotation, maxDistance);
-        }
     }
 
     public void EnableCubeSpawner()
@@ -210,7 +216,6 @@ public class CubeSpawner : MonoBehaviour
     {
         spawnPlayer = true;
         randLoc = GetRandomSpawnPosition();
-
         CurSpawnLoc = SpawnLocs[randLoc];
 
         Invoke("CheckPlayerSpawnPosition", .1f);
