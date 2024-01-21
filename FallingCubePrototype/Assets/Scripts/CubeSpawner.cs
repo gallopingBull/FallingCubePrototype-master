@@ -20,6 +20,7 @@ public class CubeSpawner : MonoBehaviour
     public Transform CurSpawnLoc;
     public List<Transform> SpawnLocs;
 
+    private Transform parent;
     private float randFloat;
 
     [SerializeField]
@@ -57,7 +58,11 @@ public class CubeSpawner : MonoBehaviour
         ArenaGenerator.OnFloorComplete += EnableCubeSpawner;
         lastSpawnLocs = new Queue<int>();
         collider = GetComponent<Collider>();
-
+        if (parent == null)
+        {
+            parent = new GameObject("SpawnLocs").transform;
+            parent.transform.position = Vector3.zero;
+        }
         // /if (EnableSpawner)
         // /    StartCoroutine(AutoSpawner());
         // /
@@ -314,8 +319,8 @@ public class CubeSpawner : MonoBehaviour
 
     public List<Vector2> GenerateGridPositions()
     {
-        int gridSizeX = CubeManager.Instance.gridSizeX; // TODO: make this a variable 
-        int gridSizeZ = CubeManager.Instance.gridSizeZ; // TODO: make this a variable
+        int gridSizeX = CubeManager.Instance.gridSizeX;
+        int gridSizeZ = CubeManager.Instance.gridSizeZ;
         gridPositions = new List<Vector2>();
 
         for (int x = 0; x < gridSizeX; x++)
@@ -329,6 +334,7 @@ public class CubeSpawner : MonoBehaviour
 
         return gridPositions;
     }
+
     public void GenerateCeilingSpawnLocations()
     {
         SpawnLocs = new List<Transform>();
@@ -338,7 +344,8 @@ public class CubeSpawner : MonoBehaviour
 
             GameObject loc = new GameObject();
 
-
+            loc.name = $"SpawnLoc {x}";
+            loc.transform.parent = parent.transform;
             loc.transform.position = new Vector3(gridPositions[x].x * 2,
             yOffset,
             gridPositions[x].y * 2);

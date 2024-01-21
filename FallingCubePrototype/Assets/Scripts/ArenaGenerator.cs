@@ -86,7 +86,7 @@ public class ArenaGenerator : MonoBehaviour
                 //Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
                 //    $"\n\tcubePosition: {cubePosition}" +
                 //    $"\n\tcolor: {color}");
-                //
+
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
                 CubeManager.Instance.SpawnDatas.Add(spawnData);
 
@@ -103,6 +103,7 @@ public class ArenaGenerator : MonoBehaviour
                         //Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
                         //                  $"\n\tcubePosition: {cubePosition}" +
                         //                  $"\n\tcolor: {color}");
+
                         SpawnData groundSpawnData = new SpawnData
                         {
                             id = id,
