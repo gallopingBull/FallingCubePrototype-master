@@ -41,6 +41,7 @@ public class CubeManager : MonoBehaviour
         }
         gridSizeX = GetComponent<ArenaGenerator>().gridSizeX;
         gridSizeZ = GetComponent<ArenaGenerator>().gridSizeZ;
+
         Debug.Log("CubeManager initialized");
     }
 
