@@ -96,7 +96,6 @@ public class CubeSpawner : MonoBehaviour
                    transform.rotation, maxDistance);
             }
         }
-
     }
 
     public void EnableCubeSpawner()
@@ -107,7 +106,6 @@ public class CubeSpawner : MonoBehaviour
 
     IEnumerator AutoSpawner()
     {
-
         if (init)
             MAXCubeSpawnAmmount = Random.Range(10, 15);
 
@@ -359,7 +357,7 @@ public class CubeSpawner : MonoBehaviour
         }
     }
 
-    void OnDestory()
+    void OnDisable()
     {
         ArenaGenerator.OnFloorComplete -= EnableCubeSpawner;
     }

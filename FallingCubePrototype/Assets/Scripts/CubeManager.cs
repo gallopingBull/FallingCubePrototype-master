@@ -10,7 +10,7 @@ public class CubeManager : MonoBehaviour
     public int gridSizeX = 10;
     public int gridSizeZ = 10;
 
-    [SerializeField] List<GameObject> cubes = new List<GameObject>();
+    [SerializeField] static List<GameObject> cubes = new List<GameObject>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
     private Transform cubesParent;
 
@@ -43,6 +43,8 @@ public class CubeManager : MonoBehaviour
         gridSizeZ = GetComponent<ArenaGenerator>().gridSizeZ;
 
         Debug.Log("CubeManager initialized");
+        DestoryAllCubes();
+        GetComponent<ArenaGenerator>().GenerateArena();
     }
 
     public void SpawnCube(SpawnData data)
@@ -52,9 +54,9 @@ public class CubeManager : MonoBehaviour
         cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
         cubes.Add(cube);
     }
-    public void CallSpawnCubes() { StartCoroutine(SpawnCubes()); }
 
-    private IEnumerator SpawnCubes()
+    // This adds a delay between spawning cubes, which is nice for debugging and looks cool.
+    private IEnumerator SpawnCubesWithDelay()
     {
         foreach (SpawnData data in spawnDatas)
         {
@@ -69,6 +71,8 @@ public class CubeManager : MonoBehaviour
         Debug.Log($"{GetTotalCubeCount()} cubes spawned");
     }
 
+    public void CallSpawnCubesWithDelay() { StartCoroutine(SpawnCubesWithDelay()); }
+
     private int GetTotalCubeCount()
     {
         return Cubes.Count;
@@ -76,18 +80,22 @@ public class CubeManager : MonoBehaviour
 
     public void DestoryAllCubes()
     {
-        if (Cubes.Count == 0)
+        if (cubes.Count == 0)
         {
             Debug.Log("No cubes to destroy");
             return;
         }
 
         Debug.Log("Destroying cubes!");
-        foreach (GameObject cube in Cubes)
+        foreach (GameObject cube in cubes)
             Destroy(cube);
 
-        Cubes.Clear();
-        SpawnDatas.Clear();
+        // Cubes.Clear();
+        cubes = new List<GameObject>();
+        Debug.Log("post destory - cubes.Count: " + cubes.Count);
+
+        //SpawnDatas.Clear();
+        spawnDatas = new List<SpawnData>();
     }
 }
 

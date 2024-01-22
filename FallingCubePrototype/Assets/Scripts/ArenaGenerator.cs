@@ -24,12 +24,7 @@ public class ArenaGenerator : MonoBehaviour
 
     [SerializeField] List<ColorOption> colorsUsed;
 
-    static public Action OnFloorComplete { get; set; }
-
-    void Start()
-    {
-        GenerateArena();
-    }
+    static public Action OnFloorComplete { get; set; } // maybe this should be in CubeManager?
 
     void Update()
     {
@@ -41,7 +36,7 @@ public class ArenaGenerator : MonoBehaviour
         }
     }
 
-    void GenerateArena()
+    public void GenerateArena()
     {
         for (int x = 0; x < gridSizeX; x++)
         {
@@ -88,7 +83,8 @@ public class ArenaGenerator : MonoBehaviour
                 //    $"\n\tcolor: {color}");
 
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
-                CubeManager.Instance.SpawnDatas.Add(spawnData);
+                //CubeManager.Instance.SpawnDatas.Add(spawnData);
+                CubeManager.Instance.SpawnCube(spawnData);
 
                 colorsUsed.Add(color);
 
@@ -111,7 +107,8 @@ public class ArenaGenerator : MonoBehaviour
                             color = ColorOption.Neutral
                         };
 
-                        CubeManager.Instance.SpawnDatas.Add(groundSpawnData);
+                        //CubeManager.Instance.SpawnDatas.Add(groundSpawnData);
+                        CubeManager.Instance.SpawnCube(groundSpawnData);
 
                         if (i == 0)
                             break;
@@ -120,8 +117,8 @@ public class ArenaGenerator : MonoBehaviour
             }
         }
 
+        //CubeManager.Instance.SpawnCubesWithDelay();
         OnFloorComplete?.Invoke();
-        CubeManager.Instance.CallSpawnCubes();
     }
 
     private bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
