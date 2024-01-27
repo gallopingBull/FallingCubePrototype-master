@@ -48,6 +48,7 @@ public class CubeSpawner : MonoBehaviour
     private float timer;
 
     private int playerSpawnPoint;
+    private CubeManager cubeManager;
 
     #endregion
 
@@ -55,6 +56,7 @@ public class CubeSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        cubeManager = GameObject.Find("CubeManager").GetComponent<CubeManager>();
         ArenaGenerator.OnFloorComplete += EnableCubeSpawner;
         lastSpawnLocs = new Queue<int>();
         collider = GetComponent<Collider>();
@@ -194,11 +196,11 @@ public class CubeSpawner : MonoBehaviour
         CurSpawnLoc = SpawnLocs[randLoc];
 
         ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
-        int id = CubeManager.Instance.SpawnDatas.Count;
+        int id = cubeManager.SpawnDatas.Count;
         SpawnData spawnData = new SpawnData { id = id, position = CurSpawnLoc.position, color = color };
-        CubeManager.Instance.SpawnCube(spawnData);
+        cubeManager.SpawnCube(spawnData);
 
-        targetCube = CubeManager.Instance.Cubes.Last();
+        targetCube = cubeManager.Cubes.Last();
 
         targetCube.SetActive(false);
         Invoke("CheckSpawnPosition", .5f);
@@ -322,8 +324,8 @@ public class CubeSpawner : MonoBehaviour
 
     public List<Vector2> GenerateGridPositions()
     {
-        int gridSizeX = CubeManager.Instance.gridSizeX;
-        int gridSizeZ = CubeManager.Instance.gridSizeZ;
+        int gridSizeX = cubeManager.gridSizeX;
+        int gridSizeZ = cubeManager.gridSizeZ;
         gridPositions = new List<Vector2>();
 
         for (int x = 0; x < gridSizeX; x++)

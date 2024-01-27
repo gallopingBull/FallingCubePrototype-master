@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class CubeManager : MonoBehaviour
 {
-    public static CubeManager Instance { get; private set; }
+    //public static CubeManager Instance { get; private set; }
     public float spawnDelay = 0.01f;
     public GameObject cubePrefab;
     public int gridSizeX = 10;
     public int gridSizeZ = 10;
 
-    [SerializeField] static List<GameObject> cubes = new List<GameObject>();
+    [SerializeField] List<GameObject> cubes = new List<GameObject>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
     private Transform cubesParent;
 
@@ -20,15 +20,15 @@ public class CubeManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        //if (Instance == null)
+        //{
+        //    Instance = this;
+        //    DontDestroyOnLoad(gameObject);
+        //}
+        //else
+        //{
+        //    Destroy(gameObject);
+        //}
         Init();
     }
 
@@ -43,7 +43,8 @@ public class CubeManager : MonoBehaviour
         gridSizeZ = GetComponent<ArenaGenerator>().gridSizeZ;
 
         Debug.Log("CubeManager initialized");
-        DestoryAllCubes();
+        StartCoroutine(DestoryAllCubes());
+
         GetComponent<ArenaGenerator>().GenerateArena();
     }
 
@@ -78,24 +79,31 @@ public class CubeManager : MonoBehaviour
         return Cubes.Count;
     }
 
-    public void DestoryAllCubes()
+    public IEnumerator DestoryAllCubes()
     {
         if (cubes.Count == 0)
         {
             Debug.Log("No cubes to destroy");
-            return;
+
+            cubes.Clear();
+            spawnDatas.Clear();
+            yield return null;
         }
+        else
+        {
+            yield return new WaitForSeconds(0.1f);
+            Debug.Log("Destroying cubes!");
+            foreach (GameObject cube in cubes)
+                Destroy(cube);
 
-        Debug.Log("Destroying cubes!");
-        foreach (GameObject cube in cubes)
-            Destroy(cube);
+            cubes.Clear();
+            spawnDatas.Clear();
+            //cubes = new List<GameObject>();
+            Debug.Log("post destory - cubes.Count: " + cubes.Count);
 
-        // Cubes.Clear();
-        cubes = new List<GameObject>();
-        Debug.Log("post destory - cubes.Count: " + cubes.Count);
-
-        //SpawnDatas.Clear();
-        spawnDatas = new List<SpawnData>();
+            //SpawnDatas.Clear();
+            spawnDatas = new List<SpawnData>();
+        }
     }
 }
 

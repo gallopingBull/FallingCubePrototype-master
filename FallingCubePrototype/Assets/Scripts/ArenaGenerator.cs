@@ -12,26 +12,33 @@ public class ArenaGenerator : MonoBehaviour
     public float spacing = 2f; // TODO: I don't like this name - it's not really spacing, it's the size of the cube
     public float floatProbability = 0.2f; // Probability of a cube floating
 
-    const int maxAttempts = 10;
-    int attempts = 0;
+    private const int maxAttempts = 10;
+    private int attempts = 0;
 
     // Define the offsets for adjacent cubes in a 3D grid
-    Vector3[] offsets = new Vector3[]
+    private Vector3[] offsets = new Vector3[]
     {
         Vector3.forward, Vector3.back, Vector3.up,
         Vector3.down, Vector3.right, Vector3.left
     };
 
     [SerializeField] List<ColorOption> colorsUsed;
+    private CubeManager cubeManager;
 
     static public Action OnFloorComplete { get; set; } // maybe this should be in CubeManager?
+
+
+    void start()
+    {
+        cubeManager = GetComponent<CubeManager>();
+    }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
             StopAllCoroutines();
-            CubeManager.Instance.DestoryAllCubes();
+            cubeManager.DestoryAllCubes();
             GenerateArena();
         }
     }
@@ -49,8 +56,16 @@ public class ArenaGenerator : MonoBehaviour
                     //Debug.Log($"randomHieght is odd - {randomHeight}");
                     randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 }
+                if (cubeManager == null)
+                {
+                    cubeManager = GetComponent<CubeManager>();
+                }
+                if (cubeManager.SpawnDatas == null)
+                {
+                    cubeManager.SpawnDatas = new List<SpawnData>();
+                }
 
-                int id = CubeManager.Instance.SpawnDatas.Count;
+                int id = cubeManager.SpawnDatas.Count;
                 Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
                 ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
 
@@ -84,7 +99,7 @@ public class ArenaGenerator : MonoBehaviour
 
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
                 //CubeManager.Instance.SpawnDatas.Add(spawnData);
-                CubeManager.Instance.SpawnCube(spawnData);
+                cubeManager.SpawnCube(spawnData);
 
                 colorsUsed.Add(color);
 
@@ -93,7 +108,7 @@ public class ArenaGenerator : MonoBehaviour
                 {
                     for (int i = (int)cubePosition.y - (int)spacing; i < cubePosition.y; i = i - (int)spacing)
                     {
-                        id = CubeManager.Instance.SpawnDatas.Count;
+                        id = cubeManager.SpawnDatas.Count;
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
 
                         //Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
@@ -108,7 +123,7 @@ public class ArenaGenerator : MonoBehaviour
                         };
 
                         //CubeManager.Instance.SpawnDatas.Add(groundSpawnData);
-                        CubeManager.Instance.SpawnCube(groundSpawnData);
+                        cubeManager.SpawnCube(groundSpawnData);
 
                         if (i == 0)
                             break;
@@ -123,7 +138,7 @@ public class ArenaGenerator : MonoBehaviour
 
     private bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
     {
-        if (CubeManager.Instance.SpawnDatas.Count == 0)
+        if (cubeManager.SpawnDatas.Count == 0)
             return false;
         //Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
 
@@ -133,7 +148,7 @@ public class ArenaGenerator : MonoBehaviour
             Vector3 adjacentPos = position + (offset * spacing); // Multiply by 2(spacing) to get the adjacent cube
 
             // Check if a cube exists at the adjacent position
-            SpawnData adjacentCube = CubeManager.Instance.SpawnDatas.Find(spawnData => spawnData.position == adjacentPos);
+            SpawnData adjacentCube = cubeManager.SpawnDatas.Find(spawnData => spawnData.position == adjacentPos);
 
             if (adjacentCube.color == color)
             {
