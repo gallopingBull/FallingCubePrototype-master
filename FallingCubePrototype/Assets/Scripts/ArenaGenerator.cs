@@ -28,7 +28,7 @@ public class ArenaGenerator : MonoBehaviour
     static public Action OnFloorComplete { get; set; } // maybe this should be in CubeManager?
 
 
-    void start()
+    void Awake()
     {
         cubeManager = GetComponent<CubeManager>();
     }
@@ -55,14 +55,6 @@ public class ArenaGenerator : MonoBehaviour
                 {
                     //Debug.Log($"randomHieght is odd - {randomHeight}");
                     randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
-                }
-                if (cubeManager == null)
-                {
-                    cubeManager = GetComponent<CubeManager>();
-                }
-                if (cubeManager.SpawnDatas == null)
-                {
-                    cubeManager.SpawnDatas = new List<SpawnData>();
                 }
 
                 int id = cubeManager.SpawnDatas.Count;

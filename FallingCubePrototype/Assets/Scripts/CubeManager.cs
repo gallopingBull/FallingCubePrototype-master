@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CubeManager : MonoBehaviour
 {
-    //public static CubeManager Instance { get; private set; }
     public float spawnDelay = 0.01f;
     public GameObject cubePrefab;
     public int gridSizeX = 10;
@@ -20,15 +19,6 @@ public class CubeManager : MonoBehaviour
 
     private void Awake()
     {
-        //if (Instance == null)
-        //{
-        //    Instance = this;
-        //    DontDestroyOnLoad(gameObject);
-        //}
-        //else
-        //{
-        //    Destroy(gameObject);
-        //}
         Init();
     }
 
