@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     private GameObject ObjectiveGate;
 
     [SerializeField]
-    private CubeSpawner bs;
+    private AerialCubeSpawner bs;
 
     [SerializeField]
     private GameObject InitalTimerPanel;

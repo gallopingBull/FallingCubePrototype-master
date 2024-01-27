@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //TODO: Change class name to CeilingSpawner
-public class CubeSpawner : MonoBehaviour
+public class AerialCubeSpawner : MonoBehaviour
 {
     #region variables
     public bool EnableSpawner = false;
