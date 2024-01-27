@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4201830530435554280}
   - component: {fileID: 4201830530435554295}
   - component: {fileID: 6328597882127027401}
+  - component: {fileID: 1519661966}
   m_Layer: 0
   m_Name: CubeManager
   m_TagString: Untagged
@@ -68,3 +69,29 @@ MonoBehaviour:
   spacing: 2
   floatProbability: 0
   colorsUsed: 
+--- !u!114 &1519661966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4201830530435554281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b3cf7794cb2cbc47956edbb3713e13c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnableSpawner: 0
+  isSpawning: 0
+  init: 1
+  yOffset: 15
+  spawnPlayer: 0
+  CurSpawnLoc: {fileID: 0}
+  SpawnLocs: []
+  maxDistance: 30
+  BoxColliderSize: 30
+  targetCube: {fileID: 0}
+  CubeHit: {fileID: 0}
+  player: {fileID: 0}
+  randLoc: 0
+  CheckColor: 0
