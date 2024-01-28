@@ -379,7 +379,7 @@ public class CubeBehavior : MonoBehaviour
     private void EnableLandingMarker()
     {
         markerEnabled = true;
-
+        LandingIndicator.SetActive(true);
         Vector3 tmpLoc = new Vector3(m_Hit.transform.position.x,
                        m_Hit.transform.position.y,
                        m_Hit.transform.position.z);
@@ -391,9 +391,9 @@ public class CubeBehavior : MonoBehaviour
                      tmpLoc.y + 1.5f,
                      Mathf.Round(tmpLoc.z));
         }
-
         else
         {
+            // TODO: i think i might be able to remove this else statement
             //Debug.log(m_Hit.transform.tag);
             LandingIndicator.transform.position = new Vector3(transform.position.x,
             Mathf.Round(m_Hit.transform.position.y + .75f),
