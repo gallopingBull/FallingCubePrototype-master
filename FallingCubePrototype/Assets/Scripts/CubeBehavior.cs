@@ -511,6 +511,8 @@ public class CubeBehavior : MonoBehaviour
         //Debug.Log($"cube.id({id}) is being initialized with color: {color}");
         id = _id;
         color = _color;
+        gameObject.name = $"Cube-{id}-{color}".ToUpper();
+        ;
         EnterState(States.init);
     }
     public void SetFalling()

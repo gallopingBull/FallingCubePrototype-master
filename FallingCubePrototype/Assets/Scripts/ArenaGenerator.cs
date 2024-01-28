@@ -90,7 +90,6 @@ public class ArenaGenerator : MonoBehaviour
                 //    $"\n\tcolor: {color}");
 
                 SpawnData spawnData = new SpawnData { id = id, position = cubePosition, color = color };
-                //CubeManager.Instance.SpawnDatas.Add(spawnData);
                 cubeManager.SpawnCube(spawnData);
 
                 colorsUsed.Add(color);
@@ -114,7 +113,6 @@ public class ArenaGenerator : MonoBehaviour
                             color = ColorOption.Neutral
                         };
 
-                        //CubeManager.Instance.SpawnDatas.Add(groundSpawnData);
                         cubeManager.SpawnCube(groundSpawnData);
 
                         if (i == 0)
@@ -123,8 +121,6 @@ public class ArenaGenerator : MonoBehaviour
                 }
             }
         }
-
-        //CubeManager.Instance.SpawnCubesWithDelay();
         OnFloorComplete?.Invoke();
     }
 
