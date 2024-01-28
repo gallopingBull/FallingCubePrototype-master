@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8194631352132975310}
   - component: {fileID: 8030386841297845174}
   m_Layer: 0
-  m_Name: TestBlock_Neutral_NOCUBEBEAVIOR
+  m_Name: Cube
   m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55774,7 +55774,6 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

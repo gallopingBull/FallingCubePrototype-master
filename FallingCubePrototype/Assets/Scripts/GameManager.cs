@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     private GameObject ObjectiveGate;
 
     [SerializeField]
-    private AerialCubeSpawner bs;
+    private AerialCubeSpawner aerialCubeSpawner;
 
     [SerializeField]
     private GameObject InitalTimerPanel;
@@ -62,7 +62,6 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         gm = this;
-        //Player = GameObject.Find("ThirdPersonController_LITE");
     }
 
     private void Start()
@@ -190,12 +189,12 @@ public class GameManager : MonoBehaviour
     {
         if (!isTesting)
         {
-            if (!bs.spawnPlayer)
+            if (!aerialCubeSpawner.spawnPlayer)
             {
-                bs.SpawnPlayerCaller();
+                aerialCubeSpawner.SpawnPlayerCaller();
             }
 
-            if (!Player.activeInHierarchy && bs.spawnPlayer)
+            if (!Player.activeInHierarchy && aerialCubeSpawner.spawnPlayer)
             {
                 //StartGame();
                 //return;
@@ -207,8 +206,8 @@ public class GameManager : MonoBehaviour
 
                 StartCoroutine("Timer");
 
-                //small delay after round begins before new cubers are allowed to 
-                //add a random.range on the time so it's never exatcly the same
+                // small delay after round begins before new cubers are allowed to 
+                // add a random.range on the time so it's never exatcly the same
                 Invoke("EnableCubeSpawnerCaller", 3f);
             }
         }
@@ -216,7 +215,7 @@ public class GameManager : MonoBehaviour
 
     private void EnableCubeSpawnerCaller()
     {
-        bs.EnableCubeSpawner();
+        aerialCubeSpawner.EnableCubeSpawner();
     }
 
     IEnumerator Timer()
@@ -272,7 +271,7 @@ public class GameManager : MonoBehaviour
                 if (target != null)
                 {
                     AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
-                    bs.Spawn();
+                    aerialCubeSpawner.Spawn();
                     target.GetComponent<CubeBehavior>().DestroyCube();
                 }
             }
