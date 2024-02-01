@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
             {
                 aerialCubeSpawner.SpawnPlayerCaller();
             }
-
+            // TODO: determine if this is necessary or not (if not, remove it)
             if (!Player.activeInHierarchy && aerialCubeSpawner.spawnPlayer)
             {
                 //StartGame();

@@ -512,7 +512,6 @@ public class CubeBehavior : MonoBehaviour
         id = _id;
         color = _color;
         gameObject.name = $"Cube-{id}-{color}".ToUpper();
-        ;
         EnterState(States.init);
     }
     public void SetFalling()
