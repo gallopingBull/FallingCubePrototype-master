@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using TMPro;
 
 using UnityEngine;
@@ -36,6 +35,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public float _time;
     private int _MAXCountdownTime;
+    static private bool countingDown = false;
     public TMP_Text Text_InitialTimer;
     public TMP_Text Text_Begin;
 
@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     private GameObject ObjectiveGate;
 
     [SerializeField]
-    private BlockSpawner bs;
+    private AerialCubeSpawner aerialCubeSpawner;
 
     [SerializeField]
     private GameObject InitalTimerPanel;
@@ -57,53 +57,44 @@ public class GameManager : MonoBehaviour
     private GameObject GameFailedPanel;
     #endregion
 
-
     #region functions
-    // Start is called before the first frame update
+
     void Awake()
     {
         gm = this;
-        //Player = GameObject.Find("ThirdPersonController_LITE");
     }
+
     private void Start()
     {
-        //StartCoroutine("Timer");
         if (!isTesting)
-        {
-           
             Invoke("InitialCountdownTimerCaller", 1f);
-        }
-        else
-        {
-            if (InitalTimerPanel != null && 
-                InitalTimerPanel.activeInHierarchy)
-            {
-                InitalTimerPanel.SetActive(false);
-            }
-        }
+        else if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
+            InitalTimerPanel.SetActive(false);
+
+        ArenaGenerator.OnFloorComplete += StartGame;
+    }
+
+    private void OnDestroy()
+    {
+        ArenaGenerator.OnFloorComplete -= StartGame;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown("escape") || Input.GetButtonDown("Back"))
-        {
             GetComponent<LoadScene>().LoadSceneByIndex(0);
-        }
-            
 
         if (Score >= MAXScore)
         {
             if (TimeGameMode && !gameCompleted && !gameWon)
-            {
                 GameWon();
-            }
+
             if (!isDoorOpen && !TimeGameMode)
-            {
                 OpenDoor();
-            }
         }
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
@@ -111,9 +102,7 @@ public class GameManager : MonoBehaviour
             if (isDoorOpen)
             {
                 if (!gameCompleted && !gameWon)
-                {
                     GameWon();
-                }
             }
             else
             {
@@ -131,12 +120,12 @@ public class GameManager : MonoBehaviour
 
     private void GameWon()
     {
+        print("game won!");
         GameWonPanel.SetActive(true);
         print(GameWonPanel.activeSelf);
         GameHudPanel.SetActive(false);
         gameWon = true;
         gameCompleted = true;
-        print("beath game");
     }
 
     public void FailedGame()
@@ -188,44 +177,50 @@ public class GameManager : MonoBehaviour
                 GameHudPanel.SetActive(true);
                 yield return new WaitForSeconds(1.5f);
 
-
                 StartGame();
                 break;
             }
         }
+
         StopCoroutine("InitialCountdownTimer");
     }
 
     public void StartGame()
     {
-        if (!bs.spawnPlayer)
+        if (!isTesting)
         {
-            bs.SpawnPlayerCaller();
-        }
+            if (!aerialCubeSpawner.spawnPlayer)
+            {
+                aerialCubeSpawner.SpawnPlayerCaller();
+            }
+            // TODO: determine if this is necessary or not (if not, remove it)
+            if (!Player.activeInHierarchy && aerialCubeSpawner.spawnPlayer)
+            {
+                //StartGame();
+                //return;
+            }
+            else
+            {
+                if (countingDown)
+                    StopCoroutine("Timer");
 
-        if (!Player.activeInHierarchy && bs.spawnPlayer)
-        {
-            //StartGame();
-            //return;
-        }
-        else
-        {
-            StartCoroutine("Timer");
+                StartCoroutine("Timer");
 
-            //small delay after round begins before new cubers are allowed to 
-            //add a random.range on the time so it's never exatcly the same
-            Invoke("EnableCubeSpawnerCaller", 3f);
+                // small delay after round begins before new cubers are allowed to 
+                // add a random.range on the time so it's never exatcly the same
+                Invoke("EnableCubeSpawnerCaller", 3f);
+            }
         }
-
     }
 
     private void EnableCubeSpawnerCaller()
     {
-        bs.EnableCubeSpawner();
+        aerialCubeSpawner.EnableCubeSpawner();
     }
 
     IEnumerator Timer()
     {
+        countingDown = true;
         CountdownTime = MAXCountdownTime;
         text.text = CountdownTime.ToString();
 
@@ -237,18 +232,16 @@ public class GameManager : MonoBehaviour
             if (CountdownTime == 0 && !gameCompleted)
             {
                 if (Score >= MAXScore)
-                {
                     GameWon();
-                }
                 else
-                {
                     FailedGame();
-                }
+
+                countingDown = false;
                 break;
             }
-
-            //print("time = " + CountdownTime);
         }
+
+        countingDown = false;
         StopCoroutine("Timer");
     }
 
@@ -256,35 +249,30 @@ public class GameManager : MonoBehaviour
     {
         if (!CubeTargets.Contains(target))
         {
-            target.GetComponent<BlockBehavior>().PlaySFX(target.GetComponent<BlockBehavior>().contactSFX);
+            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
             CubeTargets.Add(target);
         }
         Invoke("DestoryCubeTargets", .15f);
         //DestoryCubeTargets();
     }
+
     private void DestoryCubeTargets()
     {
-
         if (CubeTargets != null)
         {
             int _multiplier;
             if (CubeTargets.Count < 1)
-            {
                 _multiplier = 1;
-            }
             else
-            {
                 _multiplier = CubeTargets.Count;
-            }
 
             foreach (GameObject target in CubeTargets)
             {
                 if (target != null)
                 {
-
-                    AddPoints(target.GetComponent<BlockBehavior>().ScoreValue, _multiplier);
-                    bs.Spawn();
-                    target.GetComponent<BlockBehavior>().DestroyCube();
+                    AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
+                    aerialCubeSpawner.Spawn();
+                    target.GetComponent<CubeBehavior>().DestroyCube();
                 }
             }
         }

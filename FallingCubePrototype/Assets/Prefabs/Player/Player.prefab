@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8172144757860298996
 RectTransform:
   m_ObjectHideFlags: 0
@@ -629,16 +629,15 @@ GameObject:
   m_Component:
   - component: {fileID: 8172144758383271536}
   - component: {fileID: 8172144758383271545}
+  - component: {fileID: 8172144758383271548}
+  - component: {fileID: 8172144758383271539}
   - component: {fileID: 8172144758383271551}
   - component: {fileID: 8172144758383271550}
   - component: {fileID: 8172144758383271549}
-  - component: {fileID: 8172144758383271548}
-  - component: {fileID: 8172144758383271539}
   - component: {fileID: 8172144758383271537}
   - component: {fileID: 8172144758383271547}
-  - component: {fileID: 8172144758383271546}
+  - component: {fileID: 2068176966}
   - component: {fileID: 22436966}
-  - component: {fileID: 620025695}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -683,6 +682,36 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!54 &8172144758383271548
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8172144758383271543}
+  serializedVersion: 2
+  m_Mass: 50
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 3
+--- !u!136 &8172144758383271539
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8172144758383271543}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.3
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &8172144758383271551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -752,9 +781,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: SetActive
+      - m_Target: {fileID: 8172144758383271549}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -762,10 +791,10 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
         m_Arguments:
@@ -777,7 +806,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
+        m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: PlaySFX
         m_Mode: 2
         m_Arguments:
@@ -787,6 +816,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
   onChangeHealth:
     m_PersistentCalls:
@@ -1202,36 +1243,6 @@ MonoBehaviour:
   OnEndAction:
     m_PersistentCalls:
       m_Calls: []
---- !u!54 &8172144758383271548
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8172144758383271543}
-  serializedVersion: 2
-  m_Mass: 50
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 3
---- !u!136 &8172144758383271539
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8172144758383271543}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.3
-  m_Height: 1.8
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &8172144758383271537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1275,7 +1286,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 262144
   targetCube: {fileID: 0}
---- !u!114 &8172144758383271546
+--- !u!114 &2068176966
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1284,7 +1295,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8172144758383271543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aaf5e6f314306ab4a854a0fe2dc0d042, type: 3}
+  m_Script: {fileID: 11500000, guid: f3d9567f7303375498c8e594ab5c1bee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   enableMovement: 0
@@ -1398,82 +1409,6 @@ MonoBehaviour:
   onExitClimb:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &620025695
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8172144758383271543}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23297aa8539ec444dbff1088f40d325d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  openCloseEvents: 0
-  openCloseWindow: 1
-  selectedToolbar: 0
-  startPushPullInput:
-    useInput: 1
-    isAxisInUse: 0
-    isUnityInput: 0
-    keyboard: E
-    keyboardAxis: 0
-    joystick: A
-    joystickAxis: 0
-    mobile: A
-    mobileAxis: 0
-    joystickAxisInvert: 0
-    keyboardAxisInvert: 0
-    mobileAxisInvert: 0
-    timeButtonWasPressed: 0
-    lastTimeTheButtonWasPressed: 0
-    inButtomTimer: 0
-  movementSpeed: {x: 1, y: 1}
-  minMovementMagnitude: 0.1
-  animAcceleration: 8
-  useLeftHandIK: 1
-  useRightHandIK: 1
-  strength: 1
-  enterCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  pushpullLayer:
-    serializedVersion: 2
-    m_Bits: 131072
-  breakActionDistance: 0.25
-  enterPositionSpeed: 0.1
-  handForwardOffset: 0
-  handSideOffset: 0
-  handSpaceDistanceX: 0.25
-  distanceBetweenObject: 0.5
-  onStart:
-    m_PersistentCalls:
-      m_Calls: []
-  onFinish:
-    m_PersistentCalls:
-      m_Calls: []
-  onFindObject:
-    m_PersistentCalls:
-      m_Calls: []
-  onLostObject:
-    m_PersistentCalls:
-      m_Calls: []
-  pushPoint: {fileID: 0}
-  isStarted: 0
-  isStoping: 0
-  isPushingPulling: 0
-  isMoving: 0
-  isCollidingLeft: 0
-  isCollidingRight: 0
-  isCollidingBack: 0
-  inputVertical: 0
-  inputHorizontal: 0
-  inputWeight: 0
-  moveDistance: 1
 --- !u!1 &8172144758473296698
 GameObject:
   m_ObjectHideFlags: 0
@@ -2992,14 +2927,14 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 95017302718396200, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
---- !u!4 &8176327580665825452 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4904651149197984, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
-  m_PrefabInstance: {fileID: 8172144758939847180}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8176656947754099432 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4530470363785444, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
+  m_PrefabInstance: {fileID: 8172144758939847180}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8176327580665825452 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4904651149197984, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
   m_PrefabInstance: {fileID: 8172144758939847180}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8176683152408202736 stripped

@@ -1,128 +1,139 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Invector.vCharacterController;
 using UnityEngine;
 
-// Generateclass that lets the player move cube orthonogally only. The player may not rotate the cube and the cube cannot be moved diagonally. 
-// The cube may only be set on x and y coordinates with whole numbers.
-
-
-public class MoveCubeMechanic : vPushActionController
+public class MoveCubeMechanic : MonoBehaviour
 {
+    #region variables
+    [HideInInspector]
+    public bool enableMovement;
+
+    private Transform target;
+    private GameObject _camera;
     public float moveDistance = 1f; // Distance the cube moves with each step
+    public Transform pushPoint;
 
-    protected override void MoveInput()
+    bool isPaused = false;
+    #endregion
+
+    // Start is called before the first frame update
+    void Start()
     {
-        MoveCube();
-        if (tpInput.enabled || !isPushingPulling || !pushPoint || isStoping)
-        {
-            return;
-        }
-        tpInput.CameraInput();
-        
-        inputHorizontal = tpInput.horizontalInput.GetAxis();
-        inputVertical = tpInput.verticallInput.GetAxis();
-        if (Mathf.Abs(inputHorizontal) > 0.5f)
-        {
-            inputVertical = 0;
-        }
-        else if (Mathf.Abs(inputVertical) > 0.5f)
-        {
-            inputHorizontal = 0;
-        }
-        
-        if (Mathf.Abs(inputHorizontal) < 0.8f)
-        {
-            inputHorizontal = 0;
-        }
-        
-        if (Mathf.Abs(inputVertical) < 0.8f)
-        {
-            inputVertical = 0;
-        }
-        
-        Vector3 cameraRight = cameraTransform.right;
-        cameraRight.y = 0;
-        cameraRight.Normalize();
-        Vector3 cameraForward = cameraTransform.forward;
-        cameraForward.y = 0;
-        cameraForward.Normalize();
+        _camera = GameObject.Find("Camera");
+        pushPoint = GameObject.Find("PushPoint").GetComponent<Transform>();
+    }
 
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetButtonDown("Start"))
+        {
+            if (isPaused)
+            {
+                Time.timeScale = 1;
+                isPaused = false;
+            }
+            else
+            {
+                Time.timeScale = 0;
+                isPaused = true;
+            }
+        }
 
-        inputDirection = cameraForward * inputVertical + cameraRight * inputHorizontal;
-        inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
-        
-        if (inputDirection.z > 0 && !pushPoint.canPushForward)
+        if (enableMovement)
         {
-            inputDirection.z = 0;
-        }
-        else if (inputDirection.z < 0 && (!pushPoint.canPushBack || isCollidingBack))
-        {
-            inputDirection.z = 0;
-        }
-        
-        if (inputDirection.x > 0 && (!pushPoint.canPushRight || isCollidingRight))
-        {
-            inputDirection.x = 0;
-        }
-        else if (inputDirection.x < 0 && (!pushPoint.canPushLeft || isCollidingLeft))
-        {
-            inputDirection.x = 0;
-        }
-        
-        inputDirection.y = 0;
-        
-        if (inputDirection.magnitude > 0.1f)
-        {
-            inputWeight = Mathf.Lerp(inputWeight, 1, Time.deltaTime * animAcceleration);
-        }
-        else
-        {
-            inputWeight = Mathf.Lerp(inputWeight, 0, Time.deltaTime * animAcceleration);
+            Movecube();
+
+            //clamp x and z position to prevent cube from falling off grid/map
+            target.transform.position = new Vector3(Mathf.Clamp(target.position.x, -100, 100),
+                target.position.y,
+                Mathf.Clamp(target.position.z, -100, 100));
+
+            pushPoint.transform.position = new Vector3(Mathf.Clamp(pushPoint.position.x, -100, 100),
+                pushPoint.position.y,
+                Mathf.Clamp(pushPoint.position.z, -100, 100));
         }
     }
 
-
-    private void MoveCube()
+    private void Movecube()
     {
-        // Get input for movement
-        float horizontalInput = Input.GetAxis("LeftAnalogHorizontal");
-        float verticalInput = Input.GetAxis("LeftAnalogVertical");
+        //multiply input value by .60f to make stick less sensitive
+        //when moving cubes, otherwise cube movement glitches out
+        var h = GetComponent<vThirdPersonInput>().cc.input.x;
+        var z = GetComponent<vThirdPersonInput>().cc.input.z;
 
         // Stop moving cube if camera is rotating
         if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)
             return;
 
-        // Get the forward and right vectors of the camera without vertical component
-        Vector3 cameraForward = Camera.main.transform.forward;
-        cameraForward.y = 0f;
-        cameraForward.Normalize();
+        Vector3 camF = _camera.transform.forward;
+        Vector3 camR = _camera.transform.right;
 
-        Vector3 cameraRight = Camera.main.transform.right;
-        cameraRight.y = 0f;
-        cameraRight.Normalize();
+        camF.y = 0;
+        camR.y = 0;
+
+        camF = camF.normalized;
+        camR = camR.normalized;
 
         // Calculate movement direction based on camera orientation
-        Vector3 moveDirection = cameraForward * verticalInput + cameraRight * horizontalInput;
+        Vector3 moveDirection = camF * z + camR * h;
 
         // Ensure movement only along the X or Z axis, not diagonally
         if (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.z))
-        {
             moveDirection.z = 0f;
-        }
         else
-        {
             moveDirection.x = 0f;
-        }
 
         moveDirection.Normalize();
 
         // Calculate target position based on the current position and move distance
-        Vector3 targetPosition = transform.position + new Vector3(
+        Vector3 targetPosition = pushPoint.position + new Vector3(
             Mathf.RoundToInt(moveDirection.x),
             0f,
             Mathf.RoundToInt(moveDirection.z)
         ) * moveDistance * .05f;
 
-        // Move the cube to the target position
-        transform.position = targetPosition;
+        pushPoint.position = targetPosition;
+    }
+
+    // use this only to assign initial push point position
+    public void SetPushPointPosition()
+    {
+        Vector3 _tmpPos;
+        _tmpPos = new Vector3(target.position.x, target.position.y + 2, target.position.z);
+        pushPoint.position = _tmpPos;
+    }
+
+    public void ParentToPushPoint()
+    {
+        transform.SetParent(pushPoint, true);
+        target.SetParent(pushPoint, true);
+    }
+
+    public void DeParentToPushPoint()
+    {
+        transform.parent = null;
+        target.parent = null;
+    }
+
+    // small delay before player movement is enabled again
+    private IEnumerator EnableMovement()
+    {
+        yield return new WaitForSeconds(1.5f);
+        if (!enableMovement)
+            enableMovement = true;
+        StopCoroutine("EnableMovement");
+    }
+
+    public void EnableBoxMovement()
+    {
+        if (!enableMovement)
+            target = GetComponent<GrabMechanic>().targetCube.transform.parent.parent;
+        else
+            target = null;
+
+        enableMovement = !(enableMovement);
     }
 }
-

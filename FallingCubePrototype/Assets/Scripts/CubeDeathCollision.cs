@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.SceneManagement;
-using Invector.vCharacterController;
+﻿using Invector.vCharacterController;
 using UnityEngine;
 
 public class CubeDeathCollision : MonoBehaviour
@@ -17,10 +14,10 @@ public class CubeDeathCollision : MonoBehaviour
 
     private bool CanDestroyPlayer(GameObject go)
     {
-        return (go.gameObject.tag == "Player" &&
-            GetComponentInParent<BlockBehavior>().state ==
-            BlockBehavior.States.falling &&
-            !GetComponentInParent<BlockBehavior>().isDestroying &&
+        return (go.tag == "Player" &&
+            GetComponentInParent<CubeBehavior>().state ==
+            CubeBehavior.States.falling &&
+            !GetComponentInParent<CubeBehavior>().isDestroying &&
             !GameManager.gm.gameCompleted);
     }
 }
