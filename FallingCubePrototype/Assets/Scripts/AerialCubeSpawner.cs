@@ -65,13 +65,11 @@ public class AerialCubeSpawner : MonoBehaviour
             parent = new GameObject("SpawnLocs").transform;
             parent.transform.position = Vector3.zero;
         }
-        // /if (EnableSpawner)
-        // /    StartCoroutine(AutoSpawner());
-        // /
+
         gridPositions = GenerateGridPositions();
         GenerateCeilingSpawnLocations();
 
-        Debug.Log("CubeSpawner initialized");
+        Debug.Log("AerialCubeSpawner initialized");
     }
 
     // Update is called once per frame

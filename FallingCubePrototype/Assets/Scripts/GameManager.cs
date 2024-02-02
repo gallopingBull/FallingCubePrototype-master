@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
 
     public List<GameObject> CubeTargets;
 
+    private bool playerSpawned = false;
     [SerializeField]
     private GameObject ObjectiveGate;
 
@@ -189,12 +190,14 @@ public class GameManager : MonoBehaviour
     {
         if (!isTesting)
         {
-            if (!aerialCubeSpawner.spawnPlayer)
+            if (!playerSpawned)
             {
                 aerialCubeSpawner.SpawnPlayerCaller();
+                playerSpawned = true;
             }
+
             // TODO: determine if this is necessary or not (if not, remove it)
-            if (!Player.activeInHierarchy && aerialCubeSpawner.spawnPlayer)
+            if (!Player.activeInHierarchy /*&& aerialCubeSpawner.spawnPlayer*/)
             {
                 //StartGame();
                 //return;
@@ -279,5 +282,12 @@ public class GameManager : MonoBehaviour
         CubeTargets.Clear();
     }
 
+    private void SpawnPlayer()
+    {
+        // Spawn player
+        //GameObject player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        // Get the middle location of the grid
+        //player.transform.position = new Vector3(gridSizeX / 2, 0, gridSizeZ / 2);
+    }
     #endregion
 }

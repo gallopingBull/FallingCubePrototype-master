@@ -95,6 +95,7 @@ public class CubeManager : MonoBehaviour
             spawnDatas = new List<SpawnData>();
         }
     }
+
 }
 
 // Enum to represent different colors
