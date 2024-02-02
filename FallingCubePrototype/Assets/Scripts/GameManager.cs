@@ -42,7 +42,6 @@ public class GameManager : MonoBehaviour
 
     public List<GameObject> CubeTargets;
 
-    private bool playerSpawned = false;
     [SerializeField]
     private GameObject ObjectiveGate;
     private ArenaGenerator arenaGenerator;
@@ -74,6 +73,7 @@ public class GameManager : MonoBehaviour
         else if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
             InitalTimerPanel.SetActive(false);
 
+        SpawnPlayer();
     }
 
     private void OnDestroy()
@@ -189,32 +189,22 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        if (!playerSpawned)
+        if (!Player.activeInHierarchy)
         {
             //aerialCubeSpawner.SpawnPlayerCaller();
-            //SpawnPlayer();
-            playerSpawned = true;
+            SpawnPlayer();
         }
 
         if (!isTesting)
         {
-            // TODO: determine if this is necessary or not (if not, remove it)
-            if (!Player.activeInHierarchy /*&& aerialCubeSpawner.spawnPlayer*/)
-            {
-                //StartGame();
-                //return;
-            }
-            else
-            {
-                if (countingDown)
-                    StopCoroutine("Timer");
+            if (countingDown)
+                StopCoroutine("Timer");
 
-                StartCoroutine("Timer");
+            StartCoroutine("Timer");
 
-                // small delay after round begins before new cubers are allowed to 
-                // add a random.range on the time so it's never exatcly the same
-                Invoke("EnableCubeSpawnerCaller", 3f);
-            }
+            // small delay after round begins before new cubers are allowed to 
+            // add a random.range on the time so it's never exatcly the same
+            Invoke("EnableCubeSpawnerCaller", 3f);
         }
     }
 
@@ -287,11 +277,10 @@ public class GameManager : MonoBehaviour
     private void SpawnPlayer()
     {
         Debug.Log("Spawning player");
-        // Spawn player
-        Player = Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-
-        //Get the middle location of the grid
-        Player.transform.position = new Vector3(arenaGenerator.gridSizeX / 2, 0, arenaGenerator.gridSizeZ / 2);
+        Debug.Log($"Player: {Player.name}");
+        Player.SetActive(true);
+        //Get the middle locat  ion of the grid
+        Player.transform.position = new Vector3(arenaGenerator.gridSizeX / 2, 6, arenaGenerator.gridSizeZ / 2);
     }
     #endregion
 }
