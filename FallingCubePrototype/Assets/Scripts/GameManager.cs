@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     #region variables
     public static GameManager gm;
     public GameObject Player;
+    public GameObject PlayerPrefab;
 
     public bool isTesting = false;
 
@@ -44,8 +45,7 @@ public class GameManager : MonoBehaviour
     private bool playerSpawned = false;
     [SerializeField]
     private GameObject ObjectiveGate;
-
-    [SerializeField]
+    private ArenaGenerator arenaGenerator;
     private AerialCubeSpawner aerialCubeSpawner;
 
     [SerializeField]
@@ -67,12 +67,13 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        if (!isTesting)
+        arenaGenerator = FindObjectOfType<ArenaGenerator>();
+        aerialCubeSpawner = FindObjectOfType<AerialCubeSpawner>();
+        ArenaGenerator.OnFloorComplete += StartGame; if (!isTesting)
             Invoke("InitialCountdownTimerCaller", 1f);
         else if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
             InitalTimerPanel.SetActive(false);
 
-        ArenaGenerator.OnFloorComplete += StartGame;
     }
 
     private void OnDestroy()
@@ -188,14 +189,15 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        if (!playerSpawned)
+        {
+            //aerialCubeSpawner.SpawnPlayerCaller();
+            //SpawnPlayer();
+            playerSpawned = true;
+        }
+
         if (!isTesting)
         {
-            if (!playerSpawned)
-            {
-                aerialCubeSpawner.SpawnPlayerCaller();
-                playerSpawned = true;
-            }
-
             // TODO: determine if this is necessary or not (if not, remove it)
             if (!Player.activeInHierarchy /*&& aerialCubeSpawner.spawnPlayer*/)
             {
@@ -284,10 +286,12 @@ public class GameManager : MonoBehaviour
 
     private void SpawnPlayer()
     {
+        Debug.Log("Spawning player");
         // Spawn player
-        //GameObject player = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        // Get the middle location of the grid
-        //player.transform.position = new Vector3(gridSizeX / 2, 0, gridSizeZ / 2);
+        Player = Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+
+        //Get the middle location of the grid
+        Player.transform.position = new Vector3(arenaGenerator.gridSizeX / 2, 0, arenaGenerator.gridSizeZ / 2);
     }
     #endregion
 }
