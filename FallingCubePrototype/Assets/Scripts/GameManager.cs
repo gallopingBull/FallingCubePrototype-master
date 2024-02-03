@@ -285,7 +285,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Spawning player");
         Player.SetActive(true);
-        // Scale by cube size first then complete rest of expression to get the center of the grid
+        // Scale by cube size and grid size first (then subtract by one to account for zero) to get the center of the grid
         float x, z;
         x = ((arenaGenerator.gridSizeX * arenaGenerator.CubeSize) / 2) - 1;
         z = ((arenaGenerator.gridSizeZ * arenaGenerator.CubeSize) / 2) - 1;
