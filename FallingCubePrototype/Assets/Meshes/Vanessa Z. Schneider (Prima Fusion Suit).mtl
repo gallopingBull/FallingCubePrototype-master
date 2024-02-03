@@ -1,0 +1,68 @@
+# Blender3D MTL File: Vanessa Z. Schneider (Prima Fusion Suit).blend
+# Material Count: 6
+newmtl RefRep.138_Face.p_Fac_Face.png
+Ns 90.196078
+Ka 0.000000 0.000000 0.000000
+Kd 0.409600 0.409600 0.409600
+Ks 0.125000 0.125000 0.125000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Textures/Face.png
+
+
+newmtl RefRep.132_Back.p_Bac_Back.png
+Ns 90.196078
+Ka 0.000000 0.000000 0.000000
+Kd 0.409600 0.409600 0.409600
+Ks 0.125000 0.125000 0.125000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Textures/Back.png
+
+
+newmtl RefRep.134_Stomac_Sto_Stomach.png
+Ns 90.196078
+Ka 0.000000 0.000000 0.000000
+Kd 0.409600 0.409600 0.409600
+Ks 0.125000 0.125000 0.125000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Textures/Stomach.png
+
+
+newmtl RefRep.136_Breast_Bre_Breasts.png
+Ns 90.196078
+Ka 0.000000 0.000000 0.000000
+Kd 0.409600 0.409600 0.409600
+Ks 0.125000 0.125000 0.125000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Textures/Breasts.png
+
+
+newmtl RefRep.140_Shades_Sha_Shades.png
+Ns 90.196078
+Ka 0.000000 0.000000 0.000000
+Kd 0.409600 0.409600 0.409600
+Ks 0.125000 0.125000 0.125000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Textures/Shades.png
+
+
+newmtl RefRep.142_Hair.p_Hai_Hair.png
+Ns 90.196078
+Ka 0.000000 0.000000 0.000000
+Kd 0.409600 0.409600 0.409600
+Ks 0.125000 0.125000 0.125000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd Textures/Hair.png
+
+
