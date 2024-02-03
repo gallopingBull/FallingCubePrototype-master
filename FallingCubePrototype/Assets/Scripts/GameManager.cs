@@ -284,13 +284,13 @@ public class GameManager : MonoBehaviour
     private void SpawnPlayer()
     {
         Debug.Log("Spawning player");
-        Player.SetActive(true);
         // Scale by cube size and grid size first (then subtract by one to account for zero) to get the center of the grid
         float x, z;
         x = ((arenaGenerator.gridSizeX * arenaGenerator.CubeSize) / 2) - 1;
         z = ((arenaGenerator.gridSizeZ * arenaGenerator.CubeSize) / 2) - 1;
         Debug.Log($"player spawn point - x: {x}, z: {z}");
         Player.transform.position = new Vector3(x, 6, z);
+        Player.SetActive(true);
         cameraTargt.transform.position = new Vector3(x, 0, z);
     }
     #endregion
