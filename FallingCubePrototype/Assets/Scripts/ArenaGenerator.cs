@@ -9,7 +9,9 @@ public class ArenaGenerator : MonoBehaviour
     public int gridSizeZ = 10;
     public int minHeight = 1;
     public int maxHeight = 5;
-    public float spacing = 2f; // TODO: I don't like this name - it's not really spacing, it's the size of the cube
+
+    // cube size determined by the scale of the cube prefab and the spacing between cubes.
+    public float CubeSize = 2f;
     public float floatProbability = 0.2f; // Probability of a cube floating
 
     private const int maxAttempts = 10;
@@ -58,7 +60,7 @@ public class ArenaGenerator : MonoBehaviour
                 }
 
                 int id = cubeManager.SpawnDatas.Count;
-                Vector3 cubePosition = new Vector3(x * spacing, randomHeight, z * spacing);
+                Vector3 cubePosition = new Vector3(x * CubeSize, randomHeight, z * CubeSize);
                 ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
 
                 if (color != ColorOption.Neutral)
@@ -97,7 +99,7 @@ public class ArenaGenerator : MonoBehaviour
                 // traverses down the y axis and adds a cube at each position until it reaches the ground or y = 0
                 if (cubePosition.y > 0)
                 {
-                    for (int i = (int)cubePosition.y - (int)spacing; i < cubePosition.y; i = i - (int)spacing)
+                    for (int i = (int)cubePosition.y - (int)CubeSize; i < cubePosition.y; i = i - (int)CubeSize)
                     {
                         id = cubeManager.SpawnDatas.Count;
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
@@ -133,7 +135,7 @@ public class ArenaGenerator : MonoBehaviour
         // Check each adjacent cube
         foreach (Vector3 offset in offsets)
         {
-            Vector3 adjacentPos = position + (offset * spacing); // Multiply by 2(spacing) to get the adjacent cube
+            Vector3 adjacentPos = position + (offset * CubeSize); // Multiply by 2(spacing) to get the adjacent cube
 
             // Check if a cube exists at the adjacent position
             SpawnData adjacentCube = cubeManager.SpawnDatas.Find(spawnData => spawnData.position == adjacentPos);

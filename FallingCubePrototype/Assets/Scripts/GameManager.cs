@@ -8,8 +8,10 @@ public class GameManager : MonoBehaviour
 {
     #region variables
     public static GameManager gm;
+
+    [HideInInspector]
     public GameObject Player;
-    public GameObject PlayerPrefab;
+    //public GameObject PlayerPrefab;
 
     public bool isTesting = false;
 
@@ -42,6 +44,7 @@ public class GameManager : MonoBehaviour
 
     public List<GameObject> CubeTargets;
 
+    private GameObject cameraTargt; // this is the camera target for the invector 3rd person controller
     [SerializeField]
     private GameObject ObjectiveGate;
     private ArenaGenerator arenaGenerator;
@@ -73,6 +76,9 @@ public class GameManager : MonoBehaviour
         else if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
             InitalTimerPanel.SetActive(false);
 
+        Player = GameObject.FindGameObjectWithTag("Player");
+        cameraTargt = GameObject.Find("MainCameraTarget");
+        Player.SetActive(false);
         SpawnPlayer();
     }
 
@@ -274,13 +280,18 @@ public class GameManager : MonoBehaviour
         CubeTargets.Clear();
     }
 
+    // TODO: Modify this so location scales based on cube size.
     private void SpawnPlayer()
     {
         Debug.Log("Spawning player");
-        Debug.Log($"Player: {Player.name}");
         Player.SetActive(true);
-        //Get the middle locat  ion of the grid
-        Player.transform.position = new Vector3(arenaGenerator.gridSizeX / 2, 6, arenaGenerator.gridSizeZ / 2);
+        // Scale by cube size first then complete rest of expression to get the center of the grid
+        float x, z;
+        x = ((arenaGenerator.gridSizeX * arenaGenerator.CubeSize) / 2) - 1;
+        z = ((arenaGenerator.gridSizeZ * arenaGenerator.CubeSize) / 2) - 1;
+        Debug.Log($"player spawn point - x: {x}, z: {z}");
+        Player.transform.position = new Vector3(x, 6, z);
+        cameraTargt.transform.position = new Vector3(x, 0, z);
     }
     #endregion
 }
