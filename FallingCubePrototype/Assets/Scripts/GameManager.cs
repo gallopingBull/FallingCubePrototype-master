@@ -208,8 +208,9 @@ public class GameManager : MonoBehaviour
                 StopCoroutine("Timer");
 
             StartCoroutine("Timer");
-            OnGameBegin?.Invoke();
         }
+        Debug.Log("Game has begun!");
+        OnGameBegin?.Invoke();
     }
 
     IEnumerator Timer()

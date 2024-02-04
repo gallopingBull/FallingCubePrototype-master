@@ -14,7 +14,6 @@ public class AerialCubeSpawner : MonoBehaviour
     private bool init = true;
     public float yOffset = 15f; // Spawn height above the player 
     private List<Vector2> gridPositions;
-    [HideInInspector] public bool spawnPlayer;
 
     public Transform CurSpawnLoc;
     public List<Transform> SpawnLocs;
@@ -49,6 +48,7 @@ public class AerialCubeSpawner : MonoBehaviour
 
     #region functions
     // Start is called before the first frame update
+
     void Start()
     {
         cubeManager = GameObject.Find("CubeManager").GetComponent<CubeManager>();
@@ -84,13 +84,54 @@ public class AerialCubeSpawner : MonoBehaviour
                    transform.rotation, maxDistance);
             }
 
-            if (spawnPlayer && !CheckColor && !isSpawning)
+            if (!CheckColor && !isSpawning)
             {
                 hitDetect = Physics.BoxCast(CurSpawnLoc.transform.position,
                    transform.localScale * BoxColliderSize,
                    -transform.up, out hit,
                    transform.rotation, maxDistance);
             }
+        }
+    }
+
+    public void EnableCubeSpawner()
+    {
+        Debug.Log("AerialCubeSpawner enabled");
+        EnableSpawner = true;
+        StartCoroutine(AutoSpawner());
+    }
+
+    private IEnumerator AutoSpawner()
+    {
+        // TODO: maybe add some delay here before spawning begins??? 
+
+        if (init)
+            MAXCubeSpawnAmmount = Random.Range(10, 15);
+
+        while (EnableSpawner)
+        {
+            timer = GameManager.gm._time;
+
+            if (init)
+            {
+                if (CubeSpawnAmmount == MAXCubeSpawnAmmount)
+                {
+                    EnableSpawner = false;
+
+                    StopCoroutine(AutoSpawner());
+                }
+                CubeSpawnAmmount++;
+                randFloat = Random.Range(.25f, .35f);
+            }
+
+            else
+            {
+                randFloat = GetNewSpawnRate();
+            }
+            Debug.Log($"{randFloat} seconds till next spawn...");
+            yield return new WaitForSeconds(randFloat);
+            Spawn();
+            CheckColor = true;
         }
     }
 
@@ -110,8 +151,10 @@ public class AerialCubeSpawner : MonoBehaviour
 
         targetCube = cubeManager.cubes.Last();
 
-        targetCube.SetActive(false);
-        Invoke("CheckSpawnPosition", .5f);
+        targetCube.SetActive(true);
+        isSpawning = false;
+        CheckColor = false;
+        //Invoke("CheckSpawnPosition", .5f);
     }
 
     private void CheckSpawnPosition()
@@ -163,55 +206,12 @@ public class AerialCubeSpawner : MonoBehaviour
                 else
                     targetCube.SetActive(true);
             }
-
             else
                 targetCube.SetActive(true);
-
         }
 
         isSpawning = false;
         CheckColor = false;
-    }
-
-
-    public void EnableCubeSpawner()
-    {
-        EnableSpawner = true;
-        StartCoroutine(AutoSpawner());
-    }
-
-    private IEnumerator AutoSpawner()
-    {
-        // maybe add some delay here before spawning begins??? 
-
-        if (init)
-            MAXCubeSpawnAmmount = Random.Range(10, 15);
-
-        while (EnableSpawner)
-        {
-            timer = GameManager.gm._time;
-
-            if (init)
-            {
-                if (CubeSpawnAmmount == MAXCubeSpawnAmmount)
-                {
-                    EnableSpawner = false;
-
-                    StopCoroutine(AutoSpawner());
-                }
-                CubeSpawnAmmount++;
-                randFloat = Random.Range(.25f, .35f);
-            }
-
-            else
-            {
-                randFloat = GetNewSpawnRate();
-            }
-
-            yield return new WaitForSeconds(randFloat);
-            Spawn();
-            CheckColor = true;
-        }
     }
 
     // change rate to spawn based on current time from Gm.time
