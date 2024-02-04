@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class ArenaGenerator : MonoBehaviour
 {
-
-    public int minHeight = 1;
+    public int minHeight = 0;
     public int maxHeight = 5;
 
     // cube size determined by the scale of the cube prefab and the spacing between cubes.
@@ -28,7 +27,6 @@ public class ArenaGenerator : MonoBehaviour
 
     static public Action OnFloorComplete { get; set; } // maybe this should be in CubeManager?
 
-
     void Awake()
     {
         cubeManager = GetComponent<CubeManager>();
@@ -38,13 +36,13 @@ public class ArenaGenerator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            cubeManager.DestoryAllCubes();
             GenerateArena();
         }
     }
 
     public void GenerateArena(int gridSizex = 6, int gridSizeZ = 6)
     {
+        cubeManager.DestoryAllCubes();
         for (int x = 0; x < gridSizex; x++)
         {
             for (int z = 0; z < gridSizeZ; z++)

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-//TODO: Change class name to CeilingSpawner
 public class AerialCubeSpawner : MonoBehaviour
 {
     #region variables
@@ -57,9 +56,11 @@ public class AerialCubeSpawner : MonoBehaviour
     void Start()
     {
         cubeManager = GameObject.Find("CubeManager").GetComponent<CubeManager>();
-        ArenaGenerator.OnFloorComplete += EnableCubeSpawner;
         lastSpawnLocs = new Queue<int>();
         collider = GetComponent<Collider>();
+
+        ArenaGenerator.OnFloorComplete += EnableCubeSpawner;
+
         if (parent == null)
         {
             parent = new GameObject("SpawnLocs").transform;
@@ -167,8 +168,6 @@ public class AerialCubeSpawner : MonoBehaviour
     private int GetRandomSpawnPosition()
     {
         int tmpLoc = Random.Range(0, SpawnLocs.Count);
-        // TODO: this is a hacky fix. find better solutions for this null check.
-        //Debug.Log($"is lastSpawnLocs null: {lastSpawnLocs}");
         if (lastSpawnLocs == null)
             return 0;
         if (lastSpawnLocs.Contains(tmpLoc) || (tmpLoc == playerSpawnPoint && init))
@@ -349,9 +348,9 @@ public class AerialCubeSpawner : MonoBehaviour
 
             loc.name = $"SpawnLoc {x}";
             loc.transform.parent = parent.transform;
-            loc.transform.position = new Vector3(gridPositions[x].x * 2,
+            loc.transform.position = new Vector3(gridPositions[x].x * cubeManager.CubeSize,
             yOffset,
-            gridPositions[x].y * 2);
+            gridPositions[x].y * cubeManager.CubeSize);
 
             SpawnLocs.Add(loc.transform);
         }

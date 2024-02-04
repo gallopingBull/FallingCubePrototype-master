@@ -44,7 +44,6 @@ public class CubeManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            DestoryAllCubes();
             GenerateArena(gridSizeX, gridSizeZ);
         }
     }
@@ -57,13 +56,13 @@ public class CubeManager : MonoBehaviour
             cubesParent.transform.position = Vector3.zero;
         }
 
-        Debug.Log("CubeManager initialized");
-        DestoryAllCubes();
         GenerateArena(gridSizeX, gridSizeZ);
+        Debug.Log("CubeManager initialized");
     }
 
     public void GenerateArena(int gridSizex = 6, int gridSizeZ = 6)
     {
+        DestoryAllCubes();
         for (int x = 0; x < gridSizex; x++)
         {
             for (int z = 0; z < gridSizeZ; z++)
