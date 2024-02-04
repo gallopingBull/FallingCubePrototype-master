@@ -32,10 +32,7 @@ public class AerialCubeSpawner : MonoBehaviour
     private RaycastHit hit;
 
     public GameObject targetCube;
-    public GameObject CubeHit;
 
-    [SerializeField]
-    private GameObject player;
 
     public int randLoc;
     public Queue<int> lastSpawnLocs;
@@ -46,7 +43,6 @@ public class AerialCubeSpawner : MonoBehaviour
 
     private float timer;
 
-    private int playerSpawnPoint;
     private CubeManager cubeManager;
 
     #endregion
@@ -59,7 +55,7 @@ public class AerialCubeSpawner : MonoBehaviour
         lastSpawnLocs = new Queue<int>();
         collider = GetComponent<Collider>();
 
-        ArenaGenerator.OnFloorComplete += EnableCubeSpawner;
+        //ArenaGenerator.OnFloorComplete += EnableCubeSpawner;
 
         if (parent == null)
         {
@@ -99,10 +95,30 @@ public class AerialCubeSpawner : MonoBehaviour
         }
     }
 
+    // spawns cubes
+    private void Spawn()
+    {
+        CheckColor = true;
+        isSpawning = true;
+
+        randLoc = GetRandomSpawnPosition();
+        CurSpawnLoc = SpawnLocs[randLoc];
+
+        ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
+        int id = cubeManager.SpawnDatas.Count;
+        SpawnData spawnData = new SpawnData { id = id, position = CurSpawnLoc.position, color = color };
+        cubeManager.SpawnCube(spawnData);
+
+        targetCube = cubeManager.cubes.Last();
+
+        targetCube.SetActive(false);
+        Invoke("CheckSpawnPosition", .5f);
+    }
+
     public void EnableCubeSpawner()
     {
         EnableSpawner = true;
-        StartCoroutine("AutoSpawner");
+        StartCoroutine(AutoSpawner());
     }
 
     IEnumerator AutoSpawner()
@@ -132,7 +148,7 @@ public class AerialCubeSpawner : MonoBehaviour
             }
 
             yield return new WaitForSeconds(randFloat);
-            SpawnManager();
+            Spawn();
             CheckColor = true;
         }
     }
@@ -170,11 +186,11 @@ public class AerialCubeSpawner : MonoBehaviour
         int tmpLoc = Random.Range(0, SpawnLocs.Count);
         if (lastSpawnLocs == null)
             return 0;
-        if (lastSpawnLocs.Contains(tmpLoc) || (tmpLoc == playerSpawnPoint && init))
+
+        if (lastSpawnLocs.Contains(tmpLoc))
         {
             return GetRandomSpawnPosition();
         }
-
         else
         {
             if (lastSpawnLocs.Count > 0)
@@ -184,139 +200,13 @@ public class AerialCubeSpawner : MonoBehaviour
         }
     }
 
-    // spawns cubes
-    private void SpawnManager()
-    {
-        isSpawning = true;
-
-        randLoc = GetRandomSpawnPosition();
-        CurSpawnLoc = SpawnLocs[randLoc];
-
-        ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
-        int id = cubeManager.SpawnDatas.Count;
-        SpawnData spawnData = new SpawnData { id = id, position = CurSpawnLoc.position, color = color };
-        cubeManager.SpawnCube(spawnData);
-
-        targetCube = cubeManager.cubes.Last();
-
-        targetCube.SetActive(false);
-        Invoke("CheckSpawnPosition", .5f);
-    }
-
-    public void SpawnPlayerCaller()
-    {
-        //Debug.Log("spawn player caller");
-        SpawnPlayer();
-    }
-
-    private void SpawnPlayer()
-    {
-        spawnPlayer = true;
-        randLoc = GetRandomSpawnPosition();
-        CurSpawnLoc = SpawnLocs[randLoc];
-
-        Invoke("CheckPlayerSpawnPosition", .1f);
-    }
-
-    private void CheckPlayerSpawnPosition()
-    {
-        if (spawnPlayer)
-        {
-            if (hitDetect &&
-            hit.transform.gameObject.tag == "Block")
-            {
-                if (!player.activeInHierarchy)
-                {
-                    spawnPlayer = false;
-                    init = false;
-                    player.transform.position = hit.transform.position;
-
-                    playerSpawnPoint = randLoc;
-
-                    player.SetActive(true);
-                    //GameManager.gm.StartGame();
-                }
-            }
-            else
-            {
-                SpawnPlayer();
-                return;
-            }
-        }
-    }
-
-    private void CheckSpawnPosition()
-    {
-        // just in case cube is destoryed before it is landed on
-        if (!hit.collider)
-        {
-            if (!init)
-            {
-                GetNewCube();
-                return;
-            }
-            else
-            {
-                if (targetCube != null)
-                    targetCube.SetActive(true);
-            }
-        }
-        else
-        {
-            CubeHit = null;
-            CubeHit = hit.transform.gameObject;
-            if (hitDetect && CubeHit.tag == "Player" && init)
-            {
-                GetNewCube();
-                return;
-            }
-
-            if (hitDetect && CubeHit.tag == "Block")
-            {
-                #region debug logs
-                //Debug.Log("****----hitting block----****");
-                //Debug.Log("m_Hit object = " + CubeHit);
-                //Debug.Log("m_Hit color: " + CubeHit.GetComponent<BlockBehavior>().curColor);
-
-                //Debug.Log("tmpCube name = " + tmpCube.gameObject.name);
-                //Debug.Log("tmpCube color: " + tmpCube.GetComponent<Renderer>().material.color);
-                //Debug.Log("****------****");
-                #endregion
-
-                // spawned cube can't land on or by similar color
-                // delete cube and spawn another 
-                if (targetCube.GetComponent<CubeBehavior>().color ==
-                    CubeHit.GetComponent<CubeBehavior>().color)
-                {
-                    GetNewCube();
-                    return;
-                }
-                else
-                    targetCube.SetActive(true);
-            }
-
-            else
-                targetCube.SetActive(true);
-
-        }
-
-        isSpawning = false;
-        CheckColor = false;
-    }
-
-    public void Spawn()
-    {
-        SpawnManager();
-        CheckColor = true;
-    }
-
     private void GetNewCube()
     {
         GameObject _tmpCube;
         _tmpCube = targetCube;
         targetCube = null;
         Destroy(_tmpCube);
-        SpawnManager();
+        Spawn();
     }
 
     public List<Vector2> GenerateGridPositions()
@@ -358,7 +248,7 @@ public class AerialCubeSpawner : MonoBehaviour
 
     void OnDisable()
     {
-        ArenaGenerator.OnFloorComplete -= EnableCubeSpawner;
+        //ArenaGenerator.OnFloorComplete -= EnableCubeSpawner;
     }
 
     private void OnDrawGizmos()
