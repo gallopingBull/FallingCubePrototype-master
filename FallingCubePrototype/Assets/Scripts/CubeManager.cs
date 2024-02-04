@@ -31,7 +31,7 @@ public class CubeManager : MonoBehaviour
         Vector3.forward, Vector3.back, Vector3.up,
         Vector3.down, Vector3.right, Vector3.left
     };
-    private List<ColorOption> colorsUsed; // Track colors used in the current arena generation
+    private List<ColorOption> colorsUsed = new List<ColorOption>(); // Track colors used in the current arena generation
 
     static public Action OnFloorComplete { get; set; } // maybe this should be in CubeManager?
 
