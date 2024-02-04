@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class ArenaGenerator : MonoBehaviour
 {
-    public int gridSizeX = 10;
-    public int gridSizeZ = 10;
+
     public int minHeight = 1;
     public int maxHeight = 5;
 
@@ -39,15 +38,14 @@ public class ArenaGenerator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            StopAllCoroutines();
             cubeManager.DestoryAllCubes();
             GenerateArena();
         }
     }
 
-    public void GenerateArena()
+    public void GenerateArena(int gridSizex = 6, int gridSizeZ = 6)
     {
-        for (int x = 0; x < gridSizeX; x++)
+        for (int x = 0; x < gridSizex; x++)
         {
             for (int z = 0; z < gridSizeZ; z++)
             {

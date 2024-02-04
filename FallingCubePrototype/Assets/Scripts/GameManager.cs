@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     private GameObject cameraTargt; // this is the camera target for the invector 3rd person controller
     [SerializeField]
     private GameObject ObjectiveGate;
-    private ArenaGenerator arenaGenerator;
+    private CubeManager cubeManager;
     private AerialCubeSpawner aerialCubeSpawner;
 
     [SerializeField]
@@ -69,9 +69,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        arenaGenerator = FindObjectOfType<ArenaGenerator>();
+        cubeManager = FindObjectOfType<CubeManager>();
         aerialCubeSpawner = FindObjectOfType<AerialCubeSpawner>();
-        ArenaGenerator.OnFloorComplete += StartGame; if (!isTesting)
+        ArenaGenerator.OnFloorComplete += StartGame;
+        if (!isTesting)
             Invoke("InitialCountdownTimerCaller", 1f);
         else if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
             InitalTimerPanel.SetActive(false);
@@ -286,8 +287,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("Spawning player");
         // Scale by cube size and grid size first (then subtract by one to account for zero) to get the center of the grid
         float x, z;
-        x = ((arenaGenerator.gridSizeX * arenaGenerator.CubeSize) / 2) - 1;
-        z = ((arenaGenerator.gridSizeZ * arenaGenerator.CubeSize) / 2) - 1;
+        x = ((cubeManager.gridSizeX * cubeManager.CubeSize) / 2) - 1;
+        z = ((cubeManager.gridSizeZ * cubeManager.CubeSize) / 2) - 1;
         Debug.Log($"player spawn point - x: {x}, z: {z}");
         Player.transform.position = new Vector3(x, 6, z);
         Player.SetActive(true);

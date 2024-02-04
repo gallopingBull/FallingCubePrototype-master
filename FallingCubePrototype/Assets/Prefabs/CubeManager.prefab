@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4201830530435554280}
   - component: {fileID: 4201830530435554295}
-  - component: {fileID: 6328597882127027401}
   - component: {fileID: 1519661966}
   m_Layer: 0
   m_Name: CubeManager
@@ -47,26 +46,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnDelay: 0.01
   cubePrefab: {fileID: 1372184888410372891, guid: 02ab994a7ca53d3498cd5bae4547a061, type: 3}
-  gridSizeX: 10
-  gridSizeZ: 10
-  cubes: []
---- !u!114 &6328597882127027401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4201830530435554281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad57eb7e266e6cb4ca7a61eec48cf6e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   gridSizeX: 6
   gridSizeZ: 6
+  cubes: []
   minHeight: 0
   maxHeight: 4
-  spacing: 2
+  CubeSize: 2
   floatProbability: 0
   colorsUsed: 
 --- !u!114 &1519661966

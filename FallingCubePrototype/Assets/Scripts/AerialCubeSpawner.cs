@@ -198,7 +198,7 @@ public class AerialCubeSpawner : MonoBehaviour
         SpawnData spawnData = new SpawnData { id = id, position = CurSpawnLoc.position, color = color };
         cubeManager.SpawnCube(spawnData);
 
-        targetCube = cubeManager.Cubes.Last();
+        targetCube = cubeManager.cubes.Last();
 
         targetCube.SetActive(false);
         Invoke("CheckSpawnPosition", .5f);
