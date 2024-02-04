@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
@@ -58,6 +59,8 @@ public class GameManager : MonoBehaviour
     private GameObject GameWonPanel;
     [SerializeField]
     private GameObject GameFailedPanel;
+
+    static public Action OnGameBegin { get; set; }
     #endregion
 
     #region functions
@@ -70,7 +73,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         cubeManager = FindObjectOfType<CubeManager>();
-        aerialCubeSpawner = FindObjectOfType<AerialCubeSpawner>();
+        aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
         ArenaGenerator.OnFloorComplete += StartGame;
         if (!isTesting)
             Invoke("InitialCountdownTimerCaller", 1f);
@@ -197,10 +200,7 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         if (!Player.activeInHierarchy)
-        {
-            //aerialCubeSpawner.SpawnPlayerCaller();
             SpawnPlayer();
-        }
 
         if (!isTesting)
         {
@@ -208,16 +208,8 @@ public class GameManager : MonoBehaviour
                 StopCoroutine("Timer");
 
             StartCoroutine("Timer");
-
-            // small delay after round begins before new cubers are allowed to 
-            // add a random.range on the time so it's never exatcly the same
-            Invoke("EnableCubeSpawnerCaller", 3f);
+            OnGameBegin?.Invoke();
         }
-    }
-
-    private void EnableCubeSpawnerCaller()
-    {
-        aerialCubeSpawner.EnableCubeSpawner();
     }
 
     IEnumerator Timer()
@@ -281,7 +273,6 @@ public class GameManager : MonoBehaviour
         CubeTargets.Clear();
     }
 
-    // TODO: Modify this so location scales based on cube size.
     private void SpawnPlayer()
     {
         Debug.Log("Spawning player");

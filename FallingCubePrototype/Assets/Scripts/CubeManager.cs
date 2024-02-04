@@ -33,7 +33,7 @@ public class CubeManager : MonoBehaviour
     };
     private List<ColorOption> colorsUsed = new List<ColorOption>(); // Track colors used in the current arena generation
 
-    static public Action OnFloorComplete { get; set; } // maybe this should be in CubeManager?
+    static public Action OnFloorComplete { get; set; }
 
     private void Awake()
     {

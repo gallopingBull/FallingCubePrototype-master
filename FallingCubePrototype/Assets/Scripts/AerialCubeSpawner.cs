@@ -32,7 +32,7 @@ public class AerialCubeSpawner : MonoBehaviour
     private RaycastHit hit;
 
     public GameObject targetCube;
-
+    private GameObject cubeHit;
 
     public int randLoc;
     public Queue<int> lastSpawnLocs;
@@ -54,8 +54,7 @@ public class AerialCubeSpawner : MonoBehaviour
         cubeManager = GameObject.Find("CubeManager").GetComponent<CubeManager>();
         lastSpawnLocs = new Queue<int>();
         collider = GetComponent<Collider>();
-
-        //ArenaGenerator.OnFloorComplete += EnableCubeSpawner;
+        GameManager.OnGameBegin += EnableCubeSpawner;
 
         if (parent == null)
         {
@@ -96,7 +95,7 @@ public class AerialCubeSpawner : MonoBehaviour
     }
 
     // spawns cubes
-    private void Spawn()
+    public void Spawn()
     {
         CheckColor = true;
         isSpawning = true;
@@ -115,14 +114,76 @@ public class AerialCubeSpawner : MonoBehaviour
         Invoke("CheckSpawnPosition", .5f);
     }
 
+    private void CheckSpawnPosition()
+    {
+        // just in case cube is destoryed before it is landed on
+        if (!hit.collider)
+        {
+            if (!init)
+            {
+                GetNewCube();
+                return;
+            }
+            else
+            {
+                if (targetCube != null)
+                    targetCube.SetActive(true);
+            }
+        }
+        else
+        {
+            cubeHit = null;
+            cubeHit = hit.transform.gameObject;
+            if (hitDetect && cubeHit.tag == "Player" && init)
+            {
+                GetNewCube();
+                return;
+            }
+
+            if (hitDetect && cubeHit.tag == "Block")
+            {
+                #region debug logs
+                //Debug.Log("****----hitting block----****");
+                //Debug.Log("m_Hit object = " + CubeHit);
+                //Debug.Log("m_Hit color: " + CubeHit.GetComponent<BlockBehavior>().curColor);
+
+                //Debug.Log("tmpCube name = " + tmpCube.gameObject.name);
+                //Debug.Log("tmpCube color: " + tmpCube.GetComponent<Renderer>().material.color);
+                //Debug.Log("****------****");
+                #endregion
+
+                // spawned cube can't land on or by similar color
+                // delete cube and spawn another 
+                if (targetCube.GetComponent<CubeBehavior>().color ==
+                    cubeHit.GetComponent<CubeBehavior>().color)
+                {
+                    GetNewCube();
+                    return;
+                }
+                else
+                    targetCube.SetActive(true);
+            }
+
+            else
+                targetCube.SetActive(true);
+
+        }
+
+        isSpawning = false;
+        CheckColor = false;
+    }
+
+
     public void EnableCubeSpawner()
     {
         EnableSpawner = true;
         StartCoroutine(AutoSpawner());
     }
 
-    IEnumerator AutoSpawner()
+    private IEnumerator AutoSpawner()
     {
+        // maybe add some delay here before spawning begins??? 
+
         if (init)
             MAXCubeSpawnAmmount = Random.Range(10, 15);
 
@@ -248,7 +309,7 @@ public class AerialCubeSpawner : MonoBehaviour
 
     void OnDisable()
     {
-        //ArenaGenerator.OnFloorComplete -= EnableCubeSpawner;
+        GameManager.OnGameBegin -= EnableCubeSpawner;
     }
 
     private void OnDrawGizmos()
