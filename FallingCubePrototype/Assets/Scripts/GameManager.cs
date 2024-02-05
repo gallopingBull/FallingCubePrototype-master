@@ -75,15 +75,19 @@ public class GameManager : MonoBehaviour
         cubeManager = FindObjectOfType<CubeManager>();
         aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
         ArenaGenerator.OnFloorComplete += StartGame;
-        if (!isTesting)
-            Invoke("InitialCountdownTimerCaller", 1f);
-        else if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
-            InitalTimerPanel.SetActive(false);
 
         Player = GameObject.FindGameObjectWithTag("Player");
         cameraTargt = GameObject.Find("MainCameraTarget");
         Player.SetActive(false);
-        SpawnPlayer();
+        //SpawnPlayer();
+
+        if (!isTesting)
+            Invoke("InitialCountdownTimerCaller", 1f);
+        else if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
+        {
+            InitalTimerPanel.SetActive(false);
+            StartGame();
+        }
     }
 
     private void OnDestroy()
@@ -199,8 +203,8 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        if (!Player.activeInHierarchy)
-            SpawnPlayer();
+        //if (!Player.activeInHierarchy)
+        //    SpawnPlayer();
 
         if (!isTesting)
         {

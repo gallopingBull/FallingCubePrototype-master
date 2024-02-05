@@ -31,7 +31,9 @@ public class CubeManager : MonoBehaviour
         Vector3.forward, Vector3.back, Vector3.up,
         Vector3.down, Vector3.right, Vector3.left
     };
-    private List<ColorOption> colorsUsed = new List<ColorOption>(); // Track colors used in the current arena generation
+
+    [HideInInspector]
+    public List<ColorOption> colorsUsed = new List<ColorOption>(); // Track colors used in the current arena generation
 
     static public Action OnFloorComplete { get; set; }
 
@@ -142,7 +144,7 @@ public class CubeManager : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
-    private bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
+    public bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
     {
         if (SpawnDatas.Count == 0)
             return false;
@@ -151,7 +153,7 @@ public class CubeManager : MonoBehaviour
         // Check each adjacent cube
         foreach (Vector3 offset in offsets)
         {
-            Vector3 adjacentPos = position + (offset * CubeSize); // Multiply by 2(spacing) to get the adjacent cube
+            Vector3 adjacentPos = position + (offset * CubeSize); // Multiply by cubesize to get the adjacent cube
 
             // Check if a cube exists at the adjacent position
             SpawnData adjacentCube = SpawnDatas.Find(spawnData => spawnData.position == adjacentPos);

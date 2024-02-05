@@ -10,15 +10,15 @@ public class ClimbMechanic : vFreeClimb
     {
         //Debug.Log($"inDrag: {dragInfo.inDrag}");    
         //Debug.Log($"checkConditions: {CheckClimbCondictions()}");
-        if (Input.GetAxis("RT") == 1 && CheckClimbCondictions())
+        if (((Input.GetAxis("RT") == 1 && Input.GetAxis("LT") == 1) || Input.GetMouseButton(1)) && CheckClimbCondictions())
         {
             input = new Vector3(TP_Input.horizontalInput.GetAxis(), 0, TP_Input.verticallInput.GetAxis());
             ClimbHandle();
             ClimbJumpHandle();
             ClimbUpHandle();
         }
-        else if (Input.GetAxis("RT") == 0 && dragInfo.inDrag) 
-        { 
+        else if (((Input.GetAxis("RT") == 0 && Input.GetAxis("LT") == 0) || Input.GetMouseButtonUp(1)) && dragInfo.inDrag)
+        {
             ExitClimb();
         }
         else

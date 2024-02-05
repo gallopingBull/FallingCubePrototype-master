@@ -33,7 +33,7 @@ public class GrabMechanic : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         CubeDetection();
         InputHandler();
@@ -41,19 +41,19 @@ public class GrabMechanic : MonoBehaviour
 
     private void InputHandler()
     {
-        if (Input.GetAxis("RB") == 1 && EnableGrab)
+        if ((Input.GetAxis("RB") == 1 || Input.GetMouseButton(0)) && EnableGrab)
         {
             if (!isGrabbing)
             {
-                //Debug.Log("Grabbing");
+                Debug.Log("Grabbing");
                 Grab();
             }
         }
-        if (Input.GetAxis("RB") == 0 || !EnableGrab)
+        if ((Input.GetAxis("RB") == 0 || Input.GetMouseButtonUp(0)) || !EnableGrab)
         {
             if (isGrabbing)
             {
-                //Debug.Log("Releasing");
+                Debug.Log("Releasing");
                 Release();
             }
         }
