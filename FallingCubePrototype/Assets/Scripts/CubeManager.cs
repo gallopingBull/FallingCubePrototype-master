@@ -23,13 +23,40 @@ public class CubeManager : MonoBehaviour
     public float CubeSize = 2f;
     public float floatProbability = 0.2f; // Probability of a cube floating
     private int attempts = 0;
-    private const int maxAttempts = 10;
+    private const int maxAttempts = 3;
 
     // Define the offsets for adjacent cubes in a 3D grid
     private Vector3[] offsets = new Vector3[]
     {
+        // Cardinal directions along the axes
         Vector3.forward, Vector3.back, Vector3.up,
-        Vector3.down, Vector3.right, Vector3.left
+        Vector3.down, Vector3.right, Vector3.left,
+
+        // Diagonal directions
+        new Vector3(1, 1, 1),    // Upper-front-right diagonal
+        new Vector3(1, 1, -1),   // Upper-front-left diagonal
+        new Vector3(1, -1, 1),   // Upper-back-right diagonal
+        new Vector3(1, -1, -1),  // Upper-back-left diagonal
+        new Vector3(-1, 1, 1),   // Lower-front-right diagonal
+        new Vector3(-1, 1, -1),  // Lower-front-left diagonal
+        new Vector3(-1, -1, 1),  // Lower-back-right diagonal
+        new Vector3(-1, -1, -1), // Lower-back-left diagonal
+
+        // Additional offsets
+        new Vector3(0, 1, 1),    // Upper-middle-front
+        new Vector3(0, 1, -1),   // Upper-middle-back
+        new Vector3(0, -1, 1),   // Lower-middle-front
+        new Vector3(0, -1, -1),  // Lower-middle-back
+        new Vector3(1, 1, 0),    // Middle-front-right
+        new Vector3(1, -1, 0),   // Middle-back-right
+        new Vector3(-1, 1, 0),   // Middle-front-left
+        new Vector3(-1, -1, 0),  // Middle-back-left
+        new Vector3(1, 0, 1),    // Middle-upper-right
+        new Vector3(1, 0, -1),   // Middle-upper-left
+        new Vector3(-1, 0, 1),   // Middle-lower-right
+        new Vector3(-1, 0, -1),  // Middle-lower-left
+        new Vector3(0, 1, 0),    // Upper-middle
+        new Vector3(0, -1, 0)    // Lower-middle
     };
 
     [HideInInspector]
@@ -57,7 +84,7 @@ public class CubeManager : MonoBehaviour
             cubesParent = new GameObject("Cubes").transform;
             cubesParent.transform.position = Vector3.zero;
         }
-
+        OnFloorComplete += DisplayAllSpawnDatas;
         GenerateArena(gridSizeX, gridSizeZ);
         Debug.Log("CubeManager initialized");
     }
@@ -144,27 +171,49 @@ public class CubeManager : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
+    public float minimumDistance = 4f;
     public bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
     {
         if (SpawnDatas.Count == 0)
             return false;
-        //Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
+        Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
 
         // Check each adjacent cube
         foreach (Vector3 offset in offsets)
         {
             Vector3 adjacentPos = position + (offset * CubeSize); // Multiply by cubesize to get the adjacent cube
-
+            Debug.Log($"checking cube({id} - {color})'s position({position}) adjacentPos: {adjacentPos}");
             // Check if a cube exists at the adjacent position
             SpawnData adjacentCube = SpawnDatas.Find(spawnData => spawnData.position == adjacentPos);
 
             if (adjacentCube.color == color)
             {
-                //Debug.Log($"fail - {adjacentCube.id} and {id} the same Color {color}");
-                return true;
+                Debug.Log($"\n\t\tchecking cube({id} is same color as adjacentCube({adjacentCube.id})\n\t\t{color} == {adjacentCube.color}");
+                // Calculate the distance between the cubes
+                float distance = Vector3.Distance(position, adjacentPos);
+
+                // If the distance is less than the minimumDistance, disallow spawning
+
+                if (distance < minimumDistance)
+                {
+                    Debug.Log($"Failed to spawn - Cube {adjacentCube.id} and {id} have the same Color {color} and are too close (distance: {distance})");
+                    return true;
+                }
             }
         }
         return false;
+    }
+
+    void DisplayAllSpawnDatas()
+    {
+        foreach (SpawnData data in spawnDatas)
+        {
+            Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
+        }
+    }
+    private void OnDestroy()
+    {
+        OnFloorComplete -= DisplayAllSpawnDatas;
     }
 
     public void SpawnCube(SpawnData data)

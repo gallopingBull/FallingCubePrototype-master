@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject ObjectiveGate;
     private CubeManager cubeManager;
-    private AerialCubeSpawner aerialCubeSpawner;
+    private AerialCubeSpawner? aerialCubeSpawner;
 
     [SerializeField]
     private GameObject InitalTimerPanel;
@@ -203,8 +203,8 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        //if (!Player.activeInHierarchy)
-        //    SpawnPlayer();
+        if (!Player.activeInHierarchy)
+            SpawnPlayer();
 
         if (!isTesting)
         {
