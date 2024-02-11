@@ -42,6 +42,7 @@ public class AerialCubeSpawner : MonoBehaviour
 
     private int attempts = 0;
     private const int maxAttempts = 10;
+    [SerializeField] float minimumDistance = 4f; // TODO: This value should also scale by cube size
 
     #endregion
 
@@ -160,7 +161,7 @@ public class AerialCubeSpawner : MonoBehaviour
 
         if (color != ColorOption.Neutral)
         {
-            while ((cubeManager.CheckIfColorIsNearby(id, cubePosition, color) || cubeManager.colorsUsed.Contains(color)) && attempts < maxAttempts)
+            while ((cubeManager.CheckIfColorIsNearby(id, cubePosition, color, minimumDistance) || cubeManager.colorsUsed.Contains(color)) && attempts < maxAttempts)
             {
                 Debug.Log($"Color {color} is nearby or already used, trying again...");
                 color = (ColorOption)UnityEngine.Random.Range(0, 4);
@@ -177,7 +178,6 @@ public class AerialCubeSpawner : MonoBehaviour
         cubeManager.colorsUsed.Clear();
         SpawnData spawnData = new SpawnData { id = id, position = CurSpawnLoc.position, color = color };
         cubeManager.SpawnCube(spawnData);
-        //cubeManager.colorsUsed.Add(color);
         isSpawning = false;
         CheckColor = false;
     }

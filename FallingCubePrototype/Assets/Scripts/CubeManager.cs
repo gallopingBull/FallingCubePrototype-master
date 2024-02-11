@@ -24,40 +24,8 @@ public class CubeManager : MonoBehaviour
     public float floatProbability = 0.2f; // Probability of a cube floating
     private int attempts = 0;
     private const int maxAttempts = 3;
-
-    // Define the offsets for adjacent cubes in a 3D grid
-    private Vector3[] offsets = new Vector3[]
-    {
-        // Cardinal directions along the axes
-        Vector3.forward, Vector3.back, Vector3.up,
-        Vector3.down, Vector3.right, Vector3.left,
-
-        // Diagonal directions
-        new Vector3(1, 1, 1),    // Upper-front-right diagonal
-        new Vector3(1, 1, -1),   // Upper-front-left diagonal
-        new Vector3(1, -1, 1),   // Upper-back-right diagonal
-        new Vector3(1, -1, -1),  // Upper-back-left diagonal
-        new Vector3(-1, 1, 1),   // Lower-front-right diagonal
-        new Vector3(-1, 1, -1),  // Lower-front-left diagonal
-        new Vector3(-1, -1, 1),  // Lower-back-right diagonal
-        new Vector3(-1, -1, -1), // Lower-back-left diagonal
-
-        // Additional offsets
-        new Vector3(0, 1, 1),    // Upper-middle-front
-        new Vector3(0, 1, -1),   // Upper-middle-back
-        new Vector3(0, -1, 1),   // Lower-middle-front
-        new Vector3(0, -1, -1),  // Lower-middle-back
-        new Vector3(1, 1, 0),    // Middle-front-right
-        new Vector3(1, -1, 0),   // Middle-back-right
-        new Vector3(-1, 1, 0),   // Middle-front-left
-        new Vector3(-1, -1, 0),  // Middle-back-left
-        new Vector3(1, 0, 1),    // Middle-upper-right
-        new Vector3(1, 0, -1),   // Middle-upper-left
-        new Vector3(-1, 0, 1),   // Middle-lower-right
-        new Vector3(-1, 0, -1),  // Middle-lower-left
-        new Vector3(0, 1, 0),    // Upper-middle
-        new Vector3(0, -1, 0)    // Lower-middle
-    };
+    // TODO: the mimunum distance should be passed throuigh the method call. 
+    [SerializeField] float minimumDistance = 4f;
 
     [HideInInspector]
     public List<ColorOption> colorsUsed = new List<ColorOption>(); // Track colors used in the current arena generation
@@ -110,7 +78,7 @@ public class CubeManager : MonoBehaviour
 
                 if (color != ColorOption.Neutral)
                 {
-                    while ((CheckIfColorIsNearby(id, cubePosition, color) || colorsUsed.Contains(color)) && attempts < maxAttempts)
+                    while ((CheckIfColorIsNearby(id, cubePosition, color, minimumDistance) || colorsUsed.Contains(color)) && attempts < maxAttempts)
                     {
                         color = (ColorOption)UnityEngine.Random.Range(0, 4);
                         attempts++;
@@ -171,15 +139,9 @@ public class CubeManager : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
-    // TODO: the mimunum distance should be passed throuigh the method call. 
-    [SerializeField] float minimumDistance = 4f;
-    public bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
-    {
-        if (SpawnDatas.Count == 0)
-            return false;
-        Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
 
-        // Check each adjacent cube
+    public bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color, float minDistance)
+    {
         if (SpawnDatas.Count == 0)
             return false;
         Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
@@ -191,12 +153,11 @@ public class CubeManager : MonoBehaviour
             float distance = Vector3.Distance(position, cube.transform.position);
 
             // If a cube of the same color exists within the minimum distance, return true
-            if (distance < minimumDistance && cube.GetComponent<CubeBehavior>().color == color)
+            if (distance < minDistance && cube.GetComponent<CubeBehavior>().color == color)
             {
                 return true;
             }
         }
-
         // If no cubes of the same color were found within the minimum distance, return false
         return false;
     }
@@ -208,6 +169,7 @@ public class CubeManager : MonoBehaviour
             Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
         }
     }
+
     private void OnDestroy()
     {
         OnFloorComplete -= DisplayAllSpawnDatas;

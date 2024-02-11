@@ -138,6 +138,10 @@ PrefabInstance:
       propertyPath: EnableSpawner
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1519661966, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
+      propertyPath: minimumDistance
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 4201830530435554280, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -185,6 +189,10 @@ PrefabInstance:
     - target: {fileID: 4201830530435554281, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
       propertyPath: m_Name
       value: CubeManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 4201830530435554295, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
+      propertyPath: minimumDistance
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
