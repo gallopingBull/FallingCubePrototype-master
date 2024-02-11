@@ -171,7 +171,8 @@ public class CubeManager : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
-    public float minimumDistance = 4f;
+    // TODO: the mimunum distance should be passed throuigh the method call. 
+    [SerializeField] float minimumDistance = 4f;
     public bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color)
     {
         if (SpawnDatas.Count == 0)
@@ -179,28 +180,24 @@ public class CubeManager : MonoBehaviour
         Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
 
         // Check each adjacent cube
-        foreach (Vector3 offset in offsets)
+        if (SpawnDatas.Count == 0)
+            return false;
+        Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
+
+        // Check each cube
+        foreach (var cube in cubes)
         {
-            Vector3 adjacentPos = position + (offset * CubeSize); // Multiply by cubesize to get the adjacent cube
-            Debug.Log($"checking cube({id} - {color})'s position({position}) adjacentPos: {adjacentPos}");
-            // Check if a cube exists at the adjacent position
-            SpawnData adjacentCube = SpawnDatas.Find(spawnData => spawnData.position == adjacentPos);
+            // Calculate the distance between the current cube and the target position
+            float distance = Vector3.Distance(position, cube.transform.position);
 
-            if (adjacentCube.color == color)
+            // If a cube of the same color exists within the minimum distance, return true
+            if (distance < minimumDistance && cube.GetComponent<CubeBehavior>().color == color)
             {
-                Debug.Log($"\n\t\tchecking cube({id} is same color as adjacentCube({adjacentCube.id})\n\t\t{color} == {adjacentCube.color}");
-                // Calculate the distance between the cubes
-                float distance = Vector3.Distance(position, adjacentPos);
-
-                // If the distance is less than the minimumDistance, disallow spawning
-
-                if (distance < minimumDistance)
-                {
-                    Debug.Log($"Failed to spawn - Cube {adjacentCube.id} and {id} have the same Color {color} and are too close (distance: {distance})");
-                    return true;
-                }
+                return true;
             }
         }
+
+        // If no cubes of the same color were found within the minimum distance, return false
         return false;
     }
 

@@ -288,6 +288,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1703958310823540908, guid: 3544035f3be93e149a65f3cbdb306d28, type: 3}
+      propertyPath: minimumDistance
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1703958310823540910, guid: 3544035f3be93e149a65f3cbdb306d28, type: 3}
       propertyPath: m_Name
       value: CubeSceneGenerator
