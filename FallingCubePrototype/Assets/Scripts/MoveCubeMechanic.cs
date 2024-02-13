@@ -56,7 +56,7 @@ public class MoveCubeMechanic : MonoBehaviour
                 Mathf.Clamp(pushPoint.position.z, -100, 100));
         }
     }
-
+    // TODO: remame this method to something Input related
     private void Movecube()
     {
         //multiply input value by .60f to make stick less sensitive
