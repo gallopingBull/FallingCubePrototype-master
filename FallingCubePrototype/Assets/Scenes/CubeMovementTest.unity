@@ -248,11 +248,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4941a61b0da56a7439284fb0ffb757ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableMovement: 1
-  target: {fileID: 0}
-  moveDistance: 0.01
+  moveDistance: 0.007
   gamepadDeadzone: 0.5
   snapThreshold: 0.25
+  maxGridSize: {x: 6, y: 6}
 --- !u!1001 &1002763899
 PrefabInstance:
   m_ObjectHideFlags: 0

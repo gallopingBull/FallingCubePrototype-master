@@ -4,32 +4,33 @@ using UnityEngine;
 
 public class MoveCubeTest : MonoBehaviour
 {
-
-    public bool enableMovement;
-
-    public Transform target;
-    private GameObject _camera;
+    private GameObject camera;
     public float moveDistance = 1f; // Distance the cube moves with each step
-    float h, z;
+    private float h, z;
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
     private Vector3 lastPosition;
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
     private float cubeScale = 2f; // Default cube scale
+    private Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
 
     void Start()
     {
-        _camera = GameObject.Find("Camera");
+        camera = GameObject.Find("Camera");
         // Initialize last position to current position
         lastPosition = transform.position;
+
+        // n - 1 to account for 0-based index
+        maxGridSize.x--;
+        maxGridSize.y--;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (target == null)
-        //    return;
-
         InputHandler();
+    }
+    void LateUpdate()
+    {
         MoveCardinally();
     }
 
@@ -92,7 +93,12 @@ public class MoveCubeTest : MonoBehaviour
             Mathf.RoundToInt(moveDirection.x),
             0f,
             Mathf.RoundToInt(moveDirection.z)
-        ) * moveDistance * cubeScale; ;
+        ) * moveDistance * cubeScale;
+
+
+        // Clamp target position within the boundaries of the map
+        targetPosition.x = Mathf.Clamp(targetPosition.x, 0, maxGridSize.x * cubeScale);
+        targetPosition.z = Mathf.Clamp(targetPosition.z, 0, maxGridSize.y * cubeScale);
 
 
         // Check if both X and Z positions are whole values
