@@ -11,7 +11,7 @@ public class MoveCubeTest : MonoBehaviour
     private Vector3 lastPosition;
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
     private float cubeScale = 2f; // Default cube scale
-    private Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
+    public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
 
     void Start()
     {
