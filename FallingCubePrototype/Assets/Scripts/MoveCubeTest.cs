@@ -14,6 +14,7 @@ public class MoveCubeTest : MonoBehaviour
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
     private Vector3 lastPosition;
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
+    private float cubeScale = 2f; // Default cube scale
 
     void Start()
     {
@@ -28,7 +29,12 @@ public class MoveCubeTest : MonoBehaviour
         //if (target == null)
         //    return;
 
-        // Move the cube only if input 
+        InputHandler();
+        MoveCardinally();
+    }
+
+    private void InputHandler()
+    {
         if (Input.GetAxis("LeftAnalogHorizontal") != 0 || Input.GetAxis("LeftAnalogVertical") != 0)
         {
             h = Input.GetAxis("LeftAnalogHorizontal");
@@ -49,57 +55,9 @@ public class MoveCubeTest : MonoBehaviour
             h = Input.GetAxis("Horizontal");
             z = Input.GetAxis("Vertical");
         }
-
-        MoveCardinally(h, z);
-        //Movecube();
-        //clamp x and z position to prevent cube from falling off grid/map
-        //transform.position += new Vector3(transform.position.x, transform.position.y, transform.position.z);
-
-        //pushPoint.transform.position = new Vector3(Mathf.Clamp(pushPoint.position.x, -100, 100),
-        //    pushPoint.position.y,
-        //    Mathf.Clamp(pushPoint.position.z, -100, 100));
-
     }
 
-    private void Movecube()
-    {
-        //multiply input value by .60f to make stick less sensitive
-        //when moving cubes, otherwise cube movement glitches out
-
-        // Stop moving cube if camera is rotating
-        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)
-            return;
-
-        Vector3 camF = _camera.transform.forward;
-        Vector3 camR = _camera.transform.right;
-
-        camF.y = 0;
-        camR.y = 0;
-
-        camF = camF.normalized;
-        camR = camR.normalized;
-
-        // Calculate movement direction based on camera orientation
-        Vector3 moveDirection = camF * z + camR * h;
-
-        // Ensure movement only along the X or Z axis, not diagonally
-        if (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.z))
-            moveDirection.z = 0f;
-        else
-            moveDirection.x = 0f;
-
-        moveDirection.Normalize();
-
-        // Calculate target position based on the current position and move distance
-        Vector3 targetPosition = new Vector3(
-            Mathf.RoundToInt(moveDirection.x),
-            0f,
-            Mathf.RoundToInt(moveDirection.z)
-        ) * moveDistance * .05f;
-
-    }
-
-    void MoveCardinally(float horizontalInput, float verticalInput)
+    void MoveCardinally()
     {
         // Stop moving cube if camera is rotating
         if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)
@@ -115,7 +73,7 @@ public class MoveCubeTest : MonoBehaviour
         cameraRight.Normalize();
 
         // Calculate movement direction based on camera orientation
-        Vector3 moveDirection = cameraForward * verticalInput + cameraRight * horizontalInput;
+        Vector3 moveDirection = cameraForward * z + cameraRight * h;
 
         // Ensure movement only along the X or Z axis, not diagonally
         if (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.z))
@@ -134,7 +92,8 @@ public class MoveCubeTest : MonoBehaviour
             Mathf.RoundToInt(moveDirection.x),
             0f,
             Mathf.RoundToInt(moveDirection.z)
-        ) * moveDistance;
+        ) * moveDistance * cubeScale; ;
+
 
         // Check if both X and Z positions are whole values
         if (Mathf.Approximately(targetPosition.x, Mathf.Round(targetPosition.x)) ||
@@ -146,25 +105,25 @@ public class MoveCubeTest : MonoBehaviour
         }
         else
         {
-            // Snap to whole numbers if close enough
-            SnapToWholeNumbers(targetPosition);
+            // Snap target position to multiples of cube scale if close enough
+            SnapToMultipleOfCubeScale(targetPosition);
         }
     }
 
-    void SnapToWholeNumbers(Vector3 targetPosition)
+    void SnapToMultipleOfCubeScale(Vector3 targetPosition)
     {
-        // Calculate the distance to the nearest whole numbers in X and Z directions
-        float distanceX = Mathf.Abs(targetPosition.x - Mathf.Round(targetPosition.x));
-        float distanceZ = Mathf.Abs(targetPosition.z - Mathf.Round(targetPosition.z));
+        // Snap X and Z positions to multiples of cube scale
+        float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
+        float snappedZ = Mathf.Round(targetPosition.z / cubeScale) * cubeScale;
 
-        // If the distance is within the snap threshold, snap to whole numbers
-        if (distanceX < snapThreshold)
+        // Snap to whole numbers if close enough
+        if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
         {
-            targetPosition.x = Mathf.Round(targetPosition.x);
+            targetPosition.x = snappedX;
         }
-        if (distanceZ < snapThreshold)
+        if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
         {
-            targetPosition.z = Mathf.Round(targetPosition.z);
+            targetPosition.z = snappedZ;
         }
 
         // Move the cube to the snapped position

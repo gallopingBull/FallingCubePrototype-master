@@ -250,8 +250,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableMovement: 1
   target: {fileID: 0}
-  moveDistance: 0.02
+  moveDistance: 0.01
   gamepadDeadzone: 0.5
+  snapThreshold: 0.25
 --- !u!1001 &1002763899
 PrefabInstance:
   m_ObjectHideFlags: 0
