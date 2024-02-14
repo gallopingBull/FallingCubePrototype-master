@@ -13,6 +13,7 @@ public class MoveCubeTest : MonoBehaviour
     float h, z;
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
     private Vector3 lastPosition;
+    public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
 
     void Start()
     {
@@ -47,19 +48,6 @@ public class MoveCubeTest : MonoBehaviour
         {
             h = Input.GetAxis("Horizontal");
             z = Input.GetAxis("Vertical");
-        }
-
-
-        // Check if both X and Z positions are whole values
-        if (!Mathf.Approximately(transform.position.x, Mathf.Round(transform.position.x)))
-        {
-            Debug.Log($"x is not whole: {transform.position.x}");
-            z = 0f;
-        }
-        else if (!Mathf.Approximately(transform.position.z, Mathf.Round(transform.position.z)))
-        {
-            Debug.Log($"z is not whole: {transform.position.z}");
-            h = 0f;
         }
 
         MoveCardinally(h, z);
@@ -148,7 +136,39 @@ public class MoveCubeTest : MonoBehaviour
             Mathf.RoundToInt(moveDirection.z)
         ) * moveDistance;
 
-        // Move the cube to the target position
+        // Check if both X and Z positions are whole values
+        if (Mathf.Approximately(targetPosition.x, Mathf.Round(targetPosition.x)) ||
+            Mathf.Approximately(targetPosition.z, Mathf.Round(targetPosition.z)))
+        {
+            // Move the cube to the target position
+            transform.position = targetPosition;
+            lastPosition = targetPosition;
+        }
+        else
+        {
+            // Snap to whole numbers if close enough
+            SnapToWholeNumbers(targetPosition);
+        }
+    }
+
+    void SnapToWholeNumbers(Vector3 targetPosition)
+    {
+        // Calculate the distance to the nearest whole numbers in X and Z directions
+        float distanceX = Mathf.Abs(targetPosition.x - Mathf.Round(targetPosition.x));
+        float distanceZ = Mathf.Abs(targetPosition.z - Mathf.Round(targetPosition.z));
+
+        // If the distance is within the snap threshold, snap to whole numbers
+        if (distanceX < snapThreshold)
+        {
+            targetPosition.x = Mathf.Round(targetPosition.x);
+        }
+        if (distanceZ < snapThreshold)
+        {
+            targetPosition.z = Mathf.Round(targetPosition.z);
+        }
+
+        // Move the cube to the snapped position
         transform.position = targetPosition;
+        lastPosition = targetPosition;
     }
 }
