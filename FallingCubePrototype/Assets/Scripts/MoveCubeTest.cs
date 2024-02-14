@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MoveCubeTest : MonoBehaviour
 {
+    // TODO: this value should be assigned using exponential smoothing to make the movement less sensitive
     public float moveDistance = 1f; // Distance the cube moves with each step
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
