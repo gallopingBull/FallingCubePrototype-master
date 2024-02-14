@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class MoveCubeTest : MonoBehaviour
 {
-    private GameObject camera;
     public float moveDistance = 1f; // Distance the cube moves with each step
-    private float h, z;
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
-    private Vector3 lastPosition;
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
-    private float cubeScale = 2f; // Default cube scale
     public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
+
+    private float h, z;
+    private float cubeScale = 2f; // Default cube scale
+    private Vector3 lastPosition;
+    private GameObject camera;
 
     void Start()
     {
         camera = GameObject.Find("Camera");
+
         // Initialize last position to current position
         lastPosition = transform.position;
 
@@ -29,6 +31,7 @@ public class MoveCubeTest : MonoBehaviour
     {
         InputHandler();
     }
+
     void LateUpdate()
     {
         MoveCardinally();
@@ -116,6 +119,8 @@ public class MoveCubeTest : MonoBehaviour
         }
     }
 
+    // TODO: change this method so instead of a snap its more of
+    // a discrete "push" to the nearest whole number
     void SnapToMultipleOfCubeScale(Vector3 targetPosition)
     {
         // Snap X and Z positions to multiples of cube scale
