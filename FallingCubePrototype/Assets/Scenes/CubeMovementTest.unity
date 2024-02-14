@@ -214,8 +214,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 20463030}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: 15, z: 5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -234,7 +234,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &20463036
 MonoBehaviour:
@@ -250,13 +250,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableMovement: 1
   target: {fileID: 0}
-  moveDistance: 1000
-  pushPoint: {fileID: 317581086}
---- !u!4 &317581086 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7011659899846298483, guid: 4fd807ec12bf66444adf987846fe7ede, type: 3}
-  m_PrefabInstance: {fileID: 1002763899}
-  m_PrefabAsset: {fileID: 0}
+  moveDistance: 0.02
+  gamepadDeadzone: 0.5
 --- !u!1001 &1002763899
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -480,6 +475,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1703958310823540908, guid: 3544035f3be93e149a65f3cbdb306d28, type: 3}
+      propertyPath: maxHeight
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1703958310823540908, guid: 3544035f3be93e149a65f3cbdb306d28, type: 3}
       propertyPath: minimumDistance
       value: 6
