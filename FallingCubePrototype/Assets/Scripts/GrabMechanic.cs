@@ -103,9 +103,9 @@ public class GrabMechanic : MonoBehaviour
 
             GetComponent<MoveCubeMechanic>().DeParentToPushPoint();
 
-            targetCube.transform.parent.GetComponentInParent<CubeBehavior>().RoundCubeLocation();
+            //targetCube.transform.parent.GetComponentInParent<CubeBehavior>().RoundCubeLocation();
             targetCube.transform.parent.parent.eulerAngles = Vector3.zero;
-            targetCube.transform.parent.GetComponentInParent<CubeBehavior>().SetGround();
+            targetCube.transform.parent.GetComponentInParent<CubeBehavior>().SetGround(); // TODO: find another less coupled way of changing the cube's state
 
             // ***need to clean this up*** \\
             // these two functions reset drag settings and stop push animation

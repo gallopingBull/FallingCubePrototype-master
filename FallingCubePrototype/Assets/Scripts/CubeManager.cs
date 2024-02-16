@@ -166,7 +166,7 @@ public class CubeManager : MonoBehaviour
     {
         foreach (SpawnData data in spawnDatas)
         {
-            Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
+            //Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
         }
     }
 

@@ -1299,8 +1299,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableMovement: 0
-  moveDistance: 1
   pushPoint: {fileID: 0}
+  moveDistance: 0.03
+  gamepadDeadzone: 0.5
+  snapThreshold: 0.25
+  maxGridSize: {x: 6, y: 6}
 --- !u!114 &22436966
 MonoBehaviour:
   m_ObjectHideFlags: 0

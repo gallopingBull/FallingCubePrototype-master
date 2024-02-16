@@ -10,18 +10,26 @@ public class MoveCubeMechanic : MonoBehaviour
     [HideInInspector]
     public bool enableMovement;
 
+    private float h, z;
+    private float cubeScale = 2f; // Default cube scale
+    private Vector3 lastPosition;
     private Transform target;
-    private GameObject _camera;
-    public float moveDistance = 1f; // Distance the cube moves with each step
+    private GameObject camera;
     public Transform pushPoint;
 
     bool isPaused = false;
+
+    // TODO: this value should be assigned using exponential smoothing to make the movement less sensitive
+    public float moveDistance = 1f; // Distance the cube moves with each step
+    public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
+    public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
+    public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
     #endregion
 
     // Start is called before the first frame update
     void Start()
     {
-        _camera = GameObject.Find("Camera");
+        camera = GameObject.Find("Camera");
         pushPoint = GameObject.Find("PushPoint").GetComponent<Transform>();
     }
 
@@ -44,47 +52,65 @@ public class MoveCubeMechanic : MonoBehaviour
 
         if (enableMovement)
         {
-            Movecube();
-
-            //clamp x and z position to prevent cube from falling off grid/map
-            target.transform.position = new Vector3(Mathf.Clamp(target.position.x, -100, 100),
-                target.position.y,
-                Mathf.Clamp(target.position.z, -100, 100));
-
-            pushPoint.transform.position = new Vector3(Mathf.Clamp(pushPoint.position.x, -100, 100),
-                pushPoint.position.y,
-                Mathf.Clamp(pushPoint.position.z, -100, 100));
+            InputHandler();
         }
     }
-    // TODO: remame this method to something Input related
-    private void Movecube()
-    {
-        //multiply input value by .60f to make stick less sensitive
-        //when moving cubes, otherwise cube movement glitches out
-        var h = GetComponent<vThirdPersonInput>().cc.input.x;
-        var z = GetComponent<vThirdPersonInput>().cc.input.z;
 
+    private void InputHandler()
+    {
+        if (Input.GetAxis("LeftAnalogHorizontal") != 0 || Input.GetAxis("LeftAnalogVertical") != 0)
+        {
+            h = Input.GetAxis("LeftAnalogHorizontal");
+            z = Input.GetAxis("LeftAnalogVertical");
+
+            // Check if gamepad stick input is within dead zone
+            if (Mathf.Abs(h) < gamepadDeadzone)
+            {
+                h = 0f;
+            }
+            if (Mathf.Abs(z) < gamepadDeadzone)
+            {
+                z = 0f;
+            }
+        }
+        else
+        {
+            h = Input.GetAxis("Horizontal");
+            z = Input.GetAxis("Vertical");
+        }
+    }
+    void LateUpdate()
+    {
+        MoveCardinally();
+    }
+
+    void MoveCardinally()
+    {
         // Stop moving cube if camera is rotating
-        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)
+        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)// TODO: move this to the InputHandler method
             return;
 
-        Vector3 camF = _camera.transform.forward;
-        Vector3 camR = _camera.transform.right;
+        // Get the forward and right vectors of the camera without vertical component
+        Vector3 cameraForward = Camera.main.transform.forward;
+        cameraForward.y = 0f;
+        cameraForward.Normalize();
 
-        camF.y = 0;
-        camR.y = 0;
-
-        camF = camF.normalized;
-        camR = camR.normalized;
+        Vector3 cameraRight = Camera.main.transform.right;
+        cameraRight.y = 0f;
+        cameraRight.Normalize();
 
         // Calculate movement direction based on camera orientation
-        Vector3 moveDirection = camF * z + camR * h;
+        Vector3 moveDirection = cameraForward * z + cameraRight * h;
 
         // Ensure movement only along the X or Z axis, not diagonally
         if (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.z))
+        {
             moveDirection.z = 0f;
+        }
         else
+        {
             moveDirection.x = 0f;
+        }
 
         moveDirection.Normalize();
 
@@ -93,9 +119,50 @@ public class MoveCubeMechanic : MonoBehaviour
             Mathf.RoundToInt(moveDirection.x),
             0f,
             Mathf.RoundToInt(moveDirection.z)
-        ) * moveDistance * .05f;
+        ) * moveDistance * cubeScale;
 
+
+        // Clamp target position within the boundaries of the map
+        targetPosition.x = Mathf.Clamp(targetPosition.x, 0, maxGridSize.x * cubeScale);
+        targetPosition.z = Mathf.Clamp(targetPosition.z, 0, maxGridSize.y * cubeScale);
+
+
+        // Check if both X and Z positions are whole values
+        if (Mathf.Approximately(targetPosition.x, Mathf.Round(targetPosition.x)) ||
+            Mathf.Approximately(targetPosition.z, Mathf.Round(targetPosition.z)))
+        {
+            // Move the cube to the target position
+            pushPoint.position = targetPosition;
+            lastPosition = targetPosition;
+        }
+        else
+        {
+            // Snap target position to multiples of cube scale if close enough
+            SnapToMultipleOfCubeScale(targetPosition);
+        }
+    }
+
+    // TODO: change this method so instead of a snap its more of
+    // a discrete "push" to the nearest whole number
+    void SnapToMultipleOfCubeScale(Vector3 targetPosition)
+    {
+        // Snap X and Z positions to multiples of cube scale
+        float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
+        float snappedZ = Mathf.Round(targetPosition.z / cubeScale) * cubeScale;
+
+        // Snap to whole numbers if close enough
+        if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
+        {
+            targetPosition.x = snappedX;
+        }
+        if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
+        {
+            targetPosition.z = snappedZ;
+        }
+
+        // Move the cube to the snapped position
         pushPoint.position = targetPosition;
+        lastPosition = targetPosition;
     }
 
     // use this only to assign initial push point position
