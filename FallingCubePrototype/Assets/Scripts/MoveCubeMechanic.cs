@@ -31,6 +31,13 @@ public class MoveCubeMechanic : MonoBehaviour
     {
         camera = GameObject.Find("Camera");
         pushPoint = GameObject.Find("PushPoint").GetComponent<Transform>();
+
+        // Initialize last position to current position
+        lastPosition = transform.position;
+
+        // n - 1 to account for 0-based index
+        maxGridSize.x--;
+        maxGridSize.y--;
     }
 
     // Update is called once per frame
@@ -56,8 +63,17 @@ public class MoveCubeMechanic : MonoBehaviour
         }
     }
 
+    void LateUpdate()
+    {
+        MoveCardinally();
+    }
+
     private void InputHandler()
     {
+        // Stop moving cube if camera is rotating
+        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)// TODO: move this to the InputHandler method
+            return;
+
         if (Input.GetAxis("LeftAnalogHorizontal") != 0 || Input.GetAxis("LeftAnalogVertical") != 0)
         {
             h = Input.GetAxis("LeftAnalogHorizontal");
@@ -79,17 +95,9 @@ public class MoveCubeMechanic : MonoBehaviour
             z = Input.GetAxis("Vertical");
         }
     }
-    void LateUpdate()
-    {
-        MoveCardinally();
-    }
 
     void MoveCardinally()
     {
-        // Stop moving cube if camera is rotating
-        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)// TODO: move this to the InputHandler method
-            return;
-
         // Get the forward and right vectors of the camera without vertical component
         Vector3 cameraForward = Camera.main.transform.forward;
         cameraForward.y = 0f;

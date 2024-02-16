@@ -40,6 +40,10 @@ public class MoveCubeTest : MonoBehaviour
 
     private void InputHandler()
     {
+        // Stop moving cube if camera is rotating
+        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)
+            return;
+
         if (Input.GetAxis("LeftAnalogHorizontal") != 0 || Input.GetAxis("LeftAnalogVertical") != 0)
         {
             h = Input.GetAxis("LeftAnalogHorizontal");
@@ -64,10 +68,6 @@ public class MoveCubeTest : MonoBehaviour
 
     void MoveCardinally()
     {
-        // Stop moving cube if camera is rotating
-        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)
-            return;
-
         // Get the forward and right vectors of the camera without vertical component
         Vector3 cameraForward = Camera.main.transform.forward;
         cameraForward.y = 0f;
