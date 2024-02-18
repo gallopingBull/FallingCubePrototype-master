@@ -36,10 +36,10 @@ public class GrabMechanic : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         CubeDetection();
-        InputHandler();
+        //InputHandler();
     }
 
     private void InputHandler()
