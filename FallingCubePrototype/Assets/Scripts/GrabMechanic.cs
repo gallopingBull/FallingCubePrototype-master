@@ -76,7 +76,6 @@ public class GrabMechanic : MonoBehaviour
             GetComponent<vThirdPersonInput>().cc.GetComponent<vThirdPersonMotor>().lockMovement = true;
 
             GetComponent<vThirdPersonInput>().SetDragMovement();
-            GetComponent<vThirdPersonInput>().cc.Strafe();
 
             //print(targetCube.name);
             //print(targetCube.transform.parent.parent.name);
@@ -114,7 +113,6 @@ public class GrabMechanic : MonoBehaviour
 
             GetComponent<vThirdPersonInput>().cc.GetComponent<vThirdPersonMotor>().lockRotation = false;
             GetComponent<vThirdPersonInput>().cc.GetComponent<vThirdPersonMotor>().lockMovement = false;
-            GetComponent<vThirdPersonInput>().cc.Strafe();
             // ***need to clean this up*** \\
 
             isGrabbing = false;
