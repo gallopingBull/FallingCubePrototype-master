@@ -29,7 +29,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
     public UnityEngine.Events.UnityEvent onStart, onFinish;
     public UnityEngine.Events.UnityEvent onFindObject, onLostObject;
 
-  
+
     protected RaycastHit hit;
     protected Transform cameraTransform;
     protected Vector3 startDirection;
@@ -37,7 +37,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
     protected vIKSolver leftHand, rightHand;
     protected float weight;
     protected float startDistance;
-  
+
     protected bool canUpdateIK;
     protected Vector3 inputDirection;
     protected Vector3 lastBodyPosition;
@@ -64,7 +64,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
         leftHand = new vIKSolver(tpInput.animator, AvatarIKGoal.LeftHand);
         rightHand = new vIKSolver(tpInput.animator, AvatarIKGoal.RightHand);
     }
-   
+
     protected virtual void Update()
     {
         UpdateInput();
@@ -82,8 +82,8 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
 
     protected virtual void UpdateIK()
     {
-        if (tpInput.enabled || !isStarted || !pushPoint ||!canUpdateIK) return;
-      
+        if (tpInput.enabled || !isStarted || !pushPoint || !canUpdateIK) return;
+
         var leftHandP = leftHand.endBone.position;
         var rightHandP = rightHand.endBone.position;
 
@@ -125,7 +125,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
         rightHand.SetIKPosition(rightHandP);
         canUpdateIK = false;
     }
-   
+
     protected virtual void UpdateInput()
     {
         EnterExitInput();
@@ -241,7 +241,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
     protected virtual void MoveObject()
     {
         var strengthFactor = Mathf.Clamp(strength / pushPoint.targetBody.mass, 0, 1);
-        var direction = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));       
+        var direction = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
         movementDirection = direction;
 
         Vector3 targetPosition = pushPoint.targetBody.position + direction * strengthFactor * vTime.fixedDeltaTime;
@@ -478,7 +478,6 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
 
     public virtual void OnAnimatorMoveEvent()
     {
-
         if (tpInput.enabled || !isPushingPulling || !pushPoint || isStoping)
         {
             return;
@@ -502,5 +501,5 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
 
     public virtual bool IsCollidingBack => isMoving;
 
-    public virtual vPushObjectPoint PushPoint =>pushPoint;
+    public virtual vPushObjectPoint PushPoint => pushPoint;
 }

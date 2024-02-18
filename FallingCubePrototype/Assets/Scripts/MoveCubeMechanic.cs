@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Invector.vCharacterController;
 using UnityEngine;
 
-public class MoveCubeMechanic : MonoBehaviour
+public class MoveCubeMechanic : vPushActionController
 {
     #region variables
     [HideInInspector]
@@ -15,7 +15,7 @@ public class MoveCubeMechanic : MonoBehaviour
     private Vector3 lastPosition;
     private Transform target;
     private GameObject camera;
-    public Transform pushPoint;
+    public Transform pushPointOld;
 
     bool isPaused = false;
 
@@ -27,10 +27,11 @@ public class MoveCubeMechanic : MonoBehaviour
     #endregion
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         camera = GameObject.Find("Camera");
-        pushPoint = GameObject.Find("PushPoint").GetComponent<Transform>();
+        pushPointOld = GameObject.Find("PushPoint").GetComponent<Transform>();
 
         // Initialize last position to current position
         lastPosition = transform.position;
@@ -106,6 +107,10 @@ public class MoveCubeMechanic : MonoBehaviour
         ParentToPushPoint();
     }
 
+    protected override void MoveInput()
+    {
+
+    }
     private void MoveCardinally()
     {
         // Get the forward and right vectors of the camera without vertical component
@@ -133,7 +138,7 @@ public class MoveCubeMechanic : MonoBehaviour
         moveDirection.Normalize();
 
         // Calculate target position based on the current position and move distance
-        Vector3 targetPosition = pushPoint.position + new Vector3(
+        Vector3 targetPosition = pushPointOld.position + new Vector3(
             Mathf.RoundToInt(moveDirection.x),
             0f,
             Mathf.RoundToInt(moveDirection.z)
@@ -150,7 +155,7 @@ public class MoveCubeMechanic : MonoBehaviour
             Mathf.Approximately(targetPosition.z, Mathf.Round(targetPosition.z)))
         {
             // Move the cube to the target position
-            pushPoint.position = targetPosition;
+            pushPointOld.position = targetPosition;
             lastPosition = targetPosition;
         }
         else
@@ -179,7 +184,7 @@ public class MoveCubeMechanic : MonoBehaviour
         }
 
         // Move the cube to the snapped position
-        pushPoint.position = targetPosition;
+        pushPointOld.position = targetPosition;
         lastPosition = targetPosition;
     }
 
@@ -188,13 +193,13 @@ public class MoveCubeMechanic : MonoBehaviour
     {
         Vector3 _tmpPos;
         _tmpPos = new Vector3(target.position.x, target.position.y + 2, target.position.z);
-        pushPoint.position = _tmpPos;
+        pushPointOld.position = _tmpPos;
     }
 
     public void ParentToPushPoint()
     {
-        transform.SetParent(pushPoint, true);
-        target.SetParent(pushPoint, true);
+        transform.SetParent(pushPointOld, true);
+        target.SetParent(pushPointOld, true);
     }
 
     public void DeParentToPushPoint()
