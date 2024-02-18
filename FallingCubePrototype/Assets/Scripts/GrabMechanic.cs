@@ -1,4 +1,5 @@
-﻿using Invector.vCharacterController;
+﻿using System;
+using Invector.vCharacterController;
 using UnityEngine;
 
 public class GrabMechanic : MonoBehaviour
@@ -7,28 +8,30 @@ public class GrabMechanic : MonoBehaviour
     private bool isGrabbing;
     private bool EnableGrab;
 
-    private GameObject player;
-
-    [SerializeField] private float m_MaxDistance = 10;
+    [SerializeField] float m_MaxDistance = 10;
     private bool HitDetect;
     private bool m_HitDetect;
 
     public float BoxColliderSize = 1.5f;
     public float HeightOffset = 0;
-    private Collider m_Collider;
+    private Collider collider;
     private RaycastHit m_Hit;
-    [SerializeField] private LayerMask layerMask;
+    [SerializeField] LayerMask layerMask;
 
     [HideInInspector]
     public GameObject targetCube;
 
     private RigidbodyConstraints rbConstraints;
+
+    public static Action OnGrab;
+    public static Action OnRelease;
+
     #endregion
 
     // Start is called before the first frame update
     void Start()
     {
-        m_Collider = GetComponent<Collider>(); // get player's collider
+        collider = GetComponent<Collider>(); // get player's collider
         rbConstraints = GetComponent<Rigidbody>().constraints;
     }
 
@@ -64,26 +67,26 @@ public class GrabMechanic : MonoBehaviour
         if (targetCube != null &&
             !targetCube.transform.parent.parent.GetComponent<CubeBehavior>().isDestroying)
         {
+            OnGrab?.Invoke();
+
             // change state 
             // reset movement/rb variables
-
-
-            // get forward axis and set player position and rotation to directly face cube at set distance
-            //SetPlayerPositionAndRotation();
 
             // disable player rotation and camera rotation doesnt affect the player's rotation
             GetComponent<vThirdPersonInput>().cc.GetComponent<vThirdPersonMotor>().lockRotation = true;
             GetComponent<vThirdPersonInput>().cc.GetComponent<vThirdPersonMotor>().lockMovement = true;
 
+            // get forward axis and set player position and rotation to directly face cube at set distance
+            //SetPlayerPositionAndRotation();
+
+            // this is supposed to turn on the push animation. 
             GetComponent<vThirdPersonInput>().SetDragMovement();
 
             //print(targetCube.name);
             //print(targetCube.transform.parent.parent.name);
-            targetCube.transform.parent.GetComponentInParent<CubeBehavior>().SetDragging();
 
-            GetComponent<MoveCubeMechanic>().EnableBoxMovement();
-            GetComponent<MoveCubeMechanic>().SetPushPointPosition();
-            GetComponent<MoveCubeMechanic>().ParentToPushPoint();
+            // set the cube's state to dragging 
+            targetCube.transform.parent.GetComponentInParent<CubeBehavior>().SetDragging();
 
             isGrabbing = true;
         }
@@ -91,8 +94,7 @@ public class GrabMechanic : MonoBehaviour
 
     private void Release()
     {
-        //player can ONLY release cube if it's reach 
-        //a whole number (-1, 0, 1) on the  X/Z axis 
+        // TODO: consider player only able to release cube if it's reach a whole number (-1, 0, 1) on the X/Z axis.
         if (targetCube != null &&
             !targetCube.transform.parent.parent.GetComponent<CubeBehavior>().isDestroying)
         {
@@ -116,7 +118,7 @@ public class GrabMechanic : MonoBehaviour
             // ***need to clean this up*** \\
 
             isGrabbing = false;
-            GetComponent<MoveCubeMechanic>().EnableBoxMovement();
+            OnRelease?.Invoke();
         }
     }
 
@@ -124,7 +126,7 @@ public class GrabMechanic : MonoBehaviour
     private void CubeDetection()
     {
 
-        m_HitDetect = Physics.BoxCast(m_Collider.bounds.center,
+        m_HitDetect = Physics.BoxCast(collider.bounds.center,
             transform.localScale * (BoxColliderSize * .15f),
             transform.forward, out m_Hit,
             transform.rotation, m_MaxDistance, layerMask);
@@ -143,8 +145,7 @@ public class GrabMechanic : MonoBehaviour
                 if (m_Hit.distance <= 0)
                     print("making contact with cube");
 
-                if (m_Hit.distance < 1f ||
-                    m_Hit.distance > .75f)
+                if (m_Hit.distance < 1f || m_Hit.distance > .75f)
                 {
                     if (!EnableGrab)
                         EnableGrab = true;
@@ -169,46 +170,29 @@ public class GrabMechanic : MonoBehaviour
         }
     }
 
-    private void SetPlayerPositionAndRotation()
-    {
-        Vector3 directionToTarget = transform.position - targetCube.transform.position;
-        float angle = Vector3.Angle(transform.forward, directionToTarget);
-        float distance = directionToTarget.magnitude;
-
-        // set player position further from cube if they're too close.
-        if (distance < 1.5f)
-            transform.position = transform.position + (transform.forward * -.4f);
-    }
-
-    // returns player position
-    private Vector3 GetPlayerPosition()
-    {
-        Vector3 pos = new Vector3(transform.position.x,
-            transform.position.y + HeightOffset,
-            transform.position.z);
-        return pos;
-    }
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Vector3 tmpPos = GetPlayerPosition();
+        Vector3 pos = new Vector3(transform.position.x,
+            transform.position.y + HeightOffset,
+            transform.position.z);
+
         //Check if there has been a hit yet
         if (m_HitDetect)
         {
 
             //Draw a Ray forward from GameObject toward the hit
-            Gizmos.DrawRay(tmpPos, (transform.forward) * m_Hit.distance);
+            Gizmos.DrawRay(pos, (transform.forward) * m_Hit.distance);
             //Draw a cube that extends to where the hit exists
-            Gizmos.DrawWireCube(tmpPos + (transform.forward) * m_Hit.distance, transform.localScale * BoxColliderSize);
+            Gizmos.DrawWireCube(pos + (transform.forward) * m_Hit.distance, transform.localScale * BoxColliderSize);
         }
         //If there hasn't been a hit yet, draw the ray at the maximum distance
         else
         {
             //Draw a Ray forward from GameObject toward the maximum distance
-            Gizmos.DrawRay(tmpPos, (transform.forward) * m_MaxDistance);
+            Gizmos.DrawRay(pos, (transform.forward) * m_MaxDistance);
             //Draw a cube at the maximum distance
-            Gizmos.DrawWireCube(tmpPos + (transform.forward) * m_MaxDistance, transform.localScale * BoxColliderSize);
+            Gizmos.DrawWireCube(pos + (transform.forward) * m_MaxDistance, transform.localScale * BoxColliderSize);
         }
     }
 }

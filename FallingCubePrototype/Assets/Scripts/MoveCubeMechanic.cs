@@ -38,6 +38,9 @@ public class MoveCubeMechanic : MonoBehaviour
         // n - 1 to account for 0-based index
         maxGridSize.x--;
         maxGridSize.y--;
+
+        GrabMechanic.OnGrab += InitGrab;
+        GrabMechanic.OnRelease += EnableBoxMovement;
     }
 
     // Update is called once per frame
@@ -71,7 +74,7 @@ public class MoveCubeMechanic : MonoBehaviour
     private void InputHandler()
     {
         // Stop moving cube if camera is rotating
-        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0)// TODO: move this to the InputHandler method
+        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0) // TODO: move this to the InputHandler method
             return;
 
         if (Input.GetAxis("LeftAnalogHorizontal") != 0 || Input.GetAxis("LeftAnalogVertical") != 0)
@@ -95,8 +98,14 @@ public class MoveCubeMechanic : MonoBehaviour
             z = Input.GetAxis("Vertical");
         }
     }
+    private void InitGrab()
+    {
+        EnableBoxMovement();
+        SetPushPointPosition();
+        ParentToPushPoint();
+    }
 
-    void MoveCardinally()
+    private void MoveCardinally()
     {
         // Get the forward and right vectors of the camera without vertical component
         Vector3 cameraForward = Camera.main.transform.forward;
@@ -152,7 +161,7 @@ public class MoveCubeMechanic : MonoBehaviour
 
     // TODO: change this method so instead of a snap its more of
     // a discrete "push" to the nearest whole number
-    void SnapToMultipleOfCubeScale(Vector3 targetPosition)
+    private void SnapToMultipleOfCubeScale(Vector3 targetPosition)
     {
         // Snap X and Z positions to multiples of cube scale
         float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
@@ -210,5 +219,11 @@ public class MoveCubeMechanic : MonoBehaviour
             target = null;
 
         enableMovement = !(enableMovement);
+    }
+
+    private void OnDestroy()
+    {
+        GrabMechanic.OnGrab -= InitGrab;
+        GrabMechanic.OnRelease -= EnableBoxMovement;
     }
 }
