@@ -102,8 +102,6 @@ public class GrabMechanic : MonoBehaviour
             // change state 
             // reset movement/rb variables
 
-            GetComponent<MoveCubeMechanic>().DeParentToPushPoint();
-
             //targetCube.transform.parent.GetComponentInParent<CubeBehavior>().RoundCubeLocation();
             targetCube.transform.parent.parent.eulerAngles = Vector3.zero;
             targetCube.transform.parent.GetComponentInParent<CubeBehavior>().SetGround(); // TODO: find another less coupled way of changing the cube's state

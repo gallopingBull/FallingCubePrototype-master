@@ -40,6 +40,7 @@ public class MoveCubeMechanic : MonoBehaviour
         maxGridSize.y--;
 
         GrabMechanic.OnGrab += InitGrab;
+        GrabMechanic.OnRelease += DeParentToPushPoint;
         GrabMechanic.OnRelease += EnableBoxMovement;
     }
 
@@ -224,6 +225,7 @@ public class MoveCubeMechanic : MonoBehaviour
     private void OnDestroy()
     {
         GrabMechanic.OnGrab -= InitGrab;
+        GrabMechanic.OnRelease -= DeParentToPushPoint;
         GrabMechanic.OnRelease -= EnableBoxMovement;
     }
 }

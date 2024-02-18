@@ -542,26 +542,26 @@ namespace Invector.vCharacterController
 
 
 
-        public void SetDragMovement()	
-        {	
+        public void SetDragMovement()
+        {
             #region copied codeto make character's drag anim look correct - grabbed from vPushActionController.cs	
-            cc.animator.SetFloat(vAnimatorParameters.InputHorizontal, 0);	
-            cc.animator.SetFloat(vAnimatorParameters.InputVertical, 0);	
-            cc.animator.SetFloat(vAnimatorParameters.InputMagnitude, 0);	
-            #endregion	
-            cc.isDragging = !(cc.isDragging);	
-            animator.PlayInFixedTime("StartPushAndPull");	
-        }	
-        public void StopDragMovement(bool playAnim)	
-        {	
+            cc.animator.SetFloat(vAnimatorParameters.InputHorizontal, 0);
+            cc.animator.SetFloat(vAnimatorParameters.InputVertical, 0);
+            cc.animator.SetFloat(vAnimatorParameters.InputMagnitude, 0);
+            #endregion
+            cc.isDragging = !(cc.isDragging);
+            animator.PlayInFixedTime("StartPushAndPull");
+        }
+        public void StopDragMovement(bool playAnim)
+        {
             #region copied codeto make character's drag anim look correct - grabbed from vPushActionController.cs	
-            cc.animator.SetFloat(vAnimatorParameters.InputHorizontal, 0);	
-            cc.animator.SetFloat(vAnimatorParameters.InputVertical, 0);	
-            cc.animator.SetFloat(vAnimatorParameters.InputMagnitude, 0);	
-            #endregion	
-            if (playAnim)	
-            {	
-                animator.PlayInFixedTime("StopPushAndPull");	
+            cc.animator.SetFloat(vAnimatorParameters.InputHorizontal, 0);
+            cc.animator.SetFloat(vAnimatorParameters.InputVertical, 0);
+            cc.animator.SetFloat(vAnimatorParameters.InputMagnitude, 0);
+            #endregion
+            if (playAnim)
+            {
+                animator.PlayInFixedTime("StopPushAndPull");
             }
         }
         #endregion       
