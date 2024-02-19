@@ -155,32 +155,25 @@ public class MoveCubeMechanic : vPushActionController
 
         inputDirection.Normalize();
 
-        // Calculate target position based on the current position and move distance
-        //Vector3 targetPosition = pushPoint.targetBody.position + new Vector3(
-        //    Mathf.RoundToInt(moveDirection.x),
-        //    0f,
-        //    Mathf.RoundToInt(moveDirection.z)
-        //) * moveDistance * cubeScale;
-        //
-        //
-        //// Clamp target position within the boundaries of the map
-        //targetPosition.x = Mathf.Clamp(targetPosition.x, 0, maxGridSize.x * cubeScale);
-        //targetPosition.z = Mathf.Clamp(targetPosition.z, 0, maxGridSize.y * cubeScale);
-        //
-        //
-        //// Check if both X and Z positions are whole values
-        //if (Mathf.Approximately(targetPosition.x, Mathf.Round(targetPosition.x)) ||
-        //    Mathf.Approximately(targetPosition.z, Mathf.Round(targetPosition.z)))
-        //{
-        //    // Move the cube to the target position
-        //    pushPoint.targetBody.position = targetPosition;
-        //    lastPosition = targetPosition;
-        //}
-        //else
-        //{
-        //    // Snap target position to multiples of cube scale if close enough
-        //    SnapToMultipleOfCubeScale(targetPosition);
-        //}
+        if (inputDirection.z > 0 && !pushPoint.canPushForward)
+        {
+            inputDirection.z = 0;
+        }
+        else if (inputDirection.z < 0 && (!pushPoint.canPushBack || isCollidingBack))
+        {
+            inputDirection.z = 0;
+        }
+
+        if (inputDirection.x > 0 && (!pushPoint.canPushRight || isCollidingRight))
+        {
+            inputDirection.x = 0;
+        }
+        else if (inputDirection.x < 0 && (!pushPoint.canPushLeft || isCollidingLeft))
+        {
+            inputDirection.x = 0;
+        }
+
+        inputDirection.y = 0;
 
 
         if (inputDirection.magnitude > 0.1f)
@@ -256,8 +249,36 @@ public class MoveCubeMechanic : vPushActionController
         var direction = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
         movementDirection = direction;
 
-        Vector3 targetPosition = pushPoint.targetBody.position + direction * strengthFactor * vTime.fixedDeltaTime * cubeScale;
+        // Calculate target position based on the current position and move distance
+        Vector3 targetPosition = pushPoint.targetBody.position + new Vector3(
+            Mathf.RoundToInt(movementDirection.x),
+            0f,
+            Mathf.RoundToInt(movementDirection.z)
+        ) * strengthFactor * vTime.fixedDeltaTime * cubeScale;
+
+        //Vector3 targetPosition = pushPoint.targetBody.position + direction * strengthFactor * vTime.fixedDeltaTime * cubeScale;
         Vector3 targetDirection = (targetPosition - pushPoint.targetBody.position) / vTime.fixedDeltaTime;
+
+        #region position constraints
+        //// Clamp target position within the boundaries of the map
+        //targetPosition.x = Mathf.Clamp(targetPosition.x, 0, maxGridSize.x * cubeScale);
+        //targetPosition.z = Mathf.Clamp(targetPosition.z, 0, maxGridSize.y * cubeScale);
+        //
+        //
+        //// Check if both X and Z positions are whole values
+        //if (Mathf.Approximately(targetPosition.x, Mathf.Round(targetPosition.x)) ||
+        //    Mathf.Approximately(targetPosition.z, Mathf.Round(targetPosition.z)))
+        //{
+        //    // Move the cube to the target position
+        //    pushPoint.targetBody.position = targetPosition;
+        //    lastPosition = targetPosition;
+        //}
+        //else
+        //{
+        //    // Snap target position to multiples of cube scale if close enough
+        //    SnapToMultipleOfCubeScale(targetPosition);
+        //}
+        #endregion
 
         targetDirection.y = pushPoint.targetBody.velocity.y;
         pushPoint.targetBody.velocity = targetDirection * inputWeight;
