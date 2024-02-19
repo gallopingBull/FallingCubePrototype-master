@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Invector;
+using Invector.IK;
 using Invector.vCharacterController;
+using Invector.vCharacterController.vActions;
+using System.Collections;
 using UnityEngine;
 
 public class MoveCubeMechanic : vPushActionController
@@ -98,11 +102,11 @@ public class MoveCubeMechanic : vPushActionController
     protected override void MoveInput()
     {
         //base.MoveInput();
-        // Stop moving cube if camera is rotating
-        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0) // TODO: move this to the InputHandler method
+        if (tpInput.enabled || !isPushingPulling || !pushPoint || isStoping)
             return;
 
-        if (tpInput.enabled || !isPushingPulling || !pushPoint || isStoping)
+        // Stop moving cube if camera is rotating
+        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0) // TODO: move this to the InputHandler method
             return;
 
         inputHorizontal = tpInput.horizontalInput.GetAxis();
@@ -125,6 +129,7 @@ public class MoveCubeMechanic : vPushActionController
         {
             inputVertical = 0;
         }
+
         // Get the forward and right vectors of the camera without vertical component
         Vector3 cameraForward = Camera.main.transform.forward;
         cameraForward.y = 0f;
@@ -203,6 +208,7 @@ public class MoveCubeMechanic : vPushActionController
         // Calculate movement direction based on camera orientation
         Vector3 moveDirection = cameraForward * z + cameraRight * h;
 
+        // TODO: this is the constraint that should be added to MoveInput
         // Ensure movement only along the X or Z axis, not diagonally
         if (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.z))
         {
@@ -250,7 +256,7 @@ public class MoveCubeMechanic : vPushActionController
         var direction = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
         movementDirection = direction;
 
-        Vector3 targetPosition = pushPoint.targetBody.position + direction * strengthFactor * vTime.fixedDeltaTime;
+        Vector3 targetPosition = pushPoint.targetBody.position + direction * strengthFactor * vTime.fixedDeltaTime * cubeScale;
         Vector3 targetDirection = (targetPosition - pushPoint.targetBody.position) / vTime.fixedDeltaTime;
 
         targetDirection.y = pushPoint.targetBody.velocity.y;
