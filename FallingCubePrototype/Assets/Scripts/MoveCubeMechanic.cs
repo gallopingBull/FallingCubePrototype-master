@@ -16,7 +16,7 @@ public class MoveCubeMechanic : vPushActionController
     public bool enableMovement;
 
     private float h, z;
-    private float cubeScale = 2f; // Default cube scale
+    private float cubeScale = .25f; // Default cube scale
     private Vector3 lastPosition;
     private Transform target;
     private GameObject camera;
@@ -46,244 +46,46 @@ public class MoveCubeMechanic : vPushActionController
         maxGridSize.y--;
     }
 
-    // Update is called once per frame
-    protected override void Update()
-    {
-        if (Input.GetButtonDown("Start"))
-        {
-            if (isPaused)
-            {
-                Time.timeScale = 1;
-                isPaused = false;
-            }
-            else
-            {
-                Time.timeScale = 0;
-                isPaused = true;
-            }
-        }
-        base.Update();
-    }
-
-    //void LateUpdate()
-    //{
-    //MoveCardinally();
-    //}
-
-    // equivalent to vPushActionController.MoveInput
-    private void InputHandler()
-    {
-        // Stop moving cube if camera is rotating
-        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0) // TODO: move this to the InputHandler method
-            return;
-
-        if (Input.GetAxis("LeftAnalogHorizontal") != 0 || Input.GetAxis("LeftAnalogVertical") != 0)
-        {
-            h = Input.GetAxis("LeftAnalogHorizontal");
-            z = Input.GetAxis("LeftAnalogVertical");
-
-            // Check if gamepad stick input is within dead zone
-            if (Mathf.Abs(h) < gamepadDeadzone)
-            {
-                h = 0f;
-            }
-            if (Mathf.Abs(z) < gamepadDeadzone)
-            {
-                z = 0f;
-            }
-        }
-        else
-        {
-            h = Input.GetAxis("Horizontal");
-            z = Input.GetAxis("Vertical");
-        }
-    }
-
-    protected override void MoveInput()
-    {
-        //base.MoveInput();
-        if (tpInput.enabled || !isPushingPulling || !pushPoint || isStoping)
-            return;
-
-        // Stop moving cube if camera is rotating
-        if (Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0) // TODO: move this to the InputHandler method
-            return;
-
-        inputHorizontal = tpInput.horizontalInput.GetAxis();
-        inputVertical = tpInput.verticallInput.GetAxis();
-        if (Mathf.Abs(inputHorizontal) > 0.5f)
-        {
-            inputVertical = 0;
-        }
-        else if (Mathf.Abs(inputVertical) > 0.5f)
-        {
-            inputHorizontal = 0;
-        }
-
-        if (Mathf.Abs(inputHorizontal) < 0.8f)
-        {
-            inputHorizontal = 0;
-        }
-
-        if (Mathf.Abs(inputVertical) < 0.8f)
-        {
-            inputVertical = 0;
-        }
-
-        // Get the forward and right vectors of the camera without vertical component
-        Vector3 cameraForward = Camera.main.transform.forward;
-        cameraForward.y = 0f;
-        cameraForward.Normalize();
-
-        Vector3 cameraRight = Camera.main.transform.right;
-        cameraRight.y = 0f;
-        cameraRight.Normalize();
-
-        // Calculate movement direction based on camera orientation
-        inputDirection = cameraForward * z + cameraRight * h;
-        inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
-
-        // Ensure movement only along the X or Z axis, not diagonally
-        if (Mathf.Abs(inputDirection.x) > Mathf.Abs(inputDirection.z))
-        {
-            inputDirection.z = 0f;
-        }
-        else
-        {
-            inputDirection.x = 0f;
-        }
-
-        inputDirection.Normalize();
-
-        if (inputDirection.z > 0 && !pushPoint.canPushForward)
-        {
-            inputDirection.z = 0;
-        }
-        else if (inputDirection.z < 0 && (!pushPoint.canPushBack || isCollidingBack))
-        {
-            inputDirection.z = 0;
-        }
-
-        if (inputDirection.x > 0 && (!pushPoint.canPushRight || isCollidingRight))
-        {
-            inputDirection.x = 0;
-        }
-        else if (inputDirection.x < 0 && (!pushPoint.canPushLeft || isCollidingLeft))
-        {
-            inputDirection.x = 0;
-        }
-
-        inputDirection.y = 0;
-
-
-        if (inputDirection.magnitude > 0.1f)
-        {
-            inputWeight = Mathf.Lerp(inputWeight, 1, Time.deltaTime * animAcceleration);
-        }
-        else
-        {
-            inputWeight = Mathf.Lerp(inputWeight, 0, Time.deltaTime * animAcceleration);
-        }
-    }
-
-    // equivalent to vPushActionController.MoveObject
-    private void MoveCardinally()
-    {
-        // Get the forward and right vectors of the camera without vertical component
-        Vector3 cameraForward = Camera.main.transform.forward;
-        cameraForward.y = 0f;
-        cameraForward.Normalize();
-
-        Vector3 cameraRight = Camera.main.transform.right;
-        cameraRight.y = 0f;
-        cameraRight.Normalize();
-
-        // Calculate movement direction based on camera orientation
-        Vector3 moveDirection = cameraForward * z + cameraRight * h;
-
-        // TODO: this is the constraint that should be added to MoveInput
-        // Ensure movement only along the X or Z axis, not diagonally
-        if (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.z))
-        {
-            moveDirection.z = 0f;
-        }
-        else
-        {
-            moveDirection.x = 0f;
-        }
-
-        moveDirection.Normalize();
-
-        // Calculate target position based on the current position and move distance
-        Vector3 targetPosition = pushPointOld.position + new Vector3(
-            Mathf.RoundToInt(moveDirection.x),
-            0f,
-            Mathf.RoundToInt(moveDirection.z)
-        ) * moveDistance * cubeScale;
-
-
-        // Clamp target position within the boundaries of the map
-        targetPosition.x = Mathf.Clamp(targetPosition.x, 0, maxGridSize.x * cubeScale);
-        targetPosition.z = Mathf.Clamp(targetPosition.z, 0, maxGridSize.y * cubeScale);
-
-
-        // Check if both X and Z positions are whole values
-        if (Mathf.Approximately(targetPosition.x, Mathf.Round(targetPosition.x)) ||
-            Mathf.Approximately(targetPosition.z, Mathf.Round(targetPosition.z)))
-        {
-            // Move the cube to the target position
-            pushPointOld.position = targetPosition;
-            lastPosition = targetPosition;
-        }
-        else
-        {
-            // Snap target position to multiples of cube scale if close enough
-            SnapToMultipleOfCubeScale(targetPosition);
-        }
-    }
-
-
     protected override void MoveObject()
     {
         var strengthFactor = Mathf.Clamp(strength / pushPoint.targetBody.mass, 0, 1);
         var direction = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
         movementDirection = direction;
 
-        // Calculate target position based on the current position and move distance
-        Vector3 targetPosition = pushPoint.targetBody.position + new Vector3(
-            Mathf.RoundToInt(movementDirection.x),
-            0f,
-            Mathf.RoundToInt(movementDirection.z)
-        ) * strengthFactor * vTime.fixedDeltaTime * cubeScale;
+        // Calculate target position with grid constraints and apply a discrete push
+        Vector3 targetPosition = CalculateTargetPositionWithGrid(pushPoint.targetBody.position, direction, strengthFactor);
+        pushPoint.targetBody.position = targetPosition; // Directly setting position, consider using Rigidbody methods for physics-based movement
 
-        //Vector3 targetPosition = pushPoint.targetBody.position + direction * strengthFactor * vTime.fixedDeltaTime * cubeScale;
-        Vector3 targetDirection = (targetPosition - pushPoint.targetBody.position) / vTime.fixedDeltaTime;
+        // Check movement state and invoke events accordingly
+        bool _isMoving = (pushPoint.targetBody.position - lastBodyPosition).magnitude > 0.001f;
+        UpdateMovementState(_isMoving);
+    }
 
-        #region position constraints
-        //// Clamp target position within the boundaries of the map
-        //targetPosition.x = Mathf.Clamp(targetPosition.x, 0, maxGridSize.x * cubeScale);
-        //targetPosition.z = Mathf.Clamp(targetPosition.z, 0, maxGridSize.y * cubeScale);
-        //
-        //
-        //// Check if both X and Z positions are whole values
-        //if (Mathf.Approximately(targetPosition.x, Mathf.Round(targetPosition.x)) ||
-        //    Mathf.Approximately(targetPosition.z, Mathf.Round(targetPosition.z)))
-        //{
-        //    // Move the cube to the target position
-        //    pushPoint.targetBody.position = targetPosition;
-        //    lastPosition = targetPosition;
-        //}
-        //else
-        //{
-        //    // Snap target position to multiples of cube scale if close enough
-        //    SnapToMultipleOfCubeScale(targetPosition);
-        //}
-        #endregion
+    private Vector3 CalculateTargetPositionWithGrid(Vector3 currentPosition, Vector3 direction, float strengthFactor)
+    {
+        // Transform direction to discrete steps and apply strength factor
+        Vector3 moveStep = new Vector3(Mathf.RoundToInt(direction.x), 0f, Mathf.RoundToInt(direction.z));
+        Vector3 targetPosition = currentPosition + moveStep * moveDistance * cubeScale * strengthFactor;
 
-        targetDirection.y = pushPoint.targetBody.velocity.y;
-        pushPoint.targetBody.velocity = targetDirection * inputWeight;
-        bool _isMoving = (pushPoint.targetBodyPosition - lastBodyPosition).magnitude > 0.001f && inputWeight > 0f;
+        // Clamp target position within the boundaries of the map
+        targetPosition.x = Mathf.Clamp(targetPosition.x, 0, maxGridSize.x * cubeScale);
+        targetPosition.z = Mathf.Clamp(targetPosition.z, 0, maxGridSize.y * cubeScale);
 
+        // Apply a discrete "push" to the nearest whole number, replacing the SnapToMultipleOfCubeScale functionality
+        targetPosition = DiscretePushToWholeNumber(targetPosition);
+
+        return targetPosition;
+    }
+
+    private Vector3 DiscretePushToWholeNumber(Vector3 position)
+    {
+        position.x = Mathf.Round(position.x / cubeScale) * cubeScale;
+        position.z = Mathf.Round(position.z / cubeScale) * cubeScale;
+        return position;
+    }
+
+    private void UpdateMovementState(bool _isMoving)
+    {
         if (_isMoving != isMoving)
         {
             isMoving = _isMoving;
@@ -300,30 +102,9 @@ public class MoveCubeMechanic : vPushActionController
         }
         if (isMoving)
         {
-            pushPoint.pushableObject.onMovimentSpeedChanged.Invoke(Mathf.Clamp(pushPoint.targetBody.velocity.magnitude, 0, 1f));
+            float movementSpeed = Mathf.Clamp((pushPoint.targetBody.position - lastBodyPosition).magnitude / Time.fixedDeltaTime, 0, 1f);
+            pushPoint.pushableObject.onMovimentSpeedChanged.Invoke(movementSpeed);
+            lastBodyPosition = pushPoint.targetBody.position;
         }
-    }
-
-    // TODO: change this method so instead of a snap its more of
-    // a discrete "push" to the nearest whole number
-    private void SnapToMultipleOfCubeScale(Vector3 targetPosition)
-    {
-        // Snap X and Z positions to multiples of cube scale
-        float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
-        float snappedZ = Mathf.Round(targetPosition.z / cubeScale) * cubeScale;
-
-        // Snap to whole numbers if close enough
-        if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
-        {
-            targetPosition.x = snappedX;
-        }
-        if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
-        {
-            targetPosition.z = snappedZ;
-        }
-
-        // Move the cube to the snapped position
-        pushPoint.targetBody.position = targetPosition;
-        lastPosition = targetPosition;
     }
 }

@@ -92,6 +92,8 @@ public class MoveCubeTest : MonoBehaviour
 
         moveDirection.Normalize();
 
+
+        //** everything below this line is the where the problems occur **\\
         // Calculate target position based on the current position and move distance
         Vector3 targetPosition = transform.position + new Vector3(
             Mathf.RoundToInt(moveDirection.x),
