@@ -65,8 +65,9 @@ public class MoveCubeMechanic : vPushActionController
     {
         // Transform direction to discrete steps and apply strength factor
         Vector3 moveStep = new Vector3(Mathf.RoundToInt(direction.x), 0f, Mathf.RoundToInt(direction.z));
-        Vector3 targetPosition = currentPosition + moveStep * moveDistance * cubeScale * strengthFactor;
 
+        //Vector3 targetPosition = currentPosition + moveStep * moveDistance * cubeScale * strengthFactor;
+        Vector3 targetPosition = pushPoint.targetBody.position + direction * strengthFactor * vTime.fixedDeltaTime;
         // Clamp target position within the boundaries of the map
         targetPosition.x = Mathf.Clamp(targetPosition.x, 0, maxGridSize.x * cubeScale);
         targetPosition.z = Mathf.Clamp(targetPosition.z, 0, maxGridSize.y * cubeScale);

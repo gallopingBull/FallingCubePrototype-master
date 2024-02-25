@@ -5322,7 +5322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openCloseEvents: 0
   openCloseWindow: 1
-  selectedToolbar: 0
+  selectedToolbar: 2
   startPushPullInput:
     useInput: 1
     isAxisInUse: 0
@@ -5340,7 +5340,7 @@ MonoBehaviour:
     lastTimeTheButtonWasPressed: 0
     inButtomTimer: 0
   movementSpeed: {x: 0.25, y: 0.25}
-  minMovementMagnitude: 0.1
+  minMovementMagnitude: 0
   animAcceleration: 10
   useLeftHandIK: 1
   useRightHandIK: 1
@@ -5373,11 +5373,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 131073
   breakActionDistance: 0.25
-  enterPositionSpeed: 0.1
+  enterPositionSpeed: 2
   handForwardOffset: 0
   handSideOffset: 0
   handSpaceDistanceX: 0.25
-  distanceBetweenObject: 0.5
+  distanceBetweenObject: 0.6
   onStart:
     m_PersistentCalls:
       m_Calls:
@@ -5487,10 +5487,10 @@ MonoBehaviour:
   inputWeight: 0
   enableMovement: 0
   pushPointOld: {fileID: 0}
-  moveDistance: 1
+  moveDistance: 0.4
   gamepadDeadzone: 0.1
   snapThreshold: 0.1
-  maxGridSize: {x: 10, y: 10}
+  maxGridSize: {x: 100, y: 100}
 --- !u!4 &1843841282 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 999508717416417617, guid: e8ddd20cfc0b0b041889254bf953f264, type: 3}
@@ -6072,6 +6072,10 @@ PrefabInstance:
     - target: {fileID: 2464273831578378807, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
       propertyPath: m_ConnectedAnchor.z
       value: 0.008011971
+      objectReference: {fileID: 0}
+    - target: {fileID: 2464273831585441269, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
+      propertyPath: openCloseWindow
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2464273831795369361, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
       propertyPath: m_AnchoredPosition.x
