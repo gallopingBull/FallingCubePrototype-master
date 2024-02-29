@@ -4423,7 +4423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 999508717416417617, guid: e8ddd20cfc0b0b041889254bf953f264, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.189
       objectReference: {fileID: 0}
     - target: {fileID: 999508717416417617, guid: e8ddd20cfc0b0b041889254bf953f264, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5322,7 +5322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openCloseEvents: 0
   openCloseWindow: 1
-  selectedToolbar: 2
+  selectedToolbar: 0
   startPushPullInput:
     useInput: 1
     isAxisInUse: 0
@@ -5372,7 +5372,7 @@ MonoBehaviour:
   pushpullLayer:
     serializedVersion: 2
     m_Bits: 131073
-  breakActionDistance: 0.25
+  breakActionDistance: 1
   enterPositionSpeed: 2
   handForwardOffset: 0
   handSideOffset: 0
@@ -5487,7 +5487,7 @@ MonoBehaviour:
   inputWeight: 0
   enableMovement: 0
   pushPointOld: {fileID: 0}
-  moveDistance: 0.4
+  moveDistance: 0.6
   gamepadDeadzone: 0.1
   snapThreshold: 0.1
   maxGridSize: {x: 100, y: 100}
@@ -6044,6 +6044,10 @@ PrefabInstance:
     - target: {fileID: 2464273831578303061, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
       propertyPath: m_ConnectedAnchor.x
       value: -0.000002471462
+      objectReference: {fileID: 0}
+    - target: {fileID: 2464273831578303061, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
+      propertyPath: m_ConnectedAnchor.z
+      value: 2.5031455
       objectReference: {fileID: 0}
     - target: {fileID: 2464273831578374001, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
       propertyPath: m_ConnectedAnchor.x

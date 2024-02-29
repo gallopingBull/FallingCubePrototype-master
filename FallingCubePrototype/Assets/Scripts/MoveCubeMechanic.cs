@@ -16,7 +16,7 @@ public class MoveCubeMechanic : vPushActionController
     public bool enableMovement;
 
     private float h, z;
-    private float cubeScale = .25f; // Default cube scale
+    private float cubeScale = 2f; // Default cube scale
     private Vector3 lastPosition;
     private Transform target;
     private GameObject camera;
@@ -40,53 +40,60 @@ public class MoveCubeMechanic : vPushActionController
 
         // Initialize last position to current position
         lastPosition = transform.position;
-
+        //StartCoroutine(EnsureCubeScaleAlignment());
         // n - 1 to account for 0-based index
         maxGridSize.x--;
         maxGridSize.y--;
     }
-
     protected override void MoveObject()
     {
         var strengthFactor = Mathf.Clamp(strength / pushPoint.targetBody.mass, 0, 1);
-        var direction = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
-        movementDirection = direction;
+        var intendedDirection = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
+        if (intendedDirection != Vector3.zero && CanChangeDirection())
+        {
+            Vector3 intendedPosition = pushPoint.targetBody.position + intendedDirection * 15 * cubeScale * vTime.fixedDeltaTime;
+            intendedPosition = ApplyStepConstraints(intendedPosition);
 
-        // Calculate target position with grid constraints and apply a discrete push
-        Vector3 targetPosition = CalculateTargetPositionWithGrid(pushPoint.targetBody.position, direction, strengthFactor);
-        pushPoint.targetBody.position = targetPosition; // Directly setting position, consider using Rigidbody methods for physics-based movement
-
-        // Check movement state and invoke events accordingly
-        bool _isMoving = (pushPoint.targetBody.position - lastBodyPosition).magnitude > 0.001f;
-        UpdateMovementState(_isMoving);
+            if (!PositionIsLocked(intendedPosition))
+            {
+                // Only apply the movement if the new position is different from the current position
+                pushPoint.targetBody.position = intendedPosition;
+                UpdateMovementState(intendedPosition);
+            }
+        }
     }
 
-    private Vector3 CalculateTargetPositionWithGrid(Vector3 currentPosition, Vector3 direction, float strengthFactor)
+    private bool CanChangeDirection()
     {
-        // Transform direction to discrete steps and apply strength factor
-        Vector3 moveStep = new Vector3(Mathf.RoundToInt(direction.x), 0f, Mathf.RoundToInt(direction.z));
+        // Ensure we can change direction if the cube is aligned properly.
+        return IsPositionAligned(pushPoint.targetBody.position);
+    }
 
-        //Vector3 targetPosition = currentPosition + moveStep * moveDistance * cubeScale * strengthFactor;
-        Vector3 targetPosition = pushPoint.targetBody.position + direction * strengthFactor * vTime.fixedDeltaTime;
-        // Clamp target position within the boundaries of the map
-        targetPosition.x = Mathf.Clamp(targetPosition.x, 0, maxGridSize.x * cubeScale);
-        targetPosition.z = Mathf.Clamp(targetPosition.z, 0, maxGridSize.y * cubeScale);
-
-        // Apply a discrete "push" to the nearest whole number, replacing the SnapToMultipleOfCubeScale functionality
-        targetPosition = DiscretePushToWholeNumber(targetPosition);
-
+    private Vector3 ApplyStepConstraints(Vector3 targetPosition)
+    {
+        // Adjust the target position to be a multiple of the cube's scale
+        targetPosition.x = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
+        targetPosition.z = Mathf.Round(targetPosition.z / cubeScale) * cubeScale;
         return targetPosition;
     }
 
-    private Vector3 DiscretePushToWholeNumber(Vector3 position)
+    private bool PositionIsLocked(Vector3 targetPosition)
     {
-        position.x = Mathf.Round(position.x / cubeScale) * cubeScale;
-        position.z = Mathf.Round(position.z / cubeScale) * cubeScale;
-        return position;
+        // Check if moving to the target position would effectively lock the cube's position
+        return pushPoint.targetBody.position == targetPosition;
     }
 
-    private void UpdateMovementState(bool _isMoving)
+    private bool IsPositionAligned(Vector3 position)
     {
+        // Check if both X and Z positions are whole numbers considering the cube's scale
+        return Mathf.Approximately(position.x, Mathf.Round(position.x)) ||
+               Mathf.Approximately(position.z, Mathf.Round(position.z));
+    }
+
+    private void UpdateMovementState(Vector3 newPosition)
+    {
+        // Update movement state and potentially trigger events
+        bool _isMoving = (newPosition - lastBodyPosition).magnitude > 0.001f;
         if (_isMoving != isMoving)
         {
             isMoving = _isMoving;
@@ -101,11 +108,12 @@ public class MoveCubeMechanic : vPushActionController
                 pushPoint.pushableObject.onStopMove.Invoke();
             }
         }
+
         if (isMoving)
         {
-            float movementSpeed = Mathf.Clamp((pushPoint.targetBody.position - lastBodyPosition).magnitude / Time.fixedDeltaTime, 0, 1f);
-            pushPoint.pushableObject.onMovimentSpeedChanged.Invoke(movementSpeed);
-            lastBodyPosition = pushPoint.targetBody.position;
+            pushPoint.pushableObject.onMovimentSpeedChanged.Invoke(Mathf.Clamp(pushPoint.targetBody.velocity.magnitude, 0, 1f));
         }
+
+        lastBodyPosition = newPosition;
     }
 }
