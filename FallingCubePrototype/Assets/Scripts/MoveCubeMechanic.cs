@@ -21,6 +21,7 @@ public class MoveCubeMechanic : vPushActionController
     private Transform target;
     private GameObject camera;
     public Transform pushPointOld;
+    public vPushObjectPoint pushPointCopy;
 
     bool isPaused = false;
 
@@ -47,6 +48,12 @@ public class MoveCubeMechanic : vPushActionController
     }
     protected override void MoveObject()
     {
+        if (pushPointCopy == null)
+        {
+            pushPointCopy = pushPoint;
+            Debug.Log("pushPointCopy.targetBody.name: " + pushPointCopy.targetBody.name);
+        }
+
         var strengthFactor = Mathf.Clamp(strength / pushPoint.targetBody.mass, 0, 1);
         var intendedDirection = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
         if (intendedDirection != Vector3.zero && CanChangeDirection())
@@ -80,26 +87,35 @@ public class MoveCubeMechanic : vPushActionController
     private bool PositionIsLocked(Vector3 targetPosition)
     {
         // Check if moving to the target position would effectively lock the cube's position
+        Debug.Log($"positionIsLocked = {pushPoint.targetBody.position} == {targetPosition}");
         return pushPoint.targetBody.position == targetPosition;
     }
 
     private bool IsPositionAligned(Vector3 position)
     {
         // Check if both X and Z positions are whole numbers considering the cube's scale
-        return Mathf.Approximately(position.x, Mathf.Round(position.x)) ||
-               Mathf.Approximately(position.z, Mathf.Round(position.z));
+        Debug.Log($"IsPositionAligned: {position.x}, {position.z}");
+        Debug.Log($"Target Positions: {Mathf.Round(position.x)}, {Mathf.Round(position.z)}");
+
+        bool result = Mathf.Approximately(position.x, Mathf.Round(position.x)) ||
+                      Mathf.Approximately(position.z, Mathf.Round(position.z));
+        Debug.Log($"result: {result}");
+        return result;
     }
 
     private void UpdateMovementState(Vector3 newPosition)
     {
+        Debug.Log("Stepping into UpdateMovementState()...");
         // Update movement state and potentially trigger events
         bool _isMoving = (newPosition - lastBodyPosition).magnitude > 0.001f;
+        Debug.Log($"_isMoving: {_isMoving}");
         if (_isMoving != isMoving)
         {
             isMoving = _isMoving;
 
             if (isMoving)
             {
+                Debug.Log("Starting move...");
                 pushPoint.pushableObject.onStartMove.Invoke();
             }
             else
