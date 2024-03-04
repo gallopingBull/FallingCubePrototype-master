@@ -291,6 +291,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
     protected virtual void MoveCharacter()
     {
         var movementMagnitude = Mathf.Clamp(pushPoint.targetBody.velocity.magnitude, minMovementMagnitude, 1f) * inputWeight;
+        Debug.Log($"movementMagnitude: {movementMagnitude}");
         movementDirection = transform.InverseTransformDirection(movementDirection);
         tpInput.cc.animator.SetFloat(vAnimatorParameters.InputVertical, isMoving ? movementDirection.z * movementMagnitude : 0f, 0.2f, Time.deltaTime);
         tpInput.cc.animator.SetFloat(vAnimatorParameters.InputHorizontal, isMoving ? movementDirection.x * movementMagnitude : 0, 0.2f, Time.deltaTime);
@@ -482,7 +483,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
         {
             return;
         }
-
+        Debug.Log("calling OnAnimatorMoveEvent...");
         MoveObject();
         MoveCharacter();
 

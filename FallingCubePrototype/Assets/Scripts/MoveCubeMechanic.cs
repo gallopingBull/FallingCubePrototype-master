@@ -69,9 +69,32 @@ public class MoveCubeMechanic : vPushActionController
             }
             else
             {
+                DiscretePushToNearestWholeNumber(intendedPosition);
                 Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
             }
         }
+    }
+    // TODO: change this method so instead of a snap its more of
+    // a discrete "push" to the nearest whole number
+    void DiscretePushToNearestWholeNumber(Vector3 targetPosition)
+    {
+        // Snap X and Z positions to multiples of cube scale
+        float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
+        float snappedZ = Mathf.Round(targetPosition.z / cubeScale) * cubeScale;
+
+        // Snap to whole numbers if close enough
+        if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
+        {
+            targetPosition.x = snappedX;
+        }
+        if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
+        {
+            targetPosition.z = snappedZ;
+        }
+
+        // Move the cube to the snapped position
+        pushPoint.targetBody.position = targetPosition;
+        lastBodyPosition = targetPosition;
     }
 
     private Vector3 ApplyStepConstraints(Vector3 targetPosition)

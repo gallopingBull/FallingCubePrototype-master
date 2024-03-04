@@ -5558,7 +5558,7 @@ MonoBehaviour:
   pushPointCopy: {fileID: 0}
   moveDistance: 0.6
   gamepadDeadzone: 0.1
-  snapThreshold: 0.1
+  snapThreshold: 0.15
   maxGridSize: {x: 100, y: 100}
 --- !u!1 &1930770363
 GameObject:
