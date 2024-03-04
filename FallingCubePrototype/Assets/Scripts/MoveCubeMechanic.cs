@@ -48,32 +48,30 @@ public class MoveCubeMechanic : vPushActionController
     }
     protected override void MoveObject()
     {
-        if (pushPointCopy == null)
-        {
-            pushPointCopy = pushPoint;
-            Debug.Log("pushPointCopy.targetBody.name: " + pushPointCopy.targetBody.name);
-        }
-
         var strengthFactor = Mathf.Clamp(strength / pushPoint.targetBody.mass, 0, 1);
         var intendedDirection = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
-        if (intendedDirection != Vector3.zero && CanChangeDirection())
-        {
-            Vector3 intendedPosition = pushPoint.targetBody.position + intendedDirection * 15 * cubeScale * vTime.fixedDeltaTime;
-            intendedPosition = ApplyStepConstraints(intendedPosition);
 
-            if (!PositionIsLocked(intendedPosition))
+        if (intendedDirection != Vector3.zero)
+        {
+            Vector3 intendedPosition = pushPoint.targetBody.position + new Vector3(
+                Mathf.RoundToInt(intendedDirection.x),
+                0,
+                Mathf.RoundToInt(intendedDirection.z)
+                ) * strengthFactor * cubeScale * vTime.fixedDeltaTime;
+
+            //intendedPosition = ApplyStepConstraints(intendedPosition);
+            Debug.Log("calling PositionIsLocked...");
+            if (IsPositionAligned(intendedPosition))
             {
                 // Only apply the movement if the new position is different from the current position
                 pushPoint.targetBody.position = intendedPosition;
                 UpdateMovementState(intendedPosition);
             }
+            else
+            {
+                Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
+            }
         }
-    }
-
-    private bool CanChangeDirection()
-    {
-        // Ensure we can change direction if the cube is aligned properly.
-        return IsPositionAligned(pushPoint.targetBody.position);
     }
 
     private Vector3 ApplyStepConstraints(Vector3 targetPosition)
@@ -84,22 +82,16 @@ public class MoveCubeMechanic : vPushActionController
         return targetPosition;
     }
 
-    private bool PositionIsLocked(Vector3 targetPosition)
-    {
-        // Check if moving to the target position would effectively lock the cube's position
-        Debug.Log($"positionIsLocked = {pushPoint.targetBody.position} == {targetPosition}");
-        return pushPoint.targetBody.position == targetPosition;
-    }
 
     private bool IsPositionAligned(Vector3 position)
     {
         // Check if both X and Z positions are whole numbers considering the cube's scale
         Debug.Log($"IsPositionAligned: {position.x}, {position.z}");
-        Debug.Log($"Target Positions: {Mathf.Round(position.x)}, {Mathf.Round(position.z)}");
+        Debug.Log($"\n\tTarget Positions: {Mathf.Round(position.x)}, {Mathf.Round(position.z)}");
 
         bool result = Mathf.Approximately(position.x, Mathf.Round(position.x)) ||
                       Mathf.Approximately(position.z, Mathf.Round(position.z));
-        Debug.Log($"result: {result}");
+        Debug.Log($"\n\tresult: {result}");
         return result;
     }
 
@@ -107,8 +99,9 @@ public class MoveCubeMechanic : vPushActionController
     {
         Debug.Log("Stepping into UpdateMovementState()...");
         // Update movement state and potentially trigger events
-        bool _isMoving = (newPosition - lastBodyPosition).magnitude > 0.001f;
+        bool _isMoving = (newPosition - lastBodyPosition).magnitude > 0.001f && inputWeight > 0f;
         Debug.Log($"_isMoving: {_isMoving}");
+        Debug.Log($"isMoving: {isMoving}");
         if (_isMoving != isMoving)
         {
             isMoving = _isMoving;
