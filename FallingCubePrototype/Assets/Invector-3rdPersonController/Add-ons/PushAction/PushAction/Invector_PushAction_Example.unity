@@ -6145,6 +6145,10 @@ PrefabInstance:
       propertyPath: openCloseWindow
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2464273831585508827, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2464273831795369361, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 15

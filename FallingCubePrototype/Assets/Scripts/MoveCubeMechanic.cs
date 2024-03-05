@@ -123,8 +123,6 @@ public class MoveCubeMechanic : vPushActionController
         Debug.Log("Stepping into UpdateMovementState()...");
         // Update movement state and potentially trigger events
         bool _isMoving = (newPosition - lastBodyPosition).magnitude > 0.001f && inputWeight > 0f;
-        Debug.Log($"_isMoving: {_isMoving}");
-        Debug.Log($"isMoving: {isMoving}");
         if (_isMoving != isMoving)
         {
             isMoving = _isMoving;
@@ -136,6 +134,7 @@ public class MoveCubeMechanic : vPushActionController
             }
             else
             {
+                Debug.Log("Stopping move...");
                 pushPoint.pushableObject.onMovimentSpeedChanged.Invoke(0);
                 pushPoint.pushableObject.onStopMove.Invoke();
             }
