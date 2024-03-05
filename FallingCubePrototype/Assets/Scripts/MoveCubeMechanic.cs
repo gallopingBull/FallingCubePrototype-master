@@ -60,6 +60,7 @@ public class MoveCubeMechanic : vPushActionController
                 ) * strengthFactor * cubeScale * vTime.fixedDeltaTime;
 
             //intendedPosition = ApplyStepConstraints(intendedPosition);
+            pushPoint.targetBody.velocity = intendedDirection * inputWeight;
             Debug.Log("calling PositionIsLocked...");
             if (IsPositionAligned(intendedPosition))
             {

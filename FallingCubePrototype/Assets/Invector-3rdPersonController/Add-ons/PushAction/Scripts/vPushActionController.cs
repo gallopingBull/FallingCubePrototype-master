@@ -290,8 +290,8 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
 
     protected virtual void MoveCharacter()
     {
-        var movementMagnitude = Mathf.Clamp(pushPoint.targetBody.velocity.magnitude, minMovementMagnitude, 1f) * inputWeight;
         Debug.Log($"pushPoint.targetBody.velocity.magnitude: {pushPoint.targetBody.velocity.magnitude}");
+        var movementMagnitude = Mathf.Clamp(pushPoint.targetBody.velocity.magnitude, minMovementMagnitude, 1f) * inputWeight;
         Debug.Log($"movementMagnitude: {movementMagnitude}");
         Debug.Log($"inputWeight: {inputWeight}");
         movementDirection = transform.InverseTransformDirection(movementDirection);

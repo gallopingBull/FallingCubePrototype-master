@@ -5383,7 +5383,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1792646108}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3d9567f7303375498c8e594ab5c1bee, type: 3}
   m_Name: 
@@ -5408,7 +5408,7 @@ MonoBehaviour:
     lastTimeTheButtonWasPressed: 0
     inButtomTimer: 0
   movementSpeed: {x: 0.25, y: 0.25}
-  minMovementMagnitude: 0
+  minMovementMagnitude: 0.439
   animAcceleration: 10
   useLeftHandIK: 1
   useRightHandIK: 1
@@ -5995,7 +5995,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1334988071, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1334988071, guid: ffb2c84b1775f0f418393d7b976d5016, type: 3}
       propertyPath: openCloseWindow
