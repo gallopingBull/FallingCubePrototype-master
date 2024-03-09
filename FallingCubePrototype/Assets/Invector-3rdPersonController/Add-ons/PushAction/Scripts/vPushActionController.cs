@@ -483,7 +483,6 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
         {
             return;
         }
-        Debug.Log("calling OnAnimatorMoveEvent...");
         MoveObject();
         MoveCharacter();
 
