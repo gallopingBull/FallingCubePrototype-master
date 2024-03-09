@@ -295,6 +295,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
         Debug.Log($"movementMagnitude: {movementMagnitude}");
         Debug.Log($"inputWeight: {inputWeight}");
         movementDirection = transform.InverseTransformDirection(movementDirection);
+        Debug.Log($"movementDirection: {movementDirection}");
         Debug.Log($"MoveCharacther.isMoving: {isMoving}");
 
         tpInput.cc.animator.SetFloat(vAnimatorParameters.InputVertical, isMoving ? movementDirection.z * movementMagnitude : 0f, 0.2f, Time.deltaTime);

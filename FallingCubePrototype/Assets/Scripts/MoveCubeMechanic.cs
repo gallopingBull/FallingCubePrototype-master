@@ -50,6 +50,7 @@ public class MoveCubeMechanic : vPushActionController
     {
         var strengthFactor = Mathf.Clamp(strength / pushPoint.targetBody.mass, 0, 1);
         var intendedDirection = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
+        movementDirection = intendedDirection;
 
         if (intendedDirection != Vector3.zero)
         {
