@@ -5140,10 +5140,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerPushTest
       objectReference: {fileID: 0}
-    - target: {fileID: 1092062235473313725, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1092062236474384383, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -5151,30 +5147,6 @@ PrefabInstance:
     - target: {fileID: 1092062236474384383, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355439397174700, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355439397174700, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: openCloseWindow
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: movementSpeed.x
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: movementSpeed.y
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: selectedToolbar
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: pushpullLayer.m_Bits
-      value: 131072
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}

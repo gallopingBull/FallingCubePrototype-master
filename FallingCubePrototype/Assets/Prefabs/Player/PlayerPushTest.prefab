@@ -33,7 +33,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -823,7 +823,6 @@ GameObject:
   - component: {fileID: 1092062235473313716}
   - component: {fileID: 1092062235473313719}
   - component: {fileID: 1092062235473313723}
-  - component: {fileID: 1092062235473313713}
   - component: {fileID: 9101355440838918540}
   - component: {fileID: 9101355439397174700}
   m_Layer: 8
@@ -832,7 +831,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1092062235473313722
 Transform:
   m_ObjectHideFlags: 0
@@ -1455,18 +1454,6 @@ MonoBehaviour:
   rightFootTrigger: {fileID: 1092062236309827461}
   currentStep: {fileID: 0}
   footStepTriggers: []
---- !u!114 &1092062235473313713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1092062235473313725}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6eac9781f5b0e0b4ba6d7bf2fbda58e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &9101355440838918540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1498,7 +1485,7 @@ MonoBehaviour:
     timeButtonWasPressed: 0
     lastTimeTheButtonWasPressed: 0
     inButtomTimer: 0
-  movementSpeed: {x: 1, y: 1}
+  movementSpeed: {x: 0.25, y: 0.25}
   minMovementMagnitude: 0
   animAcceleration: 10
   useLeftHandIK: 1
@@ -1530,7 +1517,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   pushpullLayer:
     serializedVersion: 2
-    m_Bits: 131073
+    m_Bits: 131072
   breakActionDistance: 1
   enterPositionSpeed: 2
   handForwardOffset: 0
@@ -1560,7 +1547,6 @@ MonoBehaviour:
   inputVertical: 0
   inputHorizontal: 0
   inputWeight: 0
-  enableMovement: 0
   gamepadDeadzone: 0.1
   snapThreshold: 0.15
   maxGridSize: {x: 6, y: 6}
@@ -2511,7 +2497,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3002,6 +2988,11 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 95017302718396200, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
+--- !u!4 &1096574424324031266 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4530470363785444, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
+  m_PrefabInstance: {fileID: 1092062236029889478}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1096600723467430970 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4539183793719292, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
@@ -3010,11 +3001,6 @@ Transform:
 --- !u!4 &1096243949117434214 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4904651149197984, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
-  m_PrefabInstance: {fileID: 1092062236029889478}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1096574424324031266 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4530470363785444, guid: a37e15f4f9ea2284097945cfeb8fe9c0, type: 3}
   m_PrefabInstance: {fileID: 1092062236029889478}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1092062236280841870

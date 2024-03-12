@@ -282,7 +282,8 @@ public class CubeBehavior : MonoBehaviour
             rend = GetComponentInChildren<Renderer>();
 
         SetMaterialColor();
-        cubeCollider = GetComponent<Collider>();
+        //cubeCollider = GetComponent<Collider>();
+        cubeCollider = gameObject.transform.Find("CubeMesh").GetComponent<Collider>();
         cubeKillZone = gameObject.transform.Find("CubeKillZone").GetComponent<Collider>();
     }
 
