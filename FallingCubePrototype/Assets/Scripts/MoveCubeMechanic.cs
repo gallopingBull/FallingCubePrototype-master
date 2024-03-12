@@ -3,11 +3,7 @@ using UnityEngine;
 
 public class MoveCubeMechanic : vPushActionController
 {
-    [HideInInspector]
-    public bool enableMovement;
-
     private float cubeScale = 2f; // Default cube scale
-    private GameObject camera;
 
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
@@ -17,14 +13,12 @@ public class MoveCubeMechanic : vPushActionController
     protected override void Start()
     {
         base.Start();
-        camera = GameObject.Find("Camera");
-
-        //StartCoroutine(EnsureCubeScaleAlignment());
 
         // n - 1 to account for 0-based index
         maxGridSize.x--;
         maxGridSize.y--;
     }
+
     protected override void MoveObject()
     {
         var strengthFactor = Mathf.Clamp(strength / pushPoint.targetBody.mass, 0, 1);
@@ -41,7 +35,7 @@ public class MoveCubeMechanic : vPushActionController
 
             //intendedPosition = ApplyStepConstraints(intendedPosition);
             pushPoint.targetBody.velocity = intendedDirection * inputWeight;
-            Debug.Log("calling PositionIsLocked...");
+            //Debug.Log("calling PositionIsLocked...");
             if (IsPositionAligned(intendedPosition))
             {
                 // Only apply the movement if the new position is different from the current position
@@ -51,10 +45,11 @@ public class MoveCubeMechanic : vPushActionController
             else
             {
                 DiscretePushToNearestWholeNumber(intendedPosition);
-                Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
+                //Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
             }
         }
     }
+
     // TODO: change this method so instead of a snap its more of
     // a discrete "push" to the nearest whole number
     void DiscretePushToNearestWholeNumber(Vector3 targetPosition)
@@ -81,12 +76,11 @@ public class MoveCubeMechanic : vPushActionController
     private bool IsPositionAligned(Vector3 position)
     {
         // Check if both X and Z positions are whole numbers considering the cube's scale
-        Debug.Log($"IsPositionAligned: {position.x}, {position.z}");
-        Debug.Log($"\n\tTarget Positions: {Mathf.Round(position.x)}, {Mathf.Round(position.z)}");
-
+        //Debug.Log($"IsPositionAligned: {position.x}, {position.z}");
+        //Debug.Log($"\n\tTarget Positions: {Mathf.Round(position.x)}, {Mathf.Round(position.z)}");
         bool result = Mathf.Approximately(position.x, Mathf.Round(position.x)) ||
                       Mathf.Approximately(position.z, Mathf.Round(position.z));
-        Debug.Log($"\n\tresult: {result}");
+        //Debug.Log($"\n\tresult: {result}");
         return result;
     }
 
