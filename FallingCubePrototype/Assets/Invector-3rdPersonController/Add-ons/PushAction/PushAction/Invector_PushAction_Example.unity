@@ -5647,6 +5647,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
+      propertyPath: selectedToolbar
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313722, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_RootOrder
       value: 9

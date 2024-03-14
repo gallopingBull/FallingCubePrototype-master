@@ -1,4 +1,5 @@
 ﻿using Invector;
+using Invector.vCharacterController;
 using UnityEngine;
 
 public class MoveCubeMechanic : vPushActionController
@@ -47,6 +48,54 @@ public class MoveCubeMechanic : vPushActionController
                 DiscretePushToNearestWholeNumber(intendedPosition);
                 //Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
             }
+        }
+    }
+
+
+    protected override void CheckBreakActionConditions()
+    {
+        //base.CheckBreakActionConditions(); 
+
+        Debug.Log("Stepping into CheckBreakActionConditions!");
+        // radius of the SphereCast
+        float radius = tpInput.cc._capsuleCollider.radius * 0.9f;
+        var dist = 10f;
+        // ray for RayCast
+        Ray ray2 = new Ray(transform.position + new Vector3(0, tpInput.cc.colliderHeight / 2, 0), Vector3.down);
+        // raycast for check the ground distance
+        if (Physics.Raycast(ray2, out tpInput.cc.groundHit, (tpInput.cc.colliderHeight / 2) + dist, tpInput.cc.groundLayer) && !tpInput.cc.groundHit.collider.isTrigger)
+        {
+            dist = transform.position.y - tpInput.cc.groundHit.point.y;
+        }
+        // sphere cast around the base of the capsule to check the ground distance
+        if (tpInput.cc.groundCheckMethod == vThirdPersonMotor.GroundCheckMethod.High && dist >= tpInput.cc.groundMinDistance)
+        {
+            Debug.Log("\tin first condition...");
+            Vector3 pos = transform.position + Vector3.up * (tpInput.cc._capsuleCollider.radius);
+            Ray ray = new Ray(pos, -Vector3.up);
+            if (Physics.SphereCast(ray, radius, out tpInput.cc.groundHit, tpInput.cc._capsuleCollider.radius + tpInput.cc.groundMaxDistance, tpInput.cc.groundLayer) && !tpInput.cc.groundHit.collider.isTrigger)
+            {
+                Physics.Linecast(tpInput.cc.groundHit.point + (Vector3.up * 0.1f), tpInput.cc.groundHit.point + Vector3.down * 0.15f, out tpInput.cc.groundHit, tpInput.cc.groundLayer);
+                float newDist = transform.position.y - tpInput.cc.groundHit.point.y;
+                if (dist > newDist)
+                {
+                    dist = newDist;
+                }
+            }
+        }
+
+        if (dist > tpInput.cc.groundMaxDistance || Vector3.Distance(transform.position, pushPoint.transform.TransformPoint(startLocalPosition)) > (breakActionDistance))
+        {
+            Debug.Log("\tin secong condition...");
+            bool falling = dist > tpInput.cc.groundMaxDistance;
+            Debug.Log($"\tfalling: {falling}");
+            if (falling)
+            {
+                tpInput.cc.isGrounded = false;
+                tpInput.cc.animator.SetBool(vAnimatorParameters.IsGrounded, false);
+                tpInput.cc.animator.PlayInFixedTime("Falling");
+            }
+            StartCoroutine(StopPushAndPull(!falling));
         }
     }
 
