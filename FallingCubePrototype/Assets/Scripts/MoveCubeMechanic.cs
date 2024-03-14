@@ -55,22 +55,34 @@ public class MoveCubeMechanic : vPushActionController
     protected override void CheckBreakActionConditions()
     {
         //base.CheckBreakActionConditions(); 
-
         Debug.Log("Stepping into CheckBreakActionConditions!");
+
         // radius of the SphereCast
         float radius = tpInput.cc._capsuleCollider.radius * 0.9f;
         var dist = 10f;
+
         // ray for RayCast
         Ray ray2 = new Ray(transform.position + new Vector3(0, tpInput.cc.colliderHeight / 2, 0), Vector3.down);
+
+        Debug.Log($"\tray2: {Physics.Raycast(ray2, out tpInput.cc.groundHit, (tpInput.cc.colliderHeight / 2) + dist, tpInput.cc.groundLayer)}");
+        Debug.Log($"\tgroundHit: {tpInput.cc.groundHit.transform.name}" +
+            $"\n\t\tcolliderHeight: {tpInput.cc.colliderHeight / 2 + dist}" +
+            $"\n\t\tgroundLayer: {tpInput.cc.groundLayer.value}" +
+            $"\n\t\tgroundHit.collider.isTrigger: {tpInput.cc.groundHit.collider.isTrigger}");
+
         // raycast for check the ground distance
         if (Physics.Raycast(ray2, out tpInput.cc.groundHit, (tpInput.cc.colliderHeight / 2) + dist, tpInput.cc.groundLayer) && !tpInput.cc.groundHit.collider.isTrigger)
         {
+            Debug.Log("\tin first condition...");
+            Debug.Log($"\ttpInput.cc.groundHit.point.y: {tpInput.cc.groundHit.point.y}");
             dist = transform.position.y - tpInput.cc.groundHit.point.y;
         }
+        Debug.Log($"\tdist1: {dist}");
+        
         // sphere cast around the base of the capsule to check the ground distance
         if (tpInput.cc.groundCheckMethod == vThirdPersonMotor.GroundCheckMethod.High && dist >= tpInput.cc.groundMinDistance)
         {
-            Debug.Log("\tin first condition...");
+            Debug.Log("\tin second condition...");
             Vector3 pos = transform.position + Vector3.up * (tpInput.cc._capsuleCollider.radius);
             Ray ray = new Ray(pos, -Vector3.up);
             if (Physics.SphereCast(ray, radius, out tpInput.cc.groundHit, tpInput.cc._capsuleCollider.radius + tpInput.cc.groundMaxDistance, tpInput.cc.groundLayer) && !tpInput.cc.groundHit.collider.isTrigger)
@@ -83,10 +95,10 @@ public class MoveCubeMechanic : vPushActionController
                 }
             }
         }
-
+        Debug.Log($"\tdist2: {dist}");
         if (dist > tpInput.cc.groundMaxDistance || Vector3.Distance(transform.position, pushPoint.transform.TransformPoint(startLocalPosition)) > (breakActionDistance))
         {
-            Debug.Log("\tin secong condition...");
+            Debug.Log("\tin third condition...");
             bool falling = dist > tpInput.cc.groundMaxDistance;
             Debug.Log($"\tfalling: {falling}");
             if (falling)
@@ -158,5 +170,40 @@ public class MoveCubeMechanic : vPushActionController
         }
 
         lastBodyPosition = newPosition;
+    }
+
+    void OnDrawGizmos()
+    {
+        if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
+
+        // Visualize the raycast for ground check
+        float raycastHeightOffset = tpInput.cc.colliderHeight / 2;
+        Vector3 raycastStartPosition = transform.position + new Vector3(0, raycastHeightOffset, 0);
+        Vector3 raycastDirection = Vector3.down;
+        float raycastDistance = raycastHeightOffset + 10f; // Assuming 10f is the checking distance
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(raycastStartPosition, raycastStartPosition + raycastDirection * raycastDistance);
+
+        // SphereCast visualization for ground checking
+        if (tpInput.cc.groundCheckMethod == vThirdPersonMotor.GroundCheckMethod.High)
+        {
+            float radius = tpInput.cc._capsuleCollider.radius * 0.9f;
+            Vector3 sphereCastStartPosition = transform.position + Vector3.up * (tpInput.cc._capsuleCollider.radius);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(sphereCastStartPosition, radius); // Starting sphere
+
+            Vector3 sphereCastEndPosition = sphereCastStartPosition + Vector3.down * (tpInput.cc._capsuleCollider.radius + tpInput.cc.groundMaxDistance);
+            Gizmos.DrawWireSphere(sphereCastEndPosition, radius); // Ending sphere
+
+            // Optional: Draw connecting lines for clarity
+            Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x + radius, sphereCastStartPosition.y, sphereCastStartPosition.z),
+                            new Vector3(sphereCastEndPosition.x +    radius, sphereCastEndPosition.y, sphereCastEndPosition.z));
+            Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x - radius, sphereCastStartPosition.y, sphereCastStartPosition.z),
+                            new Vector3(sphereCastEndPosition.x - radius, sphereCastEndPosition.y, sphereCastEndPosition.z));
+            Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x, sphereCastStartPosition.y, sphereCastStartPosition.z + radius),
+                            new Vector3(sphereCastEndPosition.x, sphereCastEndPosition.y, sphereCastEndPosition.z + radius));
+            Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x, sphereCastStartPosition.y, sphereCastStartPosition.z - radius),
+                            new Vector3(sphereCastEndPosition.x, sphereCastEndPosition.y, sphereCastEndPosition.z - radius));
+        }
     }
 }
