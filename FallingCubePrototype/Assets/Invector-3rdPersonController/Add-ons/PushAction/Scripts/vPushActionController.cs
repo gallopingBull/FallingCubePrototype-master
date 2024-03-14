@@ -438,6 +438,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
 
     protected virtual void CheckBreakActionConditions()
     {
+        Debug.Log("Stepping into CheckBreakActionConditions!");
         // radius of the SphereCast
         float radius = tpInput.cc._capsuleCollider.radius * 0.9f;
         var dist = 10f;
@@ -451,6 +452,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
         // sphere cast around the base of the capsule to check the ground distance
         if (tpInput.cc.groundCheckMethod == vThirdPersonMotor.GroundCheckMethod.High && dist >= tpInput.cc.groundMinDistance)
         {
+            Debug.Log("\tin first condition...");
             Vector3 pos = transform.position + Vector3.up * (tpInput.cc._capsuleCollider.radius);
             Ray ray = new Ray(pos, -Vector3.up);
             if (Physics.SphereCast(ray, radius, out tpInput.cc.groundHit, tpInput.cc._capsuleCollider.radius + tpInput.cc.groundMaxDistance, tpInput.cc.groundLayer) && !tpInput.cc.groundHit.collider.isTrigger)
@@ -466,7 +468,9 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
 
         if (dist > tpInput.cc.groundMaxDistance || Vector3.Distance(transform.position, pushPoint.transform.TransformPoint(startLocalPosition)) > (breakActionDistance))
         {
+            Debug.Log("\tin secong condition...");
             bool falling = dist > tpInput.cc.groundMaxDistance;
+            Debug.Log($"\tfalling: {falling}");
             if (falling)
             {
                 tpInput.cc.isGrounded = false;

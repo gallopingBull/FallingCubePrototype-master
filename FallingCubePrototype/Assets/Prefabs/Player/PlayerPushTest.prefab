@@ -913,7 +913,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openCloseEvents: 0
   openCloseWindow: 1
-  selectedToolbar: 8
+  selectedToolbar: 5
   _isDead: 0
   _currentHealth: 1
   isImmortal: 1
@@ -1147,7 +1147,7 @@ MonoBehaviour:
   useSnapGround: 1
   snapPower: 0.5
   groundMinDistance: 0.25
-  groundMaxDistance: 0.5
+  groundMaxDistance: 10
   stopMoveLayer:
     serializedVersion: 2
     m_Bits: 0
