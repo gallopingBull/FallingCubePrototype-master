@@ -246,7 +246,8 @@ public class GameManager : MonoBehaviour
 
     public void AddCubeTarget(GameObject target)
     {
-        if (!CubeTargets.Contains(target))
+        // hacky fix to prevent cube meshes to be added to cube target
+        if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
         {
             Debug.Log($"target.GetComponent<CubeBehavior>(): {target.GetComponent<CubeBehavior>()}");
             target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);

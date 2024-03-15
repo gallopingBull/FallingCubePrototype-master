@@ -144,7 +144,7 @@ public class CubeManager : MonoBehaviour
     {
         if (SpawnDatas.Count == 0)
             return false;
-        Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
+        //Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
 
         // Check each cube
         foreach (var cube in cubes)
