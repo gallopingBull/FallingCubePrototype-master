@@ -65,13 +65,14 @@ public class MoveCubeMechanic : vPushActionController
         Ray ray2 = new Ray(transform.position + new Vector3(0, tpInput.cc.colliderHeight / 2, 0), Vector3.down);
 
         Debug.Log($"\tray2: {Physics.Raycast(ray2, out tpInput.cc.groundHit, (tpInput.cc.colliderHeight / 2) + dist, tpInput.cc.groundLayer)}");
-        Debug.Log($"\tgroundHit: {tpInput.cc.groundHit.transform.name}" +
-            $"\n\t\tcolliderHeight: {tpInput.cc.colliderHeight / 2 + dist}" +
-            $"\n\t\tgroundLayer: {tpInput.cc.groundLayer.value}" +
-            $"\n\t\tgroundHit.collider.isTrigger: {tpInput.cc.groundHit.collider.isTrigger}");
+        Debug.Log($"\tgroundHit: {tpInput.cc.groundHit.transform.name}");
+        Debug.Log($"\t\tcolliderHeight: {tpInput.cc.colliderHeight / 2 + dist}");
+        Debug.Log($"\t\tgroundLayer: {tpInput.cc.groundLayer.value}"); 
+        Debug.Log($"\t\tgroundHit.collider.isTrigger: {tpInput.cc.groundHit.collider.isTrigger}");
+        if (tpInput.cc.groundHit.collider.isTrigger) { Debug.Log($"\t\t\tgroundHit.collider.name: {tpInput.cc.groundHit.collider.transform.name}"); }
 
         // raycast for check the ground distance
-        if (Physics.Raycast(ray2, out tpInput.cc.groundHit, (tpInput.cc.colliderHeight / 2) + dist, tpInput.cc.groundLayer) && !tpInput.cc.groundHit.collider.isTrigger)
+        if (Physics.Raycast(ray2, out tpInput.cc.groundHit, (tpInput.cc.colliderHeight / 2) + dist, tpInput.cc.groundLayer) && (!tpInput.cc.groundHit.collider.isTrigger || tpInput.cc.groundHit.collider.transform.name == "climbable_surface"))
         {
             Debug.Log("\tin first condition...");
             Debug.Log($"\ttpInput.cc.groundHit.point.y: {tpInput.cc.groundHit.point.y}");
