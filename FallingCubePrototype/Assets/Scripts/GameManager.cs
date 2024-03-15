@@ -248,6 +248,7 @@ public class GameManager : MonoBehaviour
     {
         if (!CubeTargets.Contains(target))
         {
+            Debug.Log($"target.GetComponent<CubeBehavior>(): {target.GetComponent<CubeBehavior>()}");
             target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
             CubeTargets.Add(target);
         }

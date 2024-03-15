@@ -54,9 +54,6 @@ public class MoveCubeMechanic : vPushActionController
 
     protected override void CheckBreakActionConditions()
     {
-        //base.CheckBreakActionConditions(); 
-        Debug.Log("Stepping into CheckBreakActionConditions!");
-
         // radius of the SphereCast
         float radius = tpInput.cc._capsuleCollider.radius * 0.9f;
         var dist = 10f;
@@ -64,26 +61,16 @@ public class MoveCubeMechanic : vPushActionController
         // ray for RayCast
         Ray ray2 = new Ray(transform.position + new Vector3(0, tpInput.cc.colliderHeight / 2, 0), Vector3.down);
 
-        Debug.Log($"\tray2: {Physics.Raycast(ray2, out tpInput.cc.groundHit, (tpInput.cc.colliderHeight / 2) + dist, tpInput.cc.groundLayer)}");
-        Debug.Log($"\tgroundHit: {tpInput.cc.groundHit.transform.name}");
-        Debug.Log($"\t\tcolliderHeight: {tpInput.cc.colliderHeight / 2 + dist}");
-        Debug.Log($"\t\tgroundLayer: {tpInput.cc.groundLayer.value}"); 
-        Debug.Log($"\t\tgroundHit.collider.isTrigger: {tpInput.cc.groundHit.collider.isTrigger}");
-        if (tpInput.cc.groundHit.collider.isTrigger) { Debug.Log($"\t\t\tgroundHit.collider.name: {tpInput.cc.groundHit.collider.transform.name}"); }
-
         // raycast for check the ground distance
+        // Also added special check for climable_surfaces to resolve issue moving cubes on top of other cubes.
         if (Physics.Raycast(ray2, out tpInput.cc.groundHit, (tpInput.cc.colliderHeight / 2) + dist, tpInput.cc.groundLayer) && (!tpInput.cc.groundHit.collider.isTrigger || tpInput.cc.groundHit.collider.transform.name == "climbable_surface"))
         {
-            Debug.Log("\tin first condition...");
-            Debug.Log($"\ttpInput.cc.groundHit.point.y: {tpInput.cc.groundHit.point.y}");
             dist = transform.position.y - tpInput.cc.groundHit.point.y;
         }
-        Debug.Log($"\tdist1: {dist}");
-        
+
         // sphere cast around the base of the capsule to check the ground distance
         if (tpInput.cc.groundCheckMethod == vThirdPersonMotor.GroundCheckMethod.High && dist >= tpInput.cc.groundMinDistance)
         {
-            Debug.Log("\tin second condition...");
             Vector3 pos = transform.position + Vector3.up * (tpInput.cc._capsuleCollider.radius);
             Ray ray = new Ray(pos, -Vector3.up);
             if (Physics.SphereCast(ray, radius, out tpInput.cc.groundHit, tpInput.cc._capsuleCollider.radius + tpInput.cc.groundMaxDistance, tpInput.cc.groundLayer) && !tpInput.cc.groundHit.collider.isTrigger)
@@ -96,12 +83,10 @@ public class MoveCubeMechanic : vPushActionController
                 }
             }
         }
-        Debug.Log($"\tdist2: {dist}");
+
         if (dist > tpInput.cc.groundMaxDistance || Vector3.Distance(transform.position, pushPoint.transform.TransformPoint(startLocalPosition)) > (breakActionDistance))
         {
-            Debug.Log("\tin third condition...");
             bool falling = dist > tpInput.cc.groundMaxDistance;
-            Debug.Log($"\tfalling: {falling}");
             if (falling)
             {
                 tpInput.cc.isGrounded = false;
