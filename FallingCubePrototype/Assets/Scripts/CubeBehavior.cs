@@ -65,7 +65,7 @@ public class CubeBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //EnterState(States.init);
+        EnterState(States.init);
     }
 
     // Update is called once per frame
@@ -198,7 +198,7 @@ public class CubeBehavior : MonoBehaviour
                     PlaySFX(landingSFX);
                 }
 
-                rb.mass = 1000;
+                RoundCubeLocation();
                 state = _state;
                 cubeCollider.enabled = true;
                 DisableRB();
@@ -265,6 +265,7 @@ public class CubeBehavior : MonoBehaviour
                     audioSource.Stop();
                     audioSource.loop = false;
                 }
+                RoundCubeLocation();
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
                 break;
@@ -320,7 +321,7 @@ public class CubeBehavior : MonoBehaviour
 
     private void EnableRB()
     {
-        rb.mass = /*.01f*/10000000;
+        //rb.mass = /*.01f*/10000000;
         fallDrag = GetNewSpeed();
         rb.drag = fallDrag/*2*/;
         // 2 is the fastest
@@ -466,8 +467,8 @@ public class CubeBehavior : MonoBehaviour
         StopCoroutine("DestoryCube");
     }
 
-    //this float is assigned to rb.mass when
-    //cube is falling 
+    // this float is assigned to rb.mass when
+    // cube is falling 
     private float GetNewSpeed()
     {
         if (!GameManager.gm)

@@ -287,7 +287,7 @@ public class GameManager : MonoBehaviour
         float x, z;
         x = ((cubeManager.gridSizeX * cubeManager.CubeSize) / 2) - 1;
         z = ((cubeManager.gridSizeZ * cubeManager.CubeSize) / 2) - 1;
-        Debug.Log($"player spawn point - x: {x}, z: {z}");
+        //Debug.Log($"player spawn point - x: {x}, z: {z}");
         Player.transform.position = new Vector3(x, 6, z);
         Player.SetActive(true);
         cameraTargt.transform.position = new Vector3(x, 0, z);

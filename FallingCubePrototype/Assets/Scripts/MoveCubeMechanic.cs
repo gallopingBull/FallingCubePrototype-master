@@ -46,7 +46,7 @@ public class MoveCubeMechanic : vPushActionController
             else
             {
                 DiscretePushToNearestWholeNumber(intendedPosition);
-                //Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
+                //  Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
             }
         }
     }
@@ -62,7 +62,7 @@ public class MoveCubeMechanic : vPushActionController
         Ray ray2 = new Ray(transform.position + new Vector3(0, tpInput.cc.colliderHeight / 2, 0), Vector3.down);
 
         // raycast for check the ground distance
-        // Also added special check for climable_surfaces to resolve issue moving cubes on top of other cubes.
+        // hacky fix: check for climable_surfaces to resolve issue with moving cubes on top of other cubes.
         if (Physics.Raycast(ray2, out tpInput.cc.groundHit, (tpInput.cc.colliderHeight / 2) + dist, tpInput.cc.groundLayer) && (!tpInput.cc.groundHit.collider.isTrigger || tpInput.cc.groundHit.collider.transform.name == "climbable_surface"))
         {
             dist = transform.position.y - tpInput.cc.groundHit.point.y;

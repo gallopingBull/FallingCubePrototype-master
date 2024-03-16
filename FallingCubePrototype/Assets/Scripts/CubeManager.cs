@@ -52,7 +52,7 @@ public class CubeManager : MonoBehaviour
             cubesParent = new GameObject("Cubes").transform;
             cubesParent.transform.position = Vector3.zero;
         }
-        OnFloorComplete += DisplayAllSpawnDatas;
+        //OnFloorComplete += DisplayAllSpawnDatas;
         GenerateArena(gridSizeX, gridSizeZ);
         Debug.Log("CubeManager initialized");
     }
@@ -166,13 +166,13 @@ public class CubeManager : MonoBehaviour
     {
         foreach (SpawnData data in spawnDatas)
         {
-            //Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
+            Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
         }
     }
 
     private void OnDestroy()
     {
-        OnFloorComplete -= DisplayAllSpawnDatas;
+        //OnFloorComplete -= DisplayAllSpawnDatas;
     }
 
     public void SpawnCube(SpawnData data)

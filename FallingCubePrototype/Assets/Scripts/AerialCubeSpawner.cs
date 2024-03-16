@@ -155,7 +155,7 @@ public class AerialCubeSpawner : MonoBehaviour
 
         float cubebeneath =
         cubeManager.CubeSize + cubeManager.SpawnDatas.Find(spawnData => spawnData.position.x == CurSpawnLoc.position.x && spawnData.position.z == CurSpawnLoc.position.z).position.y;
-        Debug.Log($"cubebeneath: {cubebeneath} for cube at {CurSpawnLoc.position}");
+        //Debug.Log($"cubebeneath: {cubebeneath} for cube at {CurSpawnLoc.position}");
         cubePosition.y = cubebeneath;
         ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
 
@@ -163,7 +163,7 @@ public class AerialCubeSpawner : MonoBehaviour
         {
             while ((cubeManager.CheckIfColorIsNearby(id, cubePosition, color, minimumDistance) || cubeManager.colorsUsed.Contains(color)) && attempts < maxAttempts)
             {
-                Debug.Log($"Color {color} is nearby or already used, trying again...");
+                //Debug.Log($"Color {color} is nearby or already used, trying again...");
                 color = (ColorOption)UnityEngine.Random.Range(0, 4);
                 attempts++;
                 if (attempts == maxAttempts)
@@ -257,14 +257,14 @@ public class AerialCubeSpawner : MonoBehaviour
 
             GameObject loc = new GameObject();
 
-            loc.name = $"SpawnLoc {x}";
+            //loc.name = $"SpawnLoc {x}";
             loc.transform.parent = parent.transform;
             loc.transform.position = new Vector3(gridPositions[x].x * cubeManager.CubeSize,
             yOffset,
             gridPositions[x].y * cubeManager.CubeSize);
 
             SpawnLocs.Add(loc.transform);
-            Debug.Log($"new Aerial SpawnLoc {x} at {loc.transform.position}");
+            //Debug.Log($"new Aerial SpawnLoc {x} at {loc.transform.position}");
         }
     }
 
