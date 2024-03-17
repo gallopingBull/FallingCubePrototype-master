@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class CubeBehavior : MonoBehaviour
@@ -198,7 +199,7 @@ public class CubeBehavior : MonoBehaviour
                     PlaySFX(landingSFX);
                 }
 
-                RoundCubeLocation();
+                //RoundCubeLocation();
                 state = _state;
                 cubeCollider.enabled = true;
                 DisableRB();
@@ -265,7 +266,6 @@ public class CubeBehavior : MonoBehaviour
                     audioSource.Stop();
                     audioSource.loop = false;
                 }
-                RoundCubeLocation();
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
                 break;
@@ -339,17 +339,36 @@ public class CubeBehavior : MonoBehaviour
         rb.isKinematic = true;
     }
 
+    float cubeScale = 2;
+    public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
     public void RoundCubeLocation()
     {
+        Vector3 targetPosition = new Vector3(Mathf.Round(transform.position.x),
+         Mathf.Round(transform.position.y),
+         Mathf.Round(transform.position.z));
+
+        // Snap X and Z positions to multiples of cube scale
+        float snappedX = (targetPosition.x / cubeScale) * cubeScale;
+        float snappedZ = (targetPosition.z / cubeScale) * cubeScale;
+
         RigidbodyConstraints tmpConst;
         tmpConst = rb.constraints;
         rb.constraints = RigidbodyConstraints.FreezePosition;
 
-        Vector3 pos = new Vector3(Mathf.Round(transform.position.x),
-          Mathf.Round(transform.position.y),
-          Mathf.Round(transform.position.z));
 
-        transform.position = pos;
+        // Snap to whole numbers if close enough
+        if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
+        {
+            Debug.Log("snapping x!");
+            targetPosition.x = snappedX;
+        }
+        if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
+        {
+            Debug.Log("snapping z!");
+            targetPosition.z = snappedZ;
+        }
+
+        transform.position = targetPosition;
         rb.constraints = tmpConst;
     }
 
