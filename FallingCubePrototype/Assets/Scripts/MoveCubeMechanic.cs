@@ -1,6 +1,5 @@
 ﻿using Invector;
 using Invector.vCharacterController;
-using System.Collections;
 using UnityEngine;
 
 public class MoveCubeMechanic : vPushActionController
@@ -35,6 +34,10 @@ public class MoveCubeMechanic : vPushActionController
                 Mathf.RoundToInt(intendedDirection.z)
                 ) * strengthFactor * cubeScale * vTime.fixedDeltaTime;
 
+            // Clamp target position within the boundaries of the map
+            intendedPosition.x = Mathf.Clamp(intendedPosition.x, 0, maxGridSize.x * cubeScale);
+            intendedPosition.z = Mathf.Clamp(intendedPosition.z, 0, maxGridSize.y * cubeScale);
+            
             //intendedPosition = ApplyStepConstraints(intendedPosition);
             pushPoint.targetBody.velocity = intendedDirection * inputWeight;
             //Debug.Log("calling PositionIsLocked...");
@@ -47,12 +50,10 @@ public class MoveCubeMechanic : vPushActionController
             else
             {
                 DiscretePushToNearestWholeNumber(intendedPosition);
-                //  Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
+                Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
             }
         }
     }
-
-
 
     protected override void CheckBreakActionConditions()
     {
