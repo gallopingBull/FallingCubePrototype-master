@@ -50,7 +50,10 @@ public class vPushableObject : MonoBehaviour
         {
             body.constraints = RigidbodyConstraints.FreezeRotation;
         }
-
+        if (GetComponent<CubeBehavior>().state != CubeBehavior.States.dragging)
+        {
+            GetComponent<CubeBehavior>().SetDragging();
+        }
         onEnterPushMode.Invoke();
 
     }
@@ -102,7 +105,7 @@ public class vPushableObject : MonoBehaviour
         {
             body.isKinematic = true;
         }
-
+        GetComponent<CubeBehavior>().SetGround();
         onRigidodySleep.Invoke();
     }
 }
