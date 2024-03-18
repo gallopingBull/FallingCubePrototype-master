@@ -10,6 +10,8 @@ public class MoveCubeMechanic : vPushActionController
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
     public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
 
+    private Vector3[] adjPlayerPositions = { /*Vector3.forward,*/ Vector3.back, Vector3.left, Vector3.right, Vector3.down};
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -18,6 +20,63 @@ public class MoveCubeMechanic : vPushActionController
         // n - 1 to account for 0-based index
         maxGridSize.x--;
         maxGridSize.y--;
+    }
+
+    protected override void OnCollisionStay(Collision collision)
+    {
+        base.OnCollisionStay(collision);
+        // Check player position for obsructions
+        foreach (var direction in adjPlayerPositions)
+        {
+            if (CheckPlayerAdjacentSpaces(direction))
+            {
+                Debug.Log("Correct object found in direction: " + direction);
+            }
+            else
+            {
+                Debug.Log("No correct object directly adjacent in direction: " + direction);
+            }
+        }
+
+
+    }
+    public float checkDistance = 2f; // Distance to check adjacent positions
+    public float downwardCheckDistance = 2f; // Distance to check downward from adjacent positions
+
+    private bool CheckPlayerAdjacentSpaces(Vector3 direction)
+    {
+        // Check directly adjacent
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, direction, out hit, checkDistance))
+        {
+            if (hit.collider.CompareTag("Cube"))
+            {
+                return true; // Directly adjacent object has the correct tag
+            }
+        }
+        else
+        {
+            // nothing was hit directly next to the player
+            return false;
+        }
+
+        // Check below the adjacent position if direct check fails or no hit
+        Vector3 downwardPosition = transform.position + direction * checkDistance;
+        if (Physics.Raycast(downwardPosition, Vector3.down, out hit, downwardCheckDistance))
+        {
+            if (hit.collider.CompareTag("Cube"))
+            {
+                Debug.Log("no cube was detected underneat the player's adjacent grid space.");
+                return true; // Object below the adjacent position has the correct tag
+            }
+        }
+        else
+        {
+            Debug.Log("no cube was detected underneat the player's adjacent grid space.");
+            return false;
+        }
+
+        return false; // No correct object found in this direction
     }
 
     protected override void MoveObject()
