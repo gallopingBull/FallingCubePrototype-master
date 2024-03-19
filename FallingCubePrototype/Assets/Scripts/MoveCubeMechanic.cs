@@ -1,5 +1,6 @@
 ﻿using Invector;
 using Invector.vCharacterController;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class MoveCubeMechanic : vPushActionController
@@ -36,29 +37,30 @@ public class MoveCubeMechanic : vPushActionController
             {
                 Debug.Log("No correct object directly adjacent in direction: " + direction);
             }
+
         }
-
-
     }
+
     public float checkDistance = 2f; // Distance to check adjacent positions
     public float downwardCheckDistance = 2f; // Distance to check downward from adjacent positions
 
     private bool CheckPlayerAdjacentSpaces(Vector3 direction)
     {
-        // Check directly adjacent
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, direction, out hit, checkDistance))
-        {
-            if (hit.collider.CompareTag("Cube"))
-            {
-                return true; // Directly adjacent object has the correct tag
-            }
-        }
-        else
-        {
-            // nothing was hit directly next to the player
-            return false;
-        }
+        // this might be reduntant 
+        // Check directly adjacent
+        //if (Physics.Raycast(transform.position, direction, out hit, checkDistance))
+        //{
+        //    if (hit.collider.CompareTag("Cube"))
+        //    {
+        //        return true; // Directly adjacent object has the correct tag
+        //    }
+        //}
+        //else
+        //{
+        //    // nothing was hit directly next to the player
+        //    return false;
+        //}
 
         // Check below the adjacent position if direct check fails or no hit
         Vector3 downwardPosition = transform.position + direction * checkDistance;
