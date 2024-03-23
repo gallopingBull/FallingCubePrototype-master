@@ -133,6 +133,7 @@ public class CubeBehavior : MonoBehaviour
             case States.grounded:
 
                 // cube underneath this one is gone, this cube should fall
+                // TODO: explore not allowing a cube to fall until its reaches the center of a grid space.
                 if ((!m_HitDetect || m_Hit.distance > .75) && transform.position.y != 0)
                 {
                     EnterState(States.falling);

@@ -3,6 +3,8 @@ using Invector.vCharacterController;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
+// TODO: Only check for adjacent cubes for the current cube the player is standing when they's push/pullling cube.
+// When the player moves to another cube, cube detection should be intialized to ready for the player to start moving a cube.
 public class MoveCubeMechanic : vPushActionController
 {
     private float cubeScale = 2f; // Default cube scale
@@ -27,24 +29,27 @@ public class MoveCubeMechanic : vPushActionController
     {
         base.OnCollisionStay(collision);
         // Check player position for obsructions
-        foreach (var direction in adjPlayerPositions)
+        if (isMoving)
         {
-            if (CheckPlayerAdjacentSpaces(direction))
+            foreach (var direction in adjPlayerPositions)
             {
-                Debug.Log("Correct object found in direction: " + direction);
-            }
-            else
-            {
-                Debug.Log("No correct object directly adjacent in direction: " + direction);
-            }
+                if (CheckAdjacentFloorSpace(direction))
+                {
+                   //Debug.Log("Correct object found in direction: " + direction);
+                }
+                else
+                {
+                    //Debug.Log("No correct object directly adjacent in direction: " + direction);
+                }
 
+            }
         }
     }
 
     public float checkDistance = 2f; // Distance to check adjacent positions
     public float downwardCheckDistance = 2f; // Distance to check downward from adjacent positions
 
-    private bool CheckPlayerAdjacentSpaces(Vector3 direction)
+    private bool CheckAdjacentFloorSpace(Vector3 direction)
     {
         RaycastHit hit;
         // this might be reduntant 
@@ -64,11 +69,13 @@ public class MoveCubeMechanic : vPushActionController
 
         // Check below the adjacent position if direct check fails or no hit
         Vector3 downwardPosition = transform.position + direction * checkDistance;
+
+        Debug.Log($"downwardPosition : {downwardPosition}");
         if (Physics.Raycast(downwardPosition, Vector3.down, out hit, downwardCheckDistance))
         {
-            if (hit.collider.CompareTag("Cube"))
+            if (hit.collider.CompareTag("Block"))
             {
-                Debug.Log("no cube was detected underneat the player's adjacent grid space.");
+                Debug.Log($"detected cube {hit.transform.name} underneat the player's adjacent grid space.");
                 return true; // Object below the adjacent position has the correct tag
             }
         }
@@ -224,36 +231,44 @@ public class MoveCubeMechanic : vPushActionController
 
     void OnDrawGizmos()
     {
-        if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
-
-        // Visualize the raycast for ground check
-        float raycastHeightOffset = tpInput.cc.colliderHeight / 2;
-        Vector3 raycastStartPosition = transform.position + new Vector3(0, raycastHeightOffset, 0);
-        Vector3 raycastDirection = Vector3.down;
-        float raycastDistance = raycastHeightOffset + 10f; // Assuming 10f is the checking distance
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(raycastStartPosition, raycastStartPosition + raycastDirection * raycastDistance);
-
-        // SphereCast visualization for ground checking
-        if (tpInput.cc.groundCheckMethod == vThirdPersonMotor.GroundCheckMethod.High)
+        // Check each adjacent direction
+        Vector3[] directions = { Vector3.forward, Vector3.back, Vector3.left, Vector3.right };
+        foreach (Vector3 direction in directions)
         {
-            float radius = tpInput.cc._capsuleCollider.radius * 0.9f;
-            Vector3 sphereCastStartPosition = transform.position + Vector3.up * (tpInput.cc._capsuleCollider.radius);
+            Vector3 downwardPosition = transform.position + direction * checkDistance;
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(sphereCastStartPosition, radius); // Starting sphere
-
-            Vector3 sphereCastEndPosition = sphereCastStartPosition + Vector3.down * (tpInput.cc._capsuleCollider.radius + tpInput.cc.groundMaxDistance);
-            Gizmos.DrawWireSphere(sphereCastEndPosition, radius); // Ending sphere
-
-            // Draw connecting lines for clarity
-            Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x + radius, sphereCastStartPosition.y, sphereCastStartPosition.z),
-                            new Vector3(sphereCastEndPosition.x +    radius, sphereCastEndPosition.y, sphereCastEndPosition.z));
-            Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x - radius, sphereCastStartPosition.y, sphereCastStartPosition.z),
-                            new Vector3(sphereCastEndPosition.x - radius, sphereCastEndPosition.y, sphereCastEndPosition.z));
-            Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x, sphereCastStartPosition.y, sphereCastStartPosition.z + radius),
-                            new Vector3(sphereCastEndPosition.x, sphereCastEndPosition.y, sphereCastEndPosition.z + radius));
-            Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x, sphereCastStartPosition.y, sphereCastStartPosition.z - radius),
-                            new Vector3(sphereCastEndPosition.x, sphereCastEndPosition.y, sphereCastEndPosition.z - radius));
+            Gizmos.DrawRay(downwardPosition, Vector3.down * downwardCheckDistance);
         }
+        //if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
+        //
+        //// Visualize the raycast for ground check
+        //float raycastHeightOffset = tpInput.cc.colliderHeight / 2;
+        //Vector3 raycastStartPosition = transform.position + new Vector3(0, raycastHeightOffset, 0);
+        //Vector3 raycastDirection = Vector3.down;
+        //float raycastDistance = raycastHeightOffset + 10f; // Assuming 10f is the checking distance
+        //Gizmos.color = Color.blue;
+        //Gizmos.DrawLine(raycastStartPosition, raycastStartPosition + raycastDirection * raycastDistance);
+        //
+        //// SphereCast visualization for ground checking
+        //if (tpInput.cc.groundCheckMethod == vThirdPersonMotor.GroundCheckMethod.High)
+        //{
+        //    float radius = tpInput.cc._capsuleCollider.radius * 0.9f;
+        //    Vector3 sphereCastStartPosition = transform.position + Vector3.up * (tpInput.cc._capsuleCollider.radius);
+        //    Gizmos.color = Color.red;
+        //    Gizmos.DrawWireSphere(sphereCastStartPosition, radius); // Starting sphere
+        //
+        //    Vector3 sphereCastEndPosition = sphereCastStartPosition + Vector3.down * (tpInput.cc._capsuleCollider.radius + tpInput.cc.groundMaxDistance);
+        //    Gizmos.DrawWireSphere(sphereCastEndPosition, radius); // Ending sphere
+        //
+        //    // Draw connecting lines for clarity
+        //    Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x + radius, sphereCastStartPosition.y, sphereCastStartPosition.z),
+        //                    new Vector3(sphereCastEndPosition.x +    radius, sphereCastEndPosition.y, sphereCastEndPosition.z));
+        //    Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x - radius, sphereCastStartPosition.y, sphereCastStartPosition.z),
+        //                    new Vector3(sphereCastEndPosition.x - radius, sphereCastEndPosition.y, sphereCastEndPosition.z));
+        //    Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x, sphereCastStartPosition.y, sphereCastStartPosition.z + radius),
+        //                    new Vector3(sphereCastEndPosition.x, sphereCastEndPosition.y, sphereCastEndPosition.z + radius));
+        //    Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x, sphereCastStartPosition.y, sphereCastStartPosition.z - radius),
+        //                    new Vector3(sphereCastEndPosition.x, sphereCastEndPosition.y, sphereCastEndPosition.z - radius));
+        //}
     }
 }
