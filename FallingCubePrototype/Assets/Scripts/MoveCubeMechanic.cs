@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Invector;
 using Invector.vCharacterController;
 using UnityEngine;
@@ -14,7 +15,8 @@ public class MoveCubeMechanic : vPushActionController
     public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
 
     public float checkDistance = 6f; // Distance to check adjacent positions
-    public float downwardCheckDistance = 15f; // Distance to check downward from adjacent positions
+    public float downwardCheckDistance = 15f; // Distance to check downward from adjacent 
+    private Vector3 detectionOffSets = new Vector3(0, 1, 0);
 
     private GameObject currentCubeFloor;
     private Vector3[] adjPlayerPositions = { /*Vector3.forward,*/ Vector3.back, Vector3.left, Vector3.right, Vector3.down};
@@ -232,24 +234,38 @@ public class MoveCubeMechanic : vPushActionController
         OnNewCubePosition -= SetNewFloorCube;
     }
 
+   
     void OnDrawGizmos()
     {
-    
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
 
-        // Get the forward direction of the player in world space
-        Vector3 forwardDirection = transform.forward;
+
+        Vector3 targetPos = new Vector3();
+        // Perform a raycast downward to find the cube underneath
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, downwardCheckDistance))
+        {
+            if (hit.collider.CompareTag("Block") && targetPos != hit.collider.transform.position)
+            {
+                Debug.Log($"player standing on new cube: {hit.collider.transform.parent.name}");
+                targetPos = hit.collider.transform.position;
+                Debug.Log($"new targetPos: {targetPos}");
+                // Draw a yellow ray to the cube underneath
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawRay(transform.position, Vector3.down * (hit.distance + 0.1f)); // Add a small offset
+            }
+        }
+
 
         // Check each adjacent direction relative to the player's forward direction
-        Vector3[] directions = { -forwardDirection, -transform.right, transform.right };
+        Vector3[] directions = { -transform.forward, -transform.right, transform.right };
         foreach (Vector3 direction in directions)
         {
-            Vector3 downwardPosition = (transform.position + new Vector3(0, 1f, 0)) + direction * checkDistance;
-
             // Shoot a ray in the current direction
             Gizmos.color = Color.green;
-            Gizmos.DrawRay(transform.position + new Vector3(0,1f,0), direction * checkDistance);
+            Gizmos.DrawRay(targetPos + detectionOffSets, direction * checkDistance);
 
+            Vector3 downwardPosition = (targetPos + detectionOffSets) + direction * checkDistance;
             // Then shoot a ray downward from the end point of the previous ray
             Gizmos.color = Color.red;
             Gizmos.DrawRay(downwardPosition, Vector3.down * downwardCheckDistance);
