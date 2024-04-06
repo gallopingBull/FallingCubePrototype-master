@@ -13,6 +13,9 @@ public class MoveCubeMechanic : vPushActionController
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
     public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
 
+    public float checkDistance = 6f; // Distance to check adjacent positions
+    public float downwardCheckDistance = 15f; // Distance to check downward from adjacent positions
+
     private GameObject currentCubeFloor;
     private Vector3[] adjPlayerPositions = { /*Vector3.forward,*/ Vector3.back, Vector3.left, Vector3.right, Vector3.down};
     public static Action<GameObject> OnNewCubePosition;
@@ -52,9 +55,6 @@ public class MoveCubeMechanic : vPushActionController
         //    }
         //}
     }
-
-    public float checkDistance = 2f; // Distance to check adjacent positions
-    public float downwardCheckDistance = 2f; // Distance to check downward from adjacent positions
 
     private bool CheckAdjacentFloorSpace(Vector3 direction)
     {
@@ -236,46 +236,23 @@ public class MoveCubeMechanic : vPushActionController
     {
     
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
-        
-        // Visualize the raycast for ground check
-        float raycastHeightOffset = tpInput.cc.colliderHeight / 2;
-        Vector3 raycastStartPosition = transform.position + new Vector3(0, raycastHeightOffset, 0);
-        Vector3 raycastDirection = transform.forward;
-        float raycastDistance = raycastHeightOffset + 5f; // Assuming 10f is the checking distance
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(raycastStartPosition, raycastStartPosition + raycastDirection * raycastDistance);
 
-        // Check each adjacent direction
-        Vector3[] directions = { Vector3.back, Vector3.left, Vector3.right };
+        // Get the forward direction of the player in world space
+        Vector3 forwardDirection = transform.forward;
+
+        // Check each adjacent direction relative to the player's forward direction
+        Vector3[] directions = { -forwardDirection, -transform.right, transform.right };
         foreach (Vector3 direction in directions)
         {
-            Vector3 adjPos = (transform.position + (direction+raycastDirection)) * checkDistance;
+            Vector3 downwardPosition = (transform.position + new Vector3(0, 1f, 0)) + direction * checkDistance;
+
+            // Shoot a ray in the current direction
+            Gizmos.color = Color.green;
+            Gizmos.DrawRay(transform.position + new Vector3(0,1f,0), direction * checkDistance);
+
+            // Then shoot a ray downward from the end point of the previous ray
             Gizmos.color = Color.red;
-            Gizmos.DrawRay(transform.position, adjPos);
-            //Gizmos.DrawRay(downwardPosition, Vector3.down * downwardCheckDistance);
+            Gizmos.DrawRay(downwardPosition, Vector3.down * downwardCheckDistance);
         }
-
-
-        // SphereCast visualization for ground checking
-        //if (tpInput.cc.groundCheckMethod == vThirdPersonMotor.GroundCheckMethod.High)
-        //{
-        //    float radius = tpInput.cc._capsuleCollider.radius * 0.9f;
-        //    Vector3 sphereCastStartPosition = transform.position + Vector3.up * (tpInput.cc._capsuleCollider.radius);
-        //    Gizmos.color = Color.red;
-        //    Gizmos.DrawWireSphere(sphereCastStartPosition, radius); // Starting sphere
-        //
-        //    Vector3 sphereCastEndPosition = sphereCastStartPosition + Vector3.down * (tpInput.cc._capsuleCollider.radius + tpInput.cc.groundMaxDistance);
-        //    Gizmos.DrawWireSphere(sphereCastEndPosition, radius); // Ending sphere
-        //
-        //    // Draw connecting lines for clarity
-        //    Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x + radius, sphereCastStartPosition.y, sphereCastStartPosition.z),
-        //                    new Vector3(sphereCastEndPosition.x +    radius, sphereCastEndPosition.y, sphereCastEndPosition.z));
-        //    Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x - radius, sphereCastStartPosition.y, sphereCastStartPosition.z),
-        //                    new Vector3(sphereCastEndPosition.x - radius, sphereCastEndPosition.y, sphereCastEndPosition.z));
-        //    Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x, sphereCastStartPosition.y, sphereCastStartPosition.z + radius),
-        //                    new Vector3(sphereCastEndPosition.x, sphereCastEndPosition.y, sphereCastEndPosition.z + radius));
-        //    Gizmos.DrawLine(new Vector3(sphereCastStartPosition.x, sphereCastStartPosition.y, sphereCastStartPosition.z - radius),
-        //                    new Vector3(sphereCastEndPosition.x, sphereCastEndPosition.y, sphereCastEndPosition.z - radius));
-        //}
     }
 }
