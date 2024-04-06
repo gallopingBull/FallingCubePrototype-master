@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Invector;
 using Invector.vCharacterController;
 using UnityEngine;
@@ -19,7 +18,6 @@ public class MoveCubeMechanic : vPushActionController
     private Vector3 detectionOffSets = new Vector3(0, 2, 0);
 
     private GameObject currentCubeFloor;
-    private Vector3[] adjPlayerPositions = { /*Vector3.forward,*/ Vector3.back, Vector3.left, Vector3.right, Vector3.down};
     public static Action<GameObject> OnNewCubePosition;
     public static Action OnExitCubePosition;
 
@@ -35,55 +33,6 @@ public class MoveCubeMechanic : vPushActionController
 
         OnNewCubePosition += SetNewFloorCube;
         OnExitCubePosition += RemoveNewFloorCube;
-    }
-
-    protected override void OnCollisionStay(Collision collision)
-    {
-        base.OnCollisionStay(collision);
-        // Check player position for obsructions
-        //if (isMoving)
-        //{
-        //    foreach (var direction in adjPlayerPositions)
-        //    {
-        //        if (CheckAdjacentFloorSpace(direction))
-        //        {
-        //           //Debug.Log("Correct object found in direction: " + direction);
-        //        }
-        //        else
-        //        {
-        //            //Debug.Log("No correct object directly adjacent in direction: " + direction);
-        //        }
-        //
-        //    }
-        //}
-    }
-
-    private bool CheckAdjacentFloorSpace(Vector3 direction)
-    {
-        RaycastHit hit;
-
-        // Check below the adjacent position if direct check fails or no hit
-        Vector3 forwardDir = transform.position + direction * checkDistance;
-        //downwardPosition = transform.position + new Vector3(0, tpInput.cc.colliderHeight / 2, 0);
-        //Ray ray2 = new Ray(transform.position + new Vector3(0, tpInput.cc.colliderHeight / 2, 0), Vector3.down);
-
-        //Debug.Log($"downwardPosition : {forwardDir}");
-        Debug.Log($"forwardPosition : {forwardDir}");
-        if (Physics.Raycast(forwardDir, Vector3.down, out hit, downwardCheckDistance))
-        {
-            if (hit.collider.CompareTag("Block"))
-            {
-                Debug.Log($"detected cube {hit.transform.name} underneat the player's adjacent grid space.");
-                return true; // Object below the adjacent position has the correct tag
-            }
-        }
-        else
-        {
-            Debug.Log("no cube was detected underneat the player's adjacent grid space.");
-            return false;
-        }
-
-        return false; // No correct object found in this direction
     }
 
     protected override void MoveObject()
@@ -168,7 +117,7 @@ public class MoveCubeMechanic : vPushActionController
 
     // TODO: change this method so instead of a snap its more of
     // a discrete "push" to the nearest whole number
-    void DiscretePushToNearestWholeNumber(Vector3 targetPosition)
+    private void DiscretePushToNearestWholeNumber(Vector3 targetPosition)
     {
         // Snap X and Z positions to multiples of cube scale
         float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
@@ -226,7 +175,9 @@ public class MoveCubeMechanic : vPushActionController
 
         lastBodyPosition = newPosition;
     }
+    
     private void SetNewFloorCube(GameObject cube) => currentCubeFloor = cube;
+    
     private void RemoveNewFloorCube() => currentCubeFloor = null;
 
     private void OnDestroy()
@@ -234,18 +185,16 @@ public class MoveCubeMechanic : vPushActionController
         OnNewCubePosition -= SetNewFloorCube;
     }
 
-   
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
-
 
         Vector3 targetPos = new Vector3();
         // Perform a raycast downward to find the cube underneath
         RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit, downwardCheckDistance))
         {
-            if (hit.collider.CompareTag("Block") && targetPos != hit.collider.transform.position)
+            if (hit.collider.CompareTag("Block") && targetPos != hit.collider.transform.parent.position)
             {
                 Debug.Log($"player standing on new cube: {hit.collider.transform.parent.name}");
                 targetPos = hit.collider.transform.position;
@@ -257,20 +206,32 @@ public class MoveCubeMechanic : vPushActionController
         }
 
         if(isPushingPulling)
-        { // Check each adjacent direction relative to the player's forward direction
+        {
+            targetPos += detectionOffSets;
+
+            // Check each adjacent direction relative to the player's forward direction
             Vector3[] directions = { -transform.forward, -transform.right, transform.right };
             foreach (Vector3 direction in directions)
             {
                 // Shoot a ray in the current direction
-                Gizmos.color = Color.green;
-                Gizmos.DrawRay(targetPos + detectionOffSets, direction * checkDistance);
+                RaycastHit hit1;
+                bool hitCubeInCurrentDirection = Physics.Raycast(targetPos, direction, out hit1, checkDistance);
+                float currentDirectionDistance = hitCubeInCurrentDirection ? hit1.distance : checkDistance;
 
-                Vector3 downwardPosition = (targetPos + detectionOffSets) + direction * checkDistance;
-                // Then shoot a ray downward from the end point of the previous ray
-                Gizmos.color = Color.red;
-                Gizmos.DrawRay(downwardPosition, Vector3.down * downwardCheckDistance);
+                // Draw a line in the current direction
+                Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
+                Gizmos.DrawLine(targetPos, targetPos + direction * currentDirectionDistance);
+
+                Vector3 downwardPosition = targetPos + direction * checkDistance;
+
+                // Shoot a ray downward from the end point of the previous ray
+                bool hitCubeUnderneath = Physics.Raycast(downwardPosition, Vector3.down, out hit1, downwardCheckDistance);
+                float downwardRayDistance = hitCubeUnderneath ? hit1.distance : downwardCheckDistance;
+
+                // Draw a line downward
+                Gizmos.color = hitCubeUnderneath ? Color.yellow : Color.white;
+                Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
             }
         }
-       
     }
 }
