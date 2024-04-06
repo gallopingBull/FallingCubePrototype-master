@@ -1,6 +1,6 @@
-﻿using Invector;
+﻿using System;
+using Invector;
 using Invector.vCharacterController;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 // TODO: Only check for adjacent cubes for the current cube the player is standing when they's push/pullling cube.
@@ -13,7 +13,11 @@ public class MoveCubeMechanic : vPushActionController
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
     public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
 
+    private GameObject currentCubeFloor;
     private Vector3[] adjPlayerPositions = { /*Vector3.forward,*/ Vector3.back, Vector3.left, Vector3.right, Vector3.down};
+    public static Action<GameObject> OnNewCubePosition;
+    public static Action OnExitCubePosition;
+
 
     // Start is called before the first frame update
     protected override void Start()
@@ -23,27 +27,30 @@ public class MoveCubeMechanic : vPushActionController
         // n - 1 to account for 0-based index
         maxGridSize.x--;
         maxGridSize.y--;
+
+        OnNewCubePosition += SetNewFloorCube;
+        OnExitCubePosition += RemoveNewFloorCube;
     }
 
     protected override void OnCollisionStay(Collision collision)
     {
         base.OnCollisionStay(collision);
         // Check player position for obsructions
-        if (isMoving)
-        {
-            foreach (var direction in adjPlayerPositions)
-            {
-                if (CheckAdjacentFloorSpace(direction))
-                {
-                   //Debug.Log("Correct object found in direction: " + direction);
-                }
-                else
-                {
-                    //Debug.Log("No correct object directly adjacent in direction: " + direction);
-                }
-
-            }
-        }
+        //if (isMoving)
+        //{
+        //    foreach (var direction in adjPlayerPositions)
+        //    {
+        //        if (CheckAdjacentFloorSpace(direction))
+        //        {
+        //           //Debug.Log("Correct object found in direction: " + direction);
+        //        }
+        //        else
+        //        {
+        //            //Debug.Log("No correct object directly adjacent in direction: " + direction);
+        //        }
+        //
+        //    }
+        //}
     }
 
     public float checkDistance = 2f; // Distance to check adjacent positions
@@ -52,26 +59,15 @@ public class MoveCubeMechanic : vPushActionController
     private bool CheckAdjacentFloorSpace(Vector3 direction)
     {
         RaycastHit hit;
-        // this might be reduntant 
-        // Check directly adjacent
-        //if (Physics.Raycast(transform.position, direction, out hit, checkDistance))
-        //{
-        //    if (hit.collider.CompareTag("Cube"))
-        //    {
-        //        return true; // Directly adjacent object has the correct tag
-        //    }
-        //}
-        //else
-        //{
-        //    // nothing was hit directly next to the player
-        //    return false;
-        //}
 
         // Check below the adjacent position if direct check fails or no hit
-        Vector3 downwardPosition = transform.position + direction * checkDistance;
+        Vector3 forwardDir = transform.position + direction * checkDistance;
+        //downwardPosition = transform.position + new Vector3(0, tpInput.cc.colliderHeight / 2, 0);
+        //Ray ray2 = new Ray(transform.position + new Vector3(0, tpInput.cc.colliderHeight / 2, 0), Vector3.down);
 
-        Debug.Log($"downwardPosition : {downwardPosition}");
-        if (Physics.Raycast(downwardPosition, Vector3.down, out hit, downwardCheckDistance))
+        //Debug.Log($"downwardPosition : {forwardDir}");
+        Debug.Log($"forwardPosition : {forwardDir}");
+        if (Physics.Raycast(forwardDir, Vector3.down, out hit, downwardCheckDistance))
         {
             if (hit.collider.CompareTag("Block"))
             {
@@ -228,28 +224,39 @@ public class MoveCubeMechanic : vPushActionController
 
         lastBodyPosition = newPosition;
     }
+    private void SetNewFloorCube(GameObject cube) => currentCubeFloor = cube;
+    private void RemoveNewFloorCube() => currentCubeFloor = null;
+
+    private void OnDestroy()
+    {
+        OnNewCubePosition -= SetNewFloorCube;
+    }
 
     void OnDrawGizmos()
     {
+    
+        if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
+        
+        // Visualize the raycast for ground check
+        float raycastHeightOffset = tpInput.cc.colliderHeight / 2;
+        Vector3 raycastStartPosition = transform.position + new Vector3(0, raycastHeightOffset, 0);
+        Vector3 raycastDirection = transform.forward;
+        float raycastDistance = raycastHeightOffset + 5f; // Assuming 10f is the checking distance
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(raycastStartPosition, raycastStartPosition + raycastDirection * raycastDistance);
+
         // Check each adjacent direction
-        Vector3[] directions = { Vector3.forward, Vector3.back, Vector3.left, Vector3.right };
+        Vector3[] directions = { Vector3.back, Vector3.left, Vector3.right };
         foreach (Vector3 direction in directions)
         {
-            Vector3 downwardPosition = transform.position + direction * checkDistance;
+            Vector3 adjPos = (transform.position + (direction+raycastDirection)) * checkDistance;
             Gizmos.color = Color.red;
-            Gizmos.DrawRay(downwardPosition, Vector3.down * downwardCheckDistance);
+            Gizmos.DrawRay(transform.position, adjPos);
+            //Gizmos.DrawRay(downwardPosition, Vector3.down * downwardCheckDistance);
         }
-        //if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
-        //
-        //// Visualize the raycast for ground check
-        //float raycastHeightOffset = tpInput.cc.colliderHeight / 2;
-        //Vector3 raycastStartPosition = transform.position + new Vector3(0, raycastHeightOffset, 0);
-        //Vector3 raycastDirection = Vector3.down;
-        //float raycastDistance = raycastHeightOffset + 10f; // Assuming 10f is the checking distance
-        //Gizmos.color = Color.blue;
-        //Gizmos.DrawLine(raycastStartPosition, raycastStartPosition + raycastDirection * raycastDistance);
-        //
-        //// SphereCast visualization for ground checking
+
+
+        // SphereCast visualization for ground checking
         //if (tpInput.cc.groundCheckMethod == vThirdPersonMotor.GroundCheckMethod.High)
         //{
         //    float radius = tpInput.cc._capsuleCollider.radius * 0.9f;
