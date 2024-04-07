@@ -224,12 +224,10 @@ public class MoveCubeMechanic : vPushActionController
                 RaycastHit hit1;
                 bool hitCubeInCurrentDirection = Physics.Raycast(targetPos, direction, out hit1, checkDistance);
                 float currentDirectionDistance = hitCubeInCurrentDirection ? hit1.distance : checkDistance;
-
-                // Draw a line in the current direction
-                Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
                 Gizmos.DrawLine(targetPos, targetPos + direction * currentDirectionDistance);
+                Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
 
-                Vector3 downwardPosition = targetPos + direction * checkDistance;
+                Vector3 downwardPosition = targetPos + direction * currentDirectionDistance;
                 Gizmos.DrawSphere(downwardPosition, .1f);
 
                 // Shoot a ray downward from the end point of the previous ray
@@ -240,19 +238,21 @@ public class MoveCubeMechanic : vPushActionController
                 RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition, 0.1f, Vector3.down, downwardCheckDistance);
                 Gizmos.DrawSphere(downwardPosition, .1f);
 
-                // Check if any cube is found underneath
-                foreach (RaycastHit sphereHit in sphereHits)
+                if(hitCubeUnderneath)
                 {
-                    if (sphereHit.collider.CompareTag("Block"))
+                    // Check if any cube is found underneath
+                    foreach (RaycastHit sphereHit in sphereHits)
                     {
-                        // Draw a yellow ray to the cube underneath
-                        Gizmos.color = Color.blue;
-                        Gizmos.DrawRay(downwardPosition, Vector3.down * (sphereHit.distance + 0.1f)); // Add a small offset
-                        Gizmos.DrawSphere(downwardPosition, .1f);
-                        break; // Exit the loop after drawing the ray to the first cube found
+                        if (sphereHit.collider.CompareTag("Block"))
+                        {
+                            // Draw a yellow ray to the cube underneath
+                            Gizmos.color = Color.blue;
+                            Gizmos.DrawRay(downwardPosition, Vector3.down * (sphereHit.distance + 0.1f)); // Add a small offset
+                            Gizmos.DrawSphere(downwardPosition + Vector3.down * (sphereHit.distance + 0.1f), .1f);
+                            break; // Exit the loop after drawing the ray to the first cube found
+                        }
                     }
                 }
-
 
                 // Draw a line downward
                 Gizmos.color = hitCubeUnderneath ? Color.red : Color.white;
