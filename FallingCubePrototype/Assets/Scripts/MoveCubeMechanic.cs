@@ -185,6 +185,7 @@ public class MoveCubeMechanic : vPushActionController
         OnNewCubePosition -= SetNewFloorCube;
     }
 
+
     private void OnDrawGizmos()
     {
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
@@ -192,13 +193,36 @@ public class MoveCubeMechanic : vPushActionController
         Vector3 targetPos = new Vector3();
         // Perform a raycast downward to find the cube underneath
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, downwardCheckDistance))
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, downwardCheckDistance, ~12))
         {
-            if (hit.collider.CompareTag("Block") && targetPos != hit.collider.transform.parent.position)
+            Debug.Log($"Raycast hit something!\tit hit: {hit.transform.name}");
+            if (hit.collider.CompareTag("Block"))
             {
-                Debug.Log($"player standing on new cube: {hit.collider.transform.parent.name}");
-                targetPos = hit.collider.transform.position;
-                Debug.Log($"new targetPos: {targetPos}");
+                Debug.Log("It hit a Block!");
+                if (targetPos != hit.collider.transform.parent.position)
+                {
+                    Debug.Log($"player standing on new cube: {hit.collider.transform.parent.name}");
+                    targetPos = hit.collider.transform.position;
+                    targetPos += detectionOffSets;
+                    Debug.Log($"new targetPos: {targetPos}");
+                }
+
+                // Perform a spherecast at the downward position
+                //RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition, 0.1f, Vector3.down, downwardCheckDistance);
+
+                // Check if any cube is found underneath
+                //foreach (RaycastHit sphereHit in sphereHits)
+                //{
+                //    if (sphereHit.collider.CompareTag("Cube"))
+                //    {
+                //        // Draw a yellow ray to the cube underneath
+                //        Gizmos.color = Color.yellow;
+                //        Gizmos.DrawRay(downwardPosition, Vector3.down * (sphereHit.distance + 0.1f)); // Add a small offset
+                //        break; // Exit the loop after drawing the ray to the first cube found
+                //    }
+                //}
+
+
                 // Draw a yellow ray to the cube underneath
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawRay(transform.position, Vector3.down * (hit.distance + 0.1f)); // Add a small offset
@@ -207,8 +231,7 @@ public class MoveCubeMechanic : vPushActionController
 
         if(isPushingPulling)
         {
-            targetPos += detectionOffSets;
-
+            Debug.Log($"targetPos while isPushingPulling: {targetPos}");
             // Check each adjacent direction relative to the player's forward direction
             Vector3[] directions = { -transform.forward, -transform.right, transform.right };
             foreach (Vector3 direction in directions)
