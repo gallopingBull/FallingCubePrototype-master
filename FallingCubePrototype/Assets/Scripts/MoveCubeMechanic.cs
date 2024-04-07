@@ -207,29 +207,13 @@ public class MoveCubeMechanic : vPushActionController
                     Debug.Log($"new targetPos: {targetPos}");
                 }
 
-                // Perform a spherecast at the downward position
-                //RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition, 0.1f, Vector3.down, downwardCheckDistance);
-
-                // Check if any cube is found underneath
-                //foreach (RaycastHit sphereHit in sphereHits)
-                //{
-                //    if (sphereHit.collider.CompareTag("Cube"))
-                //    {
-                //        // Draw a yellow ray to the cube underneath
-                //        Gizmos.color = Color.yellow;
-                //        Gizmos.DrawRay(downwardPosition, Vector3.down * (sphereHit.distance + 0.1f)); // Add a small offset
-                //        break; // Exit the loop after drawing the ray to the first cube found
-                //    }
-                //}
-
-
                 // Draw a yellow ray to the cube underneath
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawRay(transform.position, Vector3.down * (hit.distance + 0.1f)); // Add a small offset
             }
         }
-
-        if(isPushingPulling)
+  
+        if (isPushingPulling)
         {
             Debug.Log($"targetPos while isPushingPulling: {targetPos}");
             // Check each adjacent direction relative to the player's forward direction
@@ -246,13 +230,32 @@ public class MoveCubeMechanic : vPushActionController
                 Gizmos.DrawLine(targetPos, targetPos + direction * currentDirectionDistance);
 
                 Vector3 downwardPosition = targetPos + direction * checkDistance;
+                Gizmos.DrawSphere(downwardPosition, .1f);
 
                 // Shoot a ray downward from the end point of the previous ray
                 bool hitCubeUnderneath = Physics.Raycast(downwardPosition, Vector3.down, out hit1, downwardCheckDistance);
                 float downwardRayDistance = hitCubeUnderneath ? hit1.distance : downwardCheckDistance;
 
+                // Perform a spherecast at the downward position
+                RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition, 0.1f, Vector3.down, downwardCheckDistance);
+                Gizmos.DrawSphere(downwardPosition, .1f);
+
+                // Check if any cube is found underneath
+                foreach (RaycastHit sphereHit in sphereHits)
+                {
+                    if (sphereHit.collider.CompareTag("Block"))
+                    {
+                        // Draw a yellow ray to the cube underneath
+                        Gizmos.color = Color.blue;
+                        Gizmos.DrawRay(downwardPosition, Vector3.down * (sphereHit.distance + 0.1f)); // Add a small offset
+                        Gizmos.DrawSphere(downwardPosition, .1f);
+                        break; // Exit the loop after drawing the ray to the first cube found
+                    }
+                }
+
+
                 // Draw a line downward
-                Gizmos.color = hitCubeUnderneath ? Color.yellow : Color.white;
+                Gizmos.color = hitCubeUnderneath ? Color.red : Color.white;
                 Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
             }
         }
