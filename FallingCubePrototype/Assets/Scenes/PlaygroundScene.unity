@@ -6711,7 +6711,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: downwardCheckDistance
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: startPushPullInput.joystickAxis

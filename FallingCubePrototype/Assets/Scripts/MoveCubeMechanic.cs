@@ -15,7 +15,7 @@ public class MoveCubeMechanic : vPushActionController
     public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
 
     public float checkDistance = 6f; // Distance to check adjacent positions
-    public float downwardCheckDistance = 15f; // Distance to check downward from adjacent 
+    public float downwardCheckDistance = 10f; // Distance to check downward from adjacent 
     private Vector3 detectionOffSets = new Vector3(0, 2, 0);
 
     private GameObject currentCubeFloor;
@@ -195,7 +195,7 @@ public class MoveCubeMechanic : vPushActionController
         
         // Perform a spherecast to check for game objects with a "Block" tag
         RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, 0.1f, Vector3.down, downwardCheckDistance, ~12);
-        Gizmos.DrawSphere(transform.position + Vector3.down, 0.1f); // Add a small offset
+        Gizmos.DrawSphere(transform.position, 0.1f); // Add a small offset
         foreach (RaycastHit sphereHit in sphereHitsBlock)
         {
             if (sphereHit.collider.CompareTag("Block"))
@@ -253,6 +253,11 @@ public class MoveCubeMechanic : vPushActionController
                             break; // Exit the loop after drawing the ray to the first cube found
                         }
                     }
+                }
+                else
+                {
+                    Gizmos.DrawSphere(downwardPosition + Vector3.down * downwardCheckDistance, .1f);
+
                 }
 
                 // Draw a line downward
