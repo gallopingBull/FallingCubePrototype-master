@@ -2,6 +2,7 @@
 using Invector;
 using Invector.vCharacterController;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 // TODO: Only check for adjacent cubes for the current cube the player is standing when they's push/pullling cube.
 // When the player moves to another cube, cube detection should be intialized to ready for the player to start moving a cube.
@@ -191,28 +192,28 @@ public class MoveCubeMechanic : vPushActionController
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
 
         Vector3 targetPos = new Vector3();
-        // Perform a raycast downward to find the cube underneath
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, downwardCheckDistance, ~12))
+        
+        // Perform a spherecast to check for game objects with a "Block" tag
+        RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, 0.1f, Vector3.down, downwardCheckDistance, ~12);
+        Gizmos.DrawSphere(transform.position + Vector3.down, 0.1f); // Add a small offset
+        foreach (RaycastHit sphereHit in sphereHitsBlock)
         {
-            Debug.Log($"Raycast hit something!\tit hit: {hit.transform.name}");
-            if (hit.collider.CompareTag("Block"))
+            if (sphereHit.collider.CompareTag("Block"))
             {
-                Debug.Log("It hit a Block!");
-                if (targetPos != hit.collider.transform.parent.position)
+                if (currentCubeFloor != sphereHit.transform.gameObject)
                 {
-                    Debug.Log($"player standing on new cube: {hit.collider.transform.parent.name}");
-                    targetPos = hit.collider.transform.position;
-                    targetPos += detectionOffSets;
-                    Debug.Log($"new targetPos: {targetPos}");
-                }
 
-                // Draw a yellow ray to the cube underneath
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawRay(transform.position, Vector3.down * (hit.distance + 0.1f)); // Add a small offset
+                }
+                // Draw a red line to indicate the spherecast hit
+                Gizmos.color = Color.red;
+                targetPos = sphereHit.collider.transform.position;
+                targetPos += detectionOffSets;
+                Debug.Log($"new targetPos: {targetPos}");
+                // Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * (sphereHit.distance + 0.1f)); // Add a small offset
+                break; // Exit the loop after drawing the first hit
             }
         }
-  
+
         if (isPushingPulling)
         {
             Debug.Log($"targetPos while isPushingPulling: {targetPos}");
