@@ -2,7 +2,6 @@
 using Invector;
 using Invector.vCharacterController;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 // TODO: Only check for adjacent cubes for the current cube the player is standing when they's push/pullling cube.
 // When the player moves to another cube, cube detection should be intialized to ready for the player to start moving a cube.
@@ -190,17 +189,9 @@ public class MoveCubeMechanic : vPushActionController
     protected override void OnCollisionStay(Collision collision)
     {
         base.OnCollisionStay(collision);
-
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
-
-        bool _isCollidingLeft = false;
-        bool _isCollidingRight = false;
-        bool _isCollidingBack = false;
-
+        bool _isCollidingLeft = isCollidingRight;
+        bool _isCollidingRight = isCollidingLeft;
+        bool _isCollidingBack = isCollidingBack;
         Vector3 targetPos = new Vector3();
 
         // Perform a spherecast to check for game objects with a "Block" tag
@@ -227,17 +218,22 @@ public class MoveCubeMechanic : vPushActionController
             Vector3[] directions = { -transform.forward, -transform.right, transform.right };
             for (int i = 0; i < directions.Length; i++)
             {
+                Debug.Log("!!!!!!!!");
                 // Shoot a ray in the current direction
                 RaycastHit hit1;
                 bool hitCubeInCurrentDirection = Physics.Raycast(targetPos, directions[i], out hit1, checkDistance);
                 float currentDirectionDistance = hitCubeInCurrentDirection ? hit1.distance : checkDistance;
                 Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
+                Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
                 if (hitCubeInCurrentDirection)
                 {
-                    if (hit1.collider.CompareTag("Block"))
+                    Debug.Log($"ray[{i}] hitting {hit1.transform.name}");
+                    if (hit1.transform.CompareTag("Block"))
                     {
-                        Debug.Log("fjdsfjlsdkjflk");
-                        switch (directions.Length)
+                        Debug.Log($"fjdsfjlsdkjflk - {directions.Length}");
+                        Debug.Log($"directions.Length: {directions.Length}");
+
+                        switch (i)
                         {
                             // behind player
                             case 0:
@@ -299,9 +295,127 @@ public class MoveCubeMechanic : vPushActionController
                 Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
             }
         }
-        
+
         isCollidingRight = _isCollidingRight;
         isCollidingLeft = _isCollidingLeft;
         isCollidingBack = _isCollidingBack;
+
+    }
+
+    private void OnDrawGizmos()
+    {
+        //if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider) return;
+        //
+        //bool _isCollidingLeft = false;
+        //bool _isCollidingRight = false;
+        //bool _isCollidingBack = false;
+        //
+        //Vector3 targetPos = new Vector3();
+        //
+        //// Perform a spherecast to check for game objects with a "Block" tag
+        //RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, 0.1f, Vector3.down, downwardCheckDistance, ~12);
+        //Gizmos.DrawSphere(transform.position, 0.1f); // Add a small offset
+        //
+        //foreach (RaycastHit sphereHit in sphereHitsBlock)
+        //{
+        //    if (sphereHit.collider.CompareTag("Block"))
+        //    {
+        //        //if (currentCubeFloor != sphereHit.transform.gameObject) { }
+        //
+        //        targetPos = sphereHit.collider.transform.position;
+        //        targetPos += detectionOffSets;
+        //        //Debug.Log($"new targetPos: {targetPos}");
+        //        break; // Exit the loop after drawing the first hit
+        //    }
+        //}
+        //
+        //if (isPushingPulling)
+        //{
+        //    //Debug.Log($"targetPos while isPushingPulling: {targetPos}");
+        //    // Check each adjacent direction relative to the player's forward direction
+        //    Vector3[] directions = { -transform.forward, -transform.right, transform.right };
+        //    for (int i = 0; i < directions.Length; i++)
+        //    {
+        //        Debug.Log("!!!!!!!!");
+        //        // Shoot a ray in the current direction
+        //        RaycastHit hit1;
+        //        bool hitCubeInCurrentDirection = Physics.Raycast(targetPos, directions[i], out hit1, checkDistance);
+        //        float currentDirectionDistance = hitCubeInCurrentDirection ? hit1.distance : checkDistance;
+        //        Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
+        //        Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
+        //        if (hitCubeInCurrentDirection)
+        //        {
+        //            Debug.Log($"ray[{i}] hitting {hit1.transform.name}");
+        //            if (hit1.transform.CompareTag("Block"))
+        //            {
+        //                Debug.Log($"fjdsfjlsdkjflk - {directions.Length}");
+        //                Debug.Log($"directions.Length: {directions.Length}");
+        //
+        //                switch (i)
+        //                {
+        //                    // behind player
+        //                    case 0:
+        //                        _isCollidingBack = true;
+        //                        Debug.Log("Colliding from the back!");
+        //                        break;
+        //                    // behind player - left-side
+        //                    case 1:
+        //                        _isCollidingLeft = true;
+        //                        Debug.Log("Colliding from the left!");
+        //                        break;
+        //                    // behind player - right-side
+        //                    case 2:
+        //                        Debug.Log("Colliding from the right!");
+        //                        _isCollidingRight = true;
+        //                        break;
+        //                    default: break;
+        //
+        //                }
+        //            }
+        //        }
+        //
+        //        Gizmos.DrawLine(targetPos, targetPos + directions[i] * currentDirectionDistance);
+        //        Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
+        //
+        //        Vector3 downwardPosition = targetPos + directions[i] * currentDirectionDistance;
+        //        Gizmos.DrawSphere(downwardPosition, .1f);
+        //
+        //        // Shoot a ray downward from the end point of the previous ray
+        //        bool hitCubeUnderneath = Physics.Raycast(downwardPosition, Vector3.down, out hit1, downwardCheckDistance);
+        //        float downwardRayDistance = hitCubeUnderneath ? hit1.distance : downwardCheckDistance;
+        //
+        //        // Perform a spherecast at the downward position
+        //        RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition, 0.1f, Vector3.down, downwardCheckDistance);
+        //        Gizmos.DrawSphere(downwardPosition, .1f);
+        //
+        //        if (hitCubeUnderneath)
+        //        {
+        //            // Check if any cube is found underneath
+        //            foreach (RaycastHit sphereHit in sphereHits)
+        //            {
+        //                if (sphereHit.collider.CompareTag("Block"))
+        //                {
+        //                    // Draw a yellow ray to the cube underneath
+        //                    Gizmos.color = Color.yellow;
+        //                    Gizmos.DrawRay(downwardPosition, Vector3.down * (sphereHit.distance + 0.1f)); // Add a small offset
+        //                    Gizmos.DrawSphere(downwardPosition + Vector3.down * (sphereHit.distance + 0.1f), .1f);
+        //                    break; // Exit the loop after drawing the ray to the first cube found
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Gizmos.DrawSphere(downwardPosition + Vector3.down * downwardCheckDistance, .1f);
+        //        }
+        //
+        //        // Draw a line downward
+        //        Gizmos.color = hitCubeUnderneath ? Color.yellow : Color.white;
+        //        Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
+        //    }
+        //}
+        //
+        //isCollidingRight = _isCollidingRight;
+        //isCollidingLeft = _isCollidingLeft;
+        //isCollidingBack = _isCollidingBack;
     }
 }
