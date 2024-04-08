@@ -189,14 +189,16 @@ public class MoveCubeMechanic : vPushActionController
     protected override void OnCollisionStay(Collision collision)
     {
         base.OnCollisionStay(collision);
+
         bool _isCollidingLeft = isCollidingRight;
         bool _isCollidingRight = isCollidingLeft;
         bool _isCollidingBack = isCollidingBack;
+
         Vector3 targetPos = new Vector3();
 
         // Perform a spherecast to check for game objects with a "Block" tag
         RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, 0.1f, Vector3.down, downwardCheckDistance, ~12);
-        Gizmos.DrawSphere(transform.position, 0.1f); // Add a small offset
+        //Gizmos.DrawSphere(transform.position, 0.1f); // Add a small offset
 
         foreach (RaycastHit sphereHit in sphereHitsBlock)
         {
@@ -223,7 +225,7 @@ public class MoveCubeMechanic : vPushActionController
                 RaycastHit hit1;
                 bool hitCubeInCurrentDirection = Physics.Raycast(targetPos, directions[i], out hit1, checkDistance);
                 float currentDirectionDistance = hitCubeInCurrentDirection ? hit1.distance : checkDistance;
-                Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
+                //Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
                 Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
                 if (hitCubeInCurrentDirection)
                 {
@@ -256,11 +258,11 @@ public class MoveCubeMechanic : vPushActionController
                     }
                 }
 
-                Gizmos.DrawLine(targetPos, targetPos + directions[i] * currentDirectionDistance);
-                Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
+                //Gizmos.DrawLine(targetPos, targetPos + directions[i] * currentDirectionDistance);
+                //Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
 
                 Vector3 downwardPosition = targetPos + directions[i] * currentDirectionDistance;
-                Gizmos.DrawSphere(downwardPosition, .1f);
+                //Gizmos.DrawSphere(downwardPosition, .1f);
 
                 // Shoot a ray downward from the end point of the previous ray
                 bool hitCubeUnderneath = Physics.Raycast(downwardPosition, Vector3.down, out hit1, downwardCheckDistance);
@@ -268,7 +270,7 @@ public class MoveCubeMechanic : vPushActionController
 
                 // Perform a spherecast at the downward position
                 RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition, 0.1f, Vector3.down, downwardCheckDistance);
-                Gizmos.DrawSphere(downwardPosition, .1f);
+                //Gizmos.DrawSphere(downwardPosition, .1f);
 
                 if (hitCubeUnderneath)
                 {
@@ -278,21 +280,21 @@ public class MoveCubeMechanic : vPushActionController
                         if (sphereHit.collider.CompareTag("Block"))
                         {
                             // Draw a yellow ray to the cube underneath
-                            Gizmos.color = Color.yellow;
-                            Gizmos.DrawRay(downwardPosition, Vector3.down * (sphereHit.distance + 0.1f)); // Add a small offset
-                            Gizmos.DrawSphere(downwardPosition + Vector3.down * (sphereHit.distance + 0.1f), .1f);
+                            //Gizmos.color = Color.yellow;
+                            //Gizmos.DrawRay(downwardPosition, Vector3.down * (sphereHit.distance + 0.1f)); // Add a small offset
+                            //Gizmos.DrawSphere(downwardPosition + Vector3.down * (sphereHit.distance + 0.1f), .1f);
                             break; // Exit the loop after drawing the ray to the first cube found
                         }
                     }
                 }
                 else
                 {
-                    Gizmos.DrawSphere(downwardPosition + Vector3.down * downwardCheckDistance, .1f);
+                    //Gizmos.DrawSphere(downwardPosition + Vector3.down * downwardCheckDistance, .1f);
                 }
 
                 // Draw a line downward
-                Gizmos.color = hitCubeUnderneath ? Color.yellow : Color.white;
-                Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
+                //Gizmos.color = hitCubeUnderneath ? Color.yellow : Color.white;
+                //Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
             }
         }
 
