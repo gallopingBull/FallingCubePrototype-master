@@ -21,6 +21,9 @@ public class MoveCubeMechanic : vPushActionController
     public static Action<GameObject> OnNewCubePosition;
     public static Action OnExitCubePosition;
 
+    public float sphereSize = 1f;
+
+
     private bool canPullBack, canPullBackLeft, canPullBackRight;    
 
 
@@ -266,13 +269,14 @@ public class MoveCubeMechanic : vPushActionController
         Vector3 targetPos = new Vector3();
         
         // Perform a spherecast to check for game objects with a "Block" tag
-        RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, 0.1f, Vector3.down, downwardCheckDistance, ~12);
-        Gizmos.DrawSphere(transform.position, 0.1f); // Add a small offset
+        RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, downwardCheckDistance, ~12);
+        Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
         
         foreach (RaycastHit sphereHit in sphereHitsBlock)
         {
             if (sphereHit.collider.CompareTag("Block"))
             {
+
                 //if (currentCubeFloor != sphereHit.transform.gameObject) { }
         
                 targetPos = sphereHit.collider.transform.position;
@@ -305,8 +309,9 @@ public class MoveCubeMechanic : vPushActionController
                         {
                             // behind player
                             case 0:
+                                Debug.Log("Colliding from the back!");
                                 _canPullBack = false; 
-                                if (inputDirection.z > 0 && !pushPoint.canPushForward)
+                                if (inputDirection.z > 0)
                                 {
                                     //inputDirection.z = 0;
                                 }
@@ -314,34 +319,34 @@ public class MoveCubeMechanic : vPushActionController
                                 {
                                     inputDirection.z = 0;
                                 }
+
                                 //inputWeight = 0;
-                                Debug.Log("Colliding from the back!");
                                 break;
+
                             // behind player - left-side
                             case 1:
                                 _canPullBackLeft = false;
-        
 
-     
                                 if (inputDirection.x < 0 && !canPullBackLeft)
                                 {
                                     inputDirection.x = 0;
                                 }
 
                                 //inputWeight = 0;
-
-                                Debug.Log("Colliding from the left!");
                                 break;
+
                             // behind player - right-side
                             case 2:
+                                Debug.Log("Colliding from the right!");
+
                                 _canPullBackRight = false;
+
                                 if (inputDirection.x > 0 && !canPullBackRight)
                                 {
                                     inputDirection.x = 0;
                                 }
-                                //inputWeight = 0;
 
-                                Debug.Log("Colliding from the right!");
+                                //inputWeight = 0;
                                 break;
                             default: break;
                         }
