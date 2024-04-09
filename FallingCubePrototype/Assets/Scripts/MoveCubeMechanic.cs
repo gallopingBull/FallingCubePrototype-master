@@ -271,14 +271,18 @@ public class MoveCubeMechanic : vPushActionController
         // Perform a spherecast to check for game objects with a "Block" tag
         RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, downwardCheckDistance, ~12);
         Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
-        
+        Gizmos.color = sphereHitsBlock.Length != 0 ? Color.red : Color.green;   
+        foreach (var GO in sphereHitsBlock)
+        {
+            Debug.Log($"this GO is in the current sphereHitBlock: {GO.transform.gameObject}");
+        }
         foreach (RaycastHit sphereHit in sphereHitsBlock)
         {
-            if (sphereHit.collider.CompareTag("Block"))
+            if (sphereHit.collider.CompareTag("Block") /*&& currentCubeFloor != sphereHit.transform.gameObject*/)
             {
-
+                Debug.Log($"asigning new targetPos using {sphereHit.transform.name}");
                 //if (currentCubeFloor != sphereHit.transform.gameObject) { }
-        
+                //currentCubeFloor = sphereHit.transform.gameObject;
                 targetPos = sphereHit.collider.transform.position;
                 targetPos += detectionOffSets;
                 //Debug.Log($"new targetPos: {targetPos}");
