@@ -229,16 +229,16 @@ public class MoveCubeMechanic : vPushActionController
         {
             inputDirection.z = 0;
         }
-        else if (inputDirection.z < 0 && (!pushPoint.canPushBack || isCollidingBack || !canPullBack))
+        else if (inputDirection.z < 0 && (!pushPoint.canPushBack || isCollidingBack))
         {
             inputDirection.z = 0;
         }
 
-        if (inputDirection.x > 0 && (!pushPoint.canPushRight || isCollidingRight || !canPullBackRight))
+        if (inputDirection.x > 0 && (!pushPoint.canPushRight || isCollidingRight))
         {
             inputDirection.x = 0;
         }
-        else if (inputDirection.x < 0 && (!pushPoint.canPushLeft || isCollidingLeft || !canPullBackLeft))
+        else if (inputDirection.x < 0 && (!pushPoint.canPushLeft || isCollidingLeft))
         {
             inputDirection.x = 0;
         }
@@ -305,17 +305,42 @@ public class MoveCubeMechanic : vPushActionController
                         {
                             // behind player
                             case 0:
-                                _canPullBack = false;
+                                _canPullBack = false; 
+                                if (inputDirection.z > 0 && !pushPoint.canPushForward)
+                                {
+                                    //inputDirection.z = 0;
+                                }
+                                else if (inputDirection.z < 0 && !canPullBack)
+                                {
+                                    inputDirection.z = 0;
+                                }
+                                //inputWeight = 0;
                                 Debug.Log("Colliding from the back!");
                                 break;
                             // behind player - left-side
                             case 1:
                                 _canPullBackLeft = false;
+        
+
+     
+                                if (inputDirection.x < 0 && !canPullBackLeft)
+                                {
+                                    inputDirection.x = 0;
+                                }
+
+                                //inputWeight = 0;
+
                                 Debug.Log("Colliding from the left!");
                                 break;
                             // behind player - right-side
                             case 2:
                                 _canPullBackRight = false;
+                                if (inputDirection.x > 0 && !canPullBackRight)
+                                {
+                                    inputDirection.x = 0;
+                                }
+                                //inputWeight = 0;
+
                                 Debug.Log("Colliding from the right!");
                                 break;
                             default: break;
