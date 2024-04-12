@@ -220,6 +220,7 @@ public class MoveCubeMechanic : vPushActionController
         {
             if (sphereHit.collider.CompareTag("Player"))
             {
+                Debug.Log("skipping player!!");
                 continue;
             }
             if (sphereHit.collider.CompareTag("Block") /*&& currentCubeFloor != sphereHit.transform.gameObject*/)
