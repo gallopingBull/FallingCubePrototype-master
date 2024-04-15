@@ -206,12 +206,13 @@ public class MoveCubeMechanic : vPushActionController
 
         
         Vector3 targetPos = new Vector3();
-        //int layer_mask = LayerMask.GetMask("Player");
+        int layer_mask = LayerMask.GetMask("BlockDetection");
 
         // Perform a spherecast to check for game objects with a "Block" tag
-        RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, downwardCheckDistance, ~12);
+        RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, downwardCheckDistance,layer_mask);
+        Gizmos.color = sphereHitsBlock.Length > 1 ? Color.red : Color.green;
         Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
-        Gizmos.color = sphereHitsBlock.Length != 0 ? Color.red : Color.green;   
+        Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock.Length}");
         foreach (var GO in sphereHitsBlock)
         {
             Debug.Log($"this GO is in the current sphereHitBlock: {GO.transform.gameObject}");
@@ -220,15 +221,17 @@ public class MoveCubeMechanic : vPushActionController
         {
             if (sphereHit.collider.CompareTag("Player"))
             {
-                Debug.Log("skipping player!!");
+                //Debug.Log("skipping player!!");
                 continue;
             }
-            if (sphereHit.collider.CompareTag("Block") /*&& currentCubeFloor != sphereHit.transform.gameObject*/)
+            if (sphereHit.collider.CompareTag("Block") /*   && currentCubeFloor != sphereHit.transform.gameObject*/)
             {
                 Debug.Log($"asigning new targetPos using {sphereHit.transform.name}");
-                //if (currentCubeFloor != sphereHit.transform.gameObject) { }
-                //currentCubeFloor = sphereHit.transform.gameObject;
-                targetPos = sphereHit.collider.transform.position;
+                if (currentCubeFloor != sphereHit.transform.gameObject) {
+                    //currentCubeFloor = sphereHit.transform.gameObject;
+                }
+
+                  targetPos = currentCubeFloor.transform.position;
                 targetPos += detectionOffSets;
                 //Debug.Log($"new targetPos: {targetPos}");
                 break; // Exit the loop after drawing the first hit
@@ -242,23 +245,23 @@ public class MoveCubeMechanic : vPushActionController
             Vector3[] directions = { -transform.forward, -transform.right, transform.right };
             for (int i = 0; i < directions.Length; i++)
             {
-                Debug.Log("!!!!!!!!");
+                //Debug.Log("!!!!!!!!");
                 // Shoot a ray in the current direction
                 RaycastHit hit1;
                 bool hitCubeInCurrentDirection = Physics.Raycast(targetPos, directions[i], out hit1, checkDistance);
                 float currentDirectionDistance = hitCubeInCurrentDirection ? hit1.distance : checkDistance;
                 Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
-                Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
+                //Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
                 if (hitCubeInCurrentDirection)
                 {
-                    Debug.Log($"ray[{i}] hitting {hit1.transform.name} @ {hit1.transform.position}");
-                    Debug.Log($"player postion: {transform.position}");
+                    //Debug.Log($"ray[{i}] hitting {hit1.transform.name} @ {hit1.transform.position}");
+                    //Debug.Log($"player postion: {transform.position}");
                     if (hit1.collider.CompareTag("Player"))
                     {
                         continue;
                     }
 
-                    Debug.Log($"is player in position: {transform.position == hit1.transform.position}\n\t");
+                   // Debug.Log($"is player in position: {transform.position == hit1.transform.position}\n\t");
                     if (hit1.transform.CompareTag("Block") && transform.position == hit1.transform.position)
                     {        
                         switch (i)
