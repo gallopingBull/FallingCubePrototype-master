@@ -6633,6 +6633,10 @@ PrefabInstance:
       propertyPath: selectedToolbar
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 524289
+      objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313719, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: debugMode
       value: 0
@@ -6703,7 +6707,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: sphereSize
-      value: 0.25
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: checkDistance

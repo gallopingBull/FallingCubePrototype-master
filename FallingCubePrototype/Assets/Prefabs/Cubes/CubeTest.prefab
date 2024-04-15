@@ -84792,6 +84792,7 @@ MonoBehaviour:
   m_MaxDistance: 15
   BoxColliderSize: 0.5
   ClimbingCollider: {fileID: 4172563618177574095}
+  snapThreshold: 0.1
 --- !u!114 &213847337142301523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85719,7 +85720,7 @@ GameObject:
   - component: {fileID: 8384258179952458544}
   - component: {fileID: 8473027575434832621}
   - component: {fileID: 5886772368633546326}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: CubeMesh
   m_TagString: Block
   m_Icon: {fileID: 0}
