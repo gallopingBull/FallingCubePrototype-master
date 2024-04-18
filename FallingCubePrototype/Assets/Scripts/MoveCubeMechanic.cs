@@ -210,6 +210,7 @@ public class MoveCubeMechanic : vPushActionController
     {
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider || !isStarted) return;
 
+        // TODO: Check if player is moving forward or back. If they are, side detections should be ignored.
         //var forwardDirection = Vector3.Dot(transform.forward, new Vector3(inputDirection.x, 0f, inputDirection.z));
         //var rightDirection = Vector3.Dot(transform.right, new Vector3(inputDirection.x, 0f, inputDirection.z));
         //
@@ -275,8 +276,10 @@ public class MoveCubeMechanic : vPushActionController
                     //Debug.Log($"inputDirection.x: {inputDirection.x}");
                     //Debug.Log($"inputDirection.z: {inputDirection.z}");
 
-                    Debug.Log($"is player in position: {pushPoint.targetBody.position == hit1.transform.position}");
-                    if (CheckDistance(pushPoint.targetBody.position, hit1.transform.position))
+                    // TODO: I want to check against the correct cube position that hit1 is suppose to be hitting.
+                    // Maybe I should offset hit1.transform.position by cube size so the player stops exactly on top or next to a cube.
+                    Debug.Log($"is pushbody in position: {transform.position == hit1.transform.position}");
+                    if (CheckDistance(transform.position, hit1.transform.position))
                     {
                         switch (i)
                         {
@@ -338,6 +341,8 @@ public class MoveCubeMechanic : vPushActionController
                             default: break;
 
                         }
+
+                        // TODO: is there a better way of freezing the cube in place if its near another cube?
                         pushPoint.targetBody.position = pushPoint.targetBody.position;
                         //  inputWeight = 1f;
                     }
