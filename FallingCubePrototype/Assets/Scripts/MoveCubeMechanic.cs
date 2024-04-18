@@ -1,6 +1,7 @@
 ﻿using System;
 using Invector;
 using Invector.vCharacterController;
+using TMPro;
 using UnityEngine;
 
 // TODO: Only check for adjacent cubes for the current cube the player is standing when they's push/pullling cube.
@@ -28,7 +29,7 @@ public class MoveCubeMechanic : vPushActionController
 
     private bool canPullBack, canPullBackLeft, canPullBackRight;
     Vector3 targetPos = new Vector3();
-    int layer_mask;
+    int layerMask;
     public float maxDistance = 4; //2.3f;
 
     // Start is called before the first frame update
@@ -40,7 +41,7 @@ public class MoveCubeMechanic : vPushActionController
         maxGridSize.x--;
         maxGridSize.y--;
 
-        layer_mask = LayerMask.GetMask("Cube");
+        layerMask = LayerMask.GetMask("Cube");
 
         OnNewCubePosition += SetNewFloorCube;
         OnExitCubePosition += RemoveNewFloorCube;
@@ -208,14 +209,22 @@ public class MoveCubeMechanic : vPushActionController
     private void OnDrawGizmos()
     {
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider || !isStarted) return;
-        
+
+        //var forwardDirection = Vector3.Dot(transform.forward, new Vector3(inputDirection.x, 0f, inputDirection.z));
+        //var rightDirection = Vector3.Dot(transform.right, new Vector3(inputDirection.x, 0f, inputDirection.z));
+        //
+        //Debug.Log($"forwardDirection: {forwardDirection}");
+        //Debug.Log($"rightDirection: {rightDirection}");
+        //if (forwardDirection > .9f)
+        //    return;
+
         bool _canPullBack = false;
         bool _canPullBackLeft = false;
         bool _canPullBackRight = false;
 
 
         // Perform a spherecast to check for game objects with a "Block" tag
-        RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layer_mask);
+        RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layerMask);
         Gizmos.color = sphereHitsBlock.Length > 1 ? Color.red : Color.green;
         Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
         //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock.Length}");
@@ -257,7 +266,7 @@ public class MoveCubeMechanic : vPushActionController
             {
                 // Shoot a ray in the current direction
                 RaycastHit hit1;
-                bool hitCubeInCurrentDirection = Physics.Raycast(targetPos, directions[i], out hit1, checkDistance, layer_mask);
+                bool hitCubeInCurrentDirection = Physics.Raycast(targetPos, directions[i], out hit1, checkDistance, layerMask);
                 float currentDirectionDistance = hitCubeInCurrentDirection ? hit1.distance : checkDistance;
                 Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
                 //Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
@@ -266,8 +275,8 @@ public class MoveCubeMechanic : vPushActionController
                     //Debug.Log($"inputDirection.x: {inputDirection.x}");
                     //Debug.Log($"inputDirection.z: {inputDirection.z}");
 
-                    Debug.Log($"is player in position: {transform.position == hit1.transform.position}");
-                    if (CheckDistance(transform.position, hit1.transform.position))
+                    Debug.Log($"is player in position: {pushPoint.targetBody.position == hit1.transform.position}");
+                    if (CheckDistance(pushPoint.targetBody.position, hit1.transform.position))
                     {
                         switch (i)
                         {
@@ -341,11 +350,11 @@ public class MoveCubeMechanic : vPushActionController
                 Gizmos.DrawSphere(downwardPosition, .1f);
 
                 // Shoot a ray downward from the end point of the previous ray
-                bool hitCubeUnderneath = Physics.Raycast(downwardPosition, Vector3.down, out hit1, downwardCheckDistance, layer_mask);
+                bool hitCubeUnderneath = Physics.Raycast(downwardPosition, Vector3.down, out hit1, downwardCheckDistance, layerMask);
                 float downwardRayDistance = hitCubeUnderneath ? hit1.distance : downwardCheckDistance;
 
                 // Perform a spherecast at the downward position
-                RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition, 0.1f, Vector3.down, downwardCheckDistance, layer_mask);
+                RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition, 0.1f, Vector3.down, downwardCheckDistance, layerMask);
                 Gizmos.DrawSphere(downwardPosition, .1f);
 
                 if (hitCubeUnderneath)
