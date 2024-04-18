@@ -26,8 +26,10 @@ public class MoveCubeMechanic : vPushActionController
     public float sphereSize = 1f;
     
 
-    private bool canPullBack, canPullBackLeft, canPullBackRight;    
-
+    private bool canPullBack, canPullBackLeft, canPullBackRight;
+    Vector3 targetPos = new Vector3();
+    int layer_mask;
+    public float maxDistance = 4; //2.3f;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -37,6 +39,8 @@ public class MoveCubeMechanic : vPushActionController
         // n - 1 to account for 0-based index
         maxGridSize.x--;
         maxGridSize.y--;
+
+        layer_mask = LayerMask.GetMask("Cube");
 
         OnNewCubePosition += SetNewFloorCube;
         OnExitCubePosition += RemoveNewFloorCube;
@@ -196,15 +200,10 @@ public class MoveCubeMechanic : vPushActionController
         return distance < maxDistance;
     }
 
-
     private void OnDestroy()
     {
         OnNewCubePosition -= SetNewFloorCube;
     }
-
-    Vector3 targetPos = new Vector3();
-    int layer_mask;
-    private float maxDistance = 2.3f;
 
     private void OnDrawGizmos()
     {
@@ -215,7 +214,6 @@ public class MoveCubeMechanic : vPushActionController
         bool _canPullBackRight = false;
 
 
-        layer_mask = LayerMask.GetMask("Cube");
         // Perform a spherecast to check for game objects with a "Block" tag
         RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layer_mask);
         Gizmos.color = sphereHitsBlock.Length > 1 ? Color.red : Color.green;
@@ -265,8 +263,8 @@ public class MoveCubeMechanic : vPushActionController
                 //Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
                 if (hitCubeInCurrentDirection)
                 {
-                    Debug.Log($"inputDirection.x: {inputDirection.x}");
-                    Debug.Log($"inputDirection.z: {inputDirection.z}");
+                    //Debug.Log($"inputDirection.x: {inputDirection.x}");
+                    //Debug.Log($"inputDirection.z: {inputDirection.z}");
 
                     Debug.Log($"is player in position: {transform.position == hit1.transform.position}");
                     if (CheckDistance(transform.position, hit1.transform.position))
@@ -331,7 +329,8 @@ public class MoveCubeMechanic : vPushActionController
                             default: break;
 
                         }
-                        inputWeight = 1f;
+                        pushPoint.targetBody.position = pushPoint.targetBody.position;
+                        //  inputWeight = 1f;
                     }
                 }
 
