@@ -212,7 +212,7 @@ public class MoveCubeMechanic : vPushActionController
 
         var movementInput = new Vector3(inputHorizontal, 0, inputVertical);
 
-        // Normalize the movement input vector to avoid considering the magnitude of the input
+        // check if player is moving cube forward.
         if (movementInput.magnitude > 0.1f /*&& (inputHorizontal < .5f && inputHorizontal > -.5f)*/)
         {
             movementInput.Normalize();
@@ -229,11 +229,13 @@ public class MoveCubeMechanic : vPushActionController
             if (dotProduct > 0)
             {
                 Debug.Log("Player is moving forward relative to the camera angle");
+                movingForward = true;
             }
             // If the dot product is negative, the player is moving backward
             else if (dotProduct < 0)
             {
                 Debug.Log("Player is moving backward relative to the camera angle");
+                movingForward = false;
             }
         }
 
@@ -290,9 +292,6 @@ public class MoveCubeMechanic : vPushActionController
                 //Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
                 if (hitCubeInCurrentDirection)
                 {
-                    //Debug.Log($"inputDirection.x: {inputDirection.x}");
-                    //Debug.Log($"inputDirection.z: {inputDirection.z}");
-
                     // TODO: I want to check against the correct cube position that hit1 is suppose to be hitting.
                     // Maybe I should offset hit1.transform.position by cube size so the player stops exactly on top or next to a cube.
                     Debug.Log($"is pushbody in position: {transform.position == hit1.transform.position}");
@@ -308,33 +307,35 @@ public class MoveCubeMechanic : vPushActionController
                                 if (inputDirection.z > 0) { /*inputDirection.z = 0;*/ }
                                 else if (inputDirection.z < 0 && !canPullBack)
                                     inputDirection.z = 0;
-                                //inputWeight = 0;
+                                inputWeight = 0;
                                 break;
 
                             // behind player - left-side
                             case 1:
                                 Debug.Log("Colliding from the left!");
+                                if (!movingForward) { break; }
 
                                 _canPullBackLeft = false;
                                 if (inputDirection.x < 0 && !canPullBackLeft)
                                     inputDirection.x = 0;
-                                //inputWeight = 0;
+                                inputWeight = 0;
                                 break;
 
                             // behind player - right-side
                             case 2:
                                 Debug.Log("Colliding from the right!");
+                                if (!movingForward) { break; }
 
                                 _canPullBackRight = false;
                                 if (inputDirection.x > 0 && !canPullBackRight)
                                     inputDirection.x = 0;
 
-                                //inputWeight = 0;
+                                inputWeight = 0;
                                 break;
                             default: break;
                         }
 
-                        inputWeight = 0f;
+           
                     }
                     else
                     {
