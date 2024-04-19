@@ -210,14 +210,38 @@ public class MoveCubeMechanic : vPushActionController
     {
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider || !isStarted) return;
 
-        // TODO: Check if player is moving forward or back. If they are, side detections should be ignored.
-        //var forwardDirection = Vector3.Dot(transform.forward, new Vector3(inputDirection.x, 0f, inputDirection.z));
-        //var rightDirection = Vector3.Dot(transform.right, new Vector3(inputDirection.x, 0f, inputDirection.z));
-        //
-        //Debug.Log($"forwardDirection: {forwardDirection}");
-        //Debug.Log($"rightDirection: {rightDirection}");
-        //if (forwardDirection > .9f)
-        //    return;
+        var movementInput = new Vector3(inputVertical, 0, inputHorizontal);
+
+        // Normalize the movement input vector to avoid considering the magnitude of the input
+        if (movementInput.magnitude > 0.1f && (inputHorizontal < .5f && inputHorizontal > -.5f))
+        {   
+            movementInput.Normalize();
+
+            Vector3 cameraRight = cameraTransform.right;
+            cameraRight.y = 0;
+            cameraRight.Normalize();
+
+            // Get the forward direction of the camera, but zero out the y component to make it a flat direction
+            Vector3 cameraForward = cameraTransform.forward;
+            cameraForward = Quaternion.AngleAxis(-90, Vector3.up) * cameraRight;
+
+            cameraForward.y = 0;
+            cameraForward.Normalize();
+
+            // Calculate the dot product between the movement input and the camera's forward direction
+            float dotProduct = Vector3.Dot(movementInput, cameraForward);
+
+            // If the dot product is positive, the player is moving forward
+            if (dotProduct > 0)
+            {
+                Debug.Log("Player is moving forward relative to the camera angle");
+            }
+            // If the dot product is negative, the player is moving backward
+            else if (dotProduct < 0)
+            {
+                Debug.Log("Player is moving backward relative to the camera angle");
+            }
+        }
 
         bool _canPullBack = false;
         bool _canPullBackLeft = false;
