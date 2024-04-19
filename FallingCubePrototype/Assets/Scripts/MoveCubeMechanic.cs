@@ -25,8 +25,8 @@ public class MoveCubeMechanic : vPushActionController
     public static Action OnExitCubePosition;
 
     public float sphereSize = 1f;
-    
 
+    private bool movingForward = false;
     private bool canPullBack, canPullBackLeft, canPullBackRight;
     Vector3 targetPos = new Vector3();
     int layerMask;
@@ -210,26 +210,20 @@ public class MoveCubeMechanic : vPushActionController
     {
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider || !isStarted) return;
 
-        var movementInput = new Vector3(inputVertical, 0, inputHorizontal);
+        var movementInput = new Vector3(inputHorizontal, 0, inputVertical);
 
         // Normalize the movement input vector to avoid considering the magnitude of the input
-        if (movementInput.magnitude > 0.1f && (inputHorizontal < .5f && inputHorizontal > -.5f))
-        {   
+        if (movementInput.magnitude > 0.1f /*&& (inputHorizontal < .5f && inputHorizontal > -.5f)*/)
+        {
             movementInput.Normalize();
 
-            Vector3 cameraRight = cameraTransform.right;
-            cameraRight.y = 0;
-            cameraRight.Normalize();
-
-            // Get the forward direction of the camera, but zero out the y component to make it a flat direction
-            Vector3 cameraForward = cameraTransform.forward;
-            cameraForward = Quaternion.AngleAxis(-90, Vector3.up) * cameraRight;
-
-            cameraForward.y = 0;
-            cameraForward.Normalize();
+            // Calculate the forward direction of the player (or game object) on the XZ plane
+            Vector3 playerForward = pushPoint.targetBody.transform.forward;
+            playerForward.y = 0;
+            playerForward.Normalize();
 
             // Calculate the dot product between the movement input and the camera's forward direction
-            float dotProduct = Vector3.Dot(movementInput, cameraForward);
+            float dotProduct = Vector3.Dot(movementInput, playerForward);
 
             // If the dot product is positive, the player is moving forward
             if (dotProduct > 0)
@@ -246,7 +240,6 @@ public class MoveCubeMechanic : vPushActionController
         bool _canPullBack = false;
         bool _canPullBackLeft = false;
         bool _canPullBackRight = false;
-
 
         // Perform a spherecast to check for game objects with a "Block" tag
         RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layerMask);
