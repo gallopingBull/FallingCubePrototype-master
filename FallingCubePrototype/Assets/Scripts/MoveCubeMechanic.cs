@@ -209,28 +209,43 @@ public class MoveCubeMechanic : vPushActionController
     // TODO: A lot of thhs code should be moved in to MoveInput()
     private void OnDrawGizmos()
     {
-        if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider || !isStarted) return;
+        if (tpInput.enabled || !isPushingPulling || !pushPoint || isStoping) return;
 
-        var movementInput = new Vector3(inputHorizontal, 0, inputVertical);
-    
-        movementInput.Normalize();
-        if (movementInput.magnitude > 0.1f)
+        tpInput.CameraInput();
+
+        inputHorizontal = tpInput.horizontalInput.GetAxis();
+        inputVertical = tpInput.verticallInput.GetAxis();
+        if (Mathf.Abs(inputHorizontal) > 0.5f)
         {
-            movementInput.Normalize();
-
-            Vector3 cameraRight = cameraTransform.right;
-            cameraRight.y = 0;
-            cameraRight.Normalize();
-            Vector3 cameraForward = Quaternion.AngleAxis(-90, Vector3.up) * cameraRight;
-
-            // Calculate the forward direction of the player (or game object) on the XZ plane
-            Vector3 playerForward = transform.forward;
-            playerForward.y = 0;
-            playerForward.Normalize();
-
-            inputDirection = cameraForward * inputVertical + cameraRight * inputHorizontal;
-            inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
+            inputVertical = 0;
         }
+        else if (Mathf.Abs(inputVertical) > 0.5f)
+        {
+            inputHorizontal = 0;
+        }
+
+        if (Mathf.Abs(inputHorizontal) < 0.8f)
+        {
+            inputHorizontal = 0;
+        }
+
+        if (Mathf.Abs(inputVertical) < 0.8f)
+        {
+            inputVertical = 0;
+        }
+
+        Vector3 cameraRight = cameraTransform.right;
+        cameraRight.y = 0;
+        cameraRight.Normalize();
+        Vector3 cameraForward = Quaternion.AngleAxis(-90, Vector3.up) * cameraRight;
+
+        // Calculate the forward direction of the player (or game object) on the XZ plane
+        Vector3 playerForward = transform.forward;
+        playerForward.y = 0;
+        playerForward.Normalize();
+
+        inputDirection = cameraForward * inputVertical + cameraRight * inputHorizontal;
+        inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
 
         bool _canPullBack = false;
         bool _canPullBackLeft = false;
@@ -240,7 +255,7 @@ public class MoveCubeMechanic : vPushActionController
         RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layerMask);
         Gizmos.color = sphereHitsBlock.Length > 1 ? Color.red : Color.green;
         Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
-        //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock.Length}");
+                                                           //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock.Length}");
 
         // Check cubes underneath player
         foreach (var GO in sphereHitsBlock)
@@ -298,10 +313,7 @@ public class MoveCubeMechanic : vPushActionController
 
                                 _canPullBack = false;
                                 if (inputDirection.z < 0)
-                                {
                                     inputDirection.z = 0;
-                                    //inputWeight = 0;
-                                }
 
                                 break;
 
@@ -311,11 +323,7 @@ public class MoveCubeMechanic : vPushActionController
 
                                 _canPullBackLeft = false;
                                 if (inputDirection.x < 0)
-                                {
                                     inputDirection.x = 0;
-                                    //inputWeight = 0;
-                                }
-
 
                                 break;
 
@@ -325,10 +333,8 @@ public class MoveCubeMechanic : vPushActionController
 
                                 _canPullBackRight = false;
                                 if (inputDirection.x > 0)
-                                {
                                     inputDirection.x = 0;
-                                    //inputWeight = 0;
-                                }
+
                                 break;
                             default: break;
                         }
@@ -401,11 +407,9 @@ public class MoveCubeMechanic : vPushActionController
                             Debug.Log("no cube underneath you from behind!");
 
                             _canPullBack = false;
-                            if (inputDirection.z < 0 && !canPullBack)
-                            {
+                            if (inputDirection.z < 0)
                                 inputDirection.z = 0;
-                                //inputWeight = 0;
-                            }
+
                             break;
 
                         // behind player - left-side
@@ -413,11 +417,9 @@ public class MoveCubeMechanic : vPushActionController
                             Debug.Log("no cube underneath you from left-side!");
 
                             _canPullBackLeft = false;
-                            if (inputDirection.x < 0 && !canPullBackLeft)
-                            {
+                            if (inputDirection.x < 0)
                                 inputDirection.x = 0;
-                                //inputWeight = 0;
-                            }
+
                             break;
 
                         // behind player - right-side
@@ -425,13 +427,11 @@ public class MoveCubeMechanic : vPushActionController
                             Debug.Log("no cube underneath you from right-side!");
 
                             _canPullBackRight = false;
-                            if (inputDirection.x > 0 && !canPullBackRight)
-                            {
+                            if (inputDirection.x > 0)
                                 inputDirection.x = 0;
-                                //inputWeight = 0;
-                            }
 
                             break;
+
                         default: break;
                     }
 
@@ -453,7 +453,6 @@ public class MoveCubeMechanic : vPushActionController
                 Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
             }
         }
-
 
         canPullBack = _canPullBack;
         canPullBackLeft = _canPullBackLeft;
