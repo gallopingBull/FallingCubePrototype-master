@@ -1,11 +1,8 @@
 ﻿using System;
 using Invector;
 using Invector.vCharacterController;
-using TMPro;
 using UnityEngine;
 
-// TODO: Only check for adjacent cubes for the current cube the player is standing when they's push/pullling cube.
-// When the player moves to another cube, cube detection should be intialized to ready for the player to start moving a cube.
 public class MoveCubeMechanic : vPushActionController
 {
     private float cubeScale = 2f; // Default cube scale
@@ -26,10 +23,8 @@ public class MoveCubeMechanic : vPushActionController
 
     public float sphereSize = 1f;
 
-    private bool movingForward = false;
-    private bool canPullBack, canPullBackLeft, canPullBackRight;
-    Vector3 targetPos = new Vector3();
-    int layerMask;
+    private Vector3 targetPos = new Vector3();
+    private int layerMask;
     public float maxDistance = 4; //2.3f;
 
     // Start is called before the first frame update
@@ -247,15 +242,11 @@ public class MoveCubeMechanic : vPushActionController
         inputDirection = cameraForward * inputVertical + cameraRight * inputHorizontal;
         inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
 
-        bool _canPullBack = false;
-        bool _canPullBackLeft = false;
-        bool _canPullBackRight = false;
-
         // Perform a spherecast to check for game objects with a "Block" tag
         RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layerMask);
         Gizmos.color = sphereHitsBlock.Length > 1 ? Color.red : Color.green;
         Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
-                                                           //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock.Length}");
+        //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock.Length}");
 
         // Check cubes underneath player
         foreach (var GO in sphereHitsBlock)
@@ -310,8 +301,6 @@ public class MoveCubeMechanic : vPushActionController
                             // behind player
                             case 0:
                                 Debug.Log("Colliding from the back!");
-
-                                _canPullBack = false;
                                 if (inputDirection.z < 0)
                                     inputDirection.z = 0;
 
@@ -320,8 +309,6 @@ public class MoveCubeMechanic : vPushActionController
                             // behind player - left-side
                             case 1:
                                 Debug.Log("Colliding from the left!");
-
-                                _canPullBackLeft = false;
                                 if (inputDirection.x < 0)
                                     inputDirection.x = 0;
 
@@ -330,42 +317,20 @@ public class MoveCubeMechanic : vPushActionController
                             // behind player - right-side
                             case 2:
                                 Debug.Log("Colliding from the right!");
-
-                                _canPullBackRight = false;
                                 if (inputDirection.x > 0)
                                     inputDirection.x = 0;
 
                                 break;
-                            default: break;
+                            
+                            default: 
+                                break;
                         }
                         //continue;
                     }
                     else
                     {
-                        switch (i)
-                        {
-                            // behind player
-                            case 0:
-                                _canPullBack = true;
-                                Debug.Log("Not Colliding from the back!");
-                                break;
-                            // behind player - left-side
-                            case 1:
-                                _canPullBackLeft = true;
-                                Debug.Log("Not Colliding from the left!");
-                                break;
-                            // behind player - right-side
-                            case 2:
-                                _canPullBackRight = true;
-                                Debug.Log("Not Colliding from the right!");
-                                break;
-                            default: break;
-
-                        }
-
                         // TODO: is there a better way of freezing the cube in place if its near another cube?
                         pushPoint.targetBody.position = pushPoint.targetBody.position;
-                        //  inputWeight = 1f;
                     }
                 }
 
@@ -398,15 +363,13 @@ public class MoveCubeMechanic : vPushActionController
                         }
                     }
                 }
-                else if (!hitCubeUnderneath && !hitCubeInCurrentDirection)
+                else if (!hitCubeUnderneath && !hitCubeInCurrentDirection /*&& CheckDistance(transform.position, hit1.transform.position)*/)
                 {
                     switch (i)
                     {
                         // behind player
                         case 0:
                             Debug.Log("no cube underneath you from behind!");
-
-                            _canPullBack = false;
                             if (inputDirection.z < 0)
                                 inputDirection.z = 0;
 
@@ -415,8 +378,6 @@ public class MoveCubeMechanic : vPushActionController
                         // behind player - left-side
                         case 1:
                             Debug.Log("no cube underneath you from left-side!");
-
-                            _canPullBackLeft = false;
                             if (inputDirection.x < 0)
                                 inputDirection.x = 0;
 
@@ -425,14 +386,13 @@ public class MoveCubeMechanic : vPushActionController
                         // behind player - right-side
                         case 2:
                             Debug.Log("no cube underneath you from right-side!");
-
-                            _canPullBackRight = false;
                             if (inputDirection.x > 0)
                                 inputDirection.x = 0;
 
                             break;
 
-                        default: break;
+                        default: 
+                            break;
                     }
 
                     Gizmos.color = sphereHits.Length == 0 ? Color.red : Color.green;
@@ -440,22 +400,15 @@ public class MoveCubeMechanic : vPushActionController
                 }
 
                 if (inputDirection.magnitude > 0.1f)
-                {
                     inputWeight = Mathf.Lerp(inputWeight, 1, Time.deltaTime * animAcceleration);
-                }
                 else
-                {
                     inputWeight = Mathf.Lerp(inputWeight, 0, Time.deltaTime * animAcceleration);
-                }
+
 
                 // Draw a line downward
                 Gizmos.color = hitCubeUnderneath ? Color.yellow : Color.white;
                 Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
             }
         }
-
-        canPullBack = _canPullBack;
-        canPullBackLeft = _canPullBackLeft;
-        canPullBackRight = _canPullBackRight;
     }
 }
