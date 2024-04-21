@@ -212,32 +212,24 @@ public class MoveCubeMechanic : vPushActionController
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider || !isStarted) return;
 
         var movementInput = new Vector3(inputHorizontal, 0, inputVertical);
-
-        // check if player is moving cube forward.
-        if (movementInput.magnitude > 0.1f /*&& (inputHorizontal < .5f && inputHorizontal > -.5f)*/)
+    
+        movementInput.Normalize();
+        if (movementInput.magnitude > 0.1f)
         {
             movementInput.Normalize();
+
+            Vector3 cameraRight = cameraTransform.right;
+            cameraRight.y = 0;
+            cameraRight.Normalize();
+            Vector3 cameraForward = Quaternion.AngleAxis(-90, Vector3.up) * cameraRight;
 
             // Calculate the forward direction of the player (or game object) on the XZ plane
             Vector3 playerForward = transform.forward;
             playerForward.y = 0;
             playerForward.Normalize();
 
-            // Calculate the dot product between the movement input and the camera's forward direction
-            float dotProduct = Vector3.Dot(movementInput, playerForward);
-
-            // If the dot product is positive, the player is moving forward
-            if (dotProduct > 0)
-            {
-                Debug.Log("Player is moving forward relative to the camera angle");
-                movingForward = true;
-            }
-            // If the dot product is negative, the player is moving backward
-            else if (dotProduct < 0)
-            {
-                Debug.Log("Player is moving backward relative to the camera angle");
-                movingForward = false;
-            }
+            inputDirection = cameraForward * inputVertical + cameraRight * inputHorizontal;
+            inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
         }
 
         bool _canPullBack = false;
@@ -305,49 +297,42 @@ public class MoveCubeMechanic : vPushActionController
                                 Debug.Log("Colliding from the back!");
 
                                 _canPullBack = false;
-                                if (inputDirection.z > 0) { /*inputDirection.z = 0;*/ }
-                                else if (inputDirection.z < 0 && !canPullBack)
+                                if (inputDirection.z < 0)
                                 {
                                     inputDirection.z = 0;
-                                    inputWeight = 0;
+                                    //inputWeight = 0;
                                 }
-                                    
+
                                 break;
 
                             // behind player - left-side
                             case 1:
                                 Debug.Log("Colliding from the left!");
-                                // this doesnt make sense. it should break when moving forward.
-                                if (movingForward) { break; }
 
                                 _canPullBackLeft = false;
-                                if (inputDirection.x < 0 && !canPullBackLeft)
+                                if (inputDirection.x < 0)
                                 {
                                     inputDirection.x = 0;
-                                    inputWeight = 0;
+                                    //inputWeight = 0;
                                 }
-                                
-                                
+
+
                                 break;
 
                             // behind player - right-side
                             case 2:
                                 Debug.Log("Colliding from the right!");
-                                
-                                // this doesnt make sense. it should break when moving forward.
-                                if (movingForward) { break; }
 
                                 _canPullBackRight = false;
-                                if (inputDirection.x > 0 && !canPullBackRight)
+                                if (inputDirection.x > 0)
                                 {
                                     inputDirection.x = 0;
-                                    inputWeight = 0;
+                                    //inputWeight = 0;
                                 }
-                                
-                                
                                 break;
                             default: break;
                         }
+                        //continue;
                     }
                     else
                     {
@@ -407,58 +392,60 @@ public class MoveCubeMechanic : vPushActionController
                         }
                     }
                 }
-                else
+                else if (!hitCubeUnderneath && !hitCubeInCurrentDirection)
                 {
-                    if (sphereHits.Length == 0)
+                    switch (i)
                     {
-                        switch (i)
-                        {
-                            // behind player
-                            case 0:
-                                Debug.Log("no cube underneath you from behind!");
+                        // behind player
+                        case 0:
+                            Debug.Log("no cube underneath you from behind!");
 
-                                _canPullBack = false;
-                                if (inputDirection.z < 0 && !canPullBack)
-                                {
-                                    inputDirection.z = 0;
-                                    inputWeight = 0;
-                                }
-                                break;
+                            _canPullBack = false;
+                            if (inputDirection.z < 0 && !canPullBack)
+                            {
+                                inputDirection.z = 0;
+                                //inputWeight = 0;
+                            }
+                            break;
 
-                            // behind player - left-side
-                            case 1:
-                                Debug.Log("no cube underneath you from left-side!");
+                        // behind player - left-side
+                        case 1:
+                            Debug.Log("no cube underneath you from left-side!");
 
-                                if (movingForward) { break; }
+                            _canPullBackLeft = false;
+                            if (inputDirection.x < 0 && !canPullBackLeft)
+                            {
+                                inputDirection.x = 0;
+                                //inputWeight = 0;
+                            }
+                            break;
 
-                                _canPullBackLeft = false;
-                                if (inputDirection.x < 0 && !canPullBackLeft)
-                                {
-                                    inputDirection.x = 0;
-                                    inputWeight = 0;
-                                }
-                                break;
+                        // behind player - right-side
+                        case 2:
+                            Debug.Log("no cube underneath you from right-side!");
 
-                            // behind player - right-side
-                            case 2:
-                                Debug.Log("no cube underneath you from right-side!");
-                                if (movingForward) { break; }
+                            _canPullBackRight = false;
+                            if (inputDirection.x > 0 && !canPullBackRight)
+                            {
+                                inputDirection.x = 0;
+                                //inputWeight = 0;
+                            }
 
-                                _canPullBackRight = false;
-                                if (inputDirection.x > 0 && !canPullBackRight)
-                                {
-                                    inputDirection.x = 0;
-                                    inputWeight = 0;
-                                }
-
-                                break;
-                            default: break;
-                        }
-
+                            break;
+                        default: break;
                     }
 
                     Gizmos.color = sphereHits.Length == 0 ? Color.red : Color.green;
                     Gizmos.DrawSphere(downwardPosition + Vector3.down * downwardCheckDistance, .1f);
+                }
+
+                if (inputDirection.magnitude > 0.1f)
+                {
+                    inputWeight = Mathf.Lerp(inputWeight, 1, Time.deltaTime * animAcceleration);
+                }
+                else
+                {
+                    inputWeight = Mathf.Lerp(inputWeight, 0, Time.deltaTime * animAcceleration);
                 }
 
                 // Draw a line downward
@@ -469,7 +456,7 @@ public class MoveCubeMechanic : vPushActionController
 
 
         canPullBack = _canPullBack;
-        canPullBackLeft = _canPullBackLeft; 
-        canPullBackRight = _canPullBackRight;   
+        canPullBackLeft = _canPullBackLeft;
+        canPullBackRight = _canPullBackRight;
     }
 }
