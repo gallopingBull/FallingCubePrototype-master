@@ -206,6 +206,8 @@ public class MoveCubeMechanic : vPushActionController
         OnNewCubePosition -= SetNewFloorCube;
     }
 
+
+    // TODO: A lot of thhs code should be moved in to MoveInput()
     private void OnDrawGizmos()
     {
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider || !isStarted) return;
@@ -306,8 +308,11 @@ public class MoveCubeMechanic : vPushActionController
                                 _canPullBack = false;
                                 if (inputDirection.z > 0) { /*inputDirection.z = 0;*/ }
                                 else if (inputDirection.z < 0 && !canPullBack)
+                                {
                                     inputDirection.z = 0;
-                                inputWeight = 0;
+                                    inputWeight = 0;
+                                }
+                                    
                                 break;
 
                             // behind player - left-side
@@ -317,8 +322,12 @@ public class MoveCubeMechanic : vPushActionController
 
                                 _canPullBackLeft = false;
                                 if (inputDirection.x < 0 && !canPullBackLeft)
+                                {
                                     inputDirection.x = 0;
-                                inputWeight = 0;
+                                    inputWeight = 0;
+                                }
+                                
+                                
                                 break;
 
                             // behind player - right-side
@@ -328,14 +337,15 @@ public class MoveCubeMechanic : vPushActionController
 
                                 _canPullBackRight = false;
                                 if (inputDirection.x > 0 && !canPullBackRight)
+                                {
                                     inputDirection.x = 0;
-
-                                inputWeight = 0;
+                                    inputWeight = 0;
+                                }
+                                
+                                
                                 break;
                             default: break;
                         }
-
-           
                     }
                     else
                     {
@@ -397,6 +407,52 @@ public class MoveCubeMechanic : vPushActionController
                 }
                 else
                 {
+                    switch (i)
+                    {
+                        // behind player
+                        case 0:
+                            Debug.Log("no cube underneath you from behind!");
+
+                            _canPullBack = false;
+                            if (inputDirection.z > 0) { /*inputDirection.z = 0;*/ }
+                            else if (inputDirection.z < 0 && !canPullBack)
+                            {
+                                inputDirection.z = 0;
+                                inputWeight = 0;
+                            }
+                                
+                            break;
+
+                        // behind player - left-side
+                        case 1:
+                            Debug.Log("no cube underneath you from left-side!");
+
+                            if (!movingForward) { break; }
+
+                            _canPullBackLeft = false;
+                            if (inputDirection.x < 0 && !canPullBackLeft)
+                            {
+                                inputDirection.x = 0;
+                                inputWeight = 0;
+                            }
+                            break;
+
+                        // behind player - right-side
+                        case 2:
+                            Debug.Log("no cube underneath you from right-side!");
+                            if (!movingForward) { break; }
+
+                            _canPullBackRight = false;
+                            if (inputDirection.x > 0 && !canPullBackRight)
+                            {
+                                inputDirection.x = 0;
+                                inputWeight = 0;
+                            }
+
+                            break;
+                        default: break;
+                    }
+                    Gizmos.color = sphereHits.Length == 0 ? Color.red : Color.green;
                     Gizmos.DrawSphere(downwardPosition + Vector3.down * downwardCheckDistance, .1f);
                 }
 
