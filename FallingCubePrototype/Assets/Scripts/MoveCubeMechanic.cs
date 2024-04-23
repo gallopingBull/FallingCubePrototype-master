@@ -204,7 +204,7 @@ public class MoveCubeMechanic : vPushActionController
     // TODO: A lot of thhs code should be moved in to MoveInput()
     private void OnDrawGizmos()
     {
-        if (tpInput.enabled || !isPushingPulling || !pushPoint || isStoping) return;
+        if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider  || tpInput.enabled || !isPushingPulling || !pushPoint || isStoping) return;
 
         tpInput.CameraInput();
 
@@ -212,20 +212,25 @@ public class MoveCubeMechanic : vPushActionController
         inputVertical = tpInput.verticallInput.GetAxis();
         if (Mathf.Abs(inputHorizontal) > 0.5f)
         {
+            
+            Debug.Log("inputHorizontal > 0.5f");
             inputVertical = 0;
         }
         else if (Mathf.Abs(inputVertical) > 0.5f)
         {
+            Debug.Log("inputVertical > 0.5f");
+            inputHorizontal = 0;
+        }
+        else if (Mathf.Abs(inputHorizontal) < 0.8f)
+        {
+            Debug.Log("inputHorizontal < 0.8f");
+
             inputHorizontal = 0;
         }
 
-        if (Mathf.Abs(inputHorizontal) < 0.8f)
+        else if (Mathf.Abs(inputVertical) < 0.8f)
         {
-            inputHorizontal = 0;
-        }
-
-        if (Mathf.Abs(inputVertical) < 0.8f)
-        {
+            Debug.Log("inputVertical < 0.8f");
             inputVertical = 0;
         }
 
@@ -249,10 +254,10 @@ public class MoveCubeMechanic : vPushActionController
         //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock.Length}");
 
         // Check cubes underneath player
-        foreach (var GO in sphereHitsBlock)
-        {
-            Debug.Log($"this GO is in the current sphereHitBlock: {GO.transform.gameObject}");
-        }
+        //foreach (var GO in sphereHitsBlock)
+        //{
+        //    Debug.Log($"this GO is in the current sphereHitBlock: {GO.transform.gameObject}");
+        //}
 
         foreach (RaycastHit sphereHit in sphereHitsBlock)
         {
@@ -262,8 +267,8 @@ public class MoveCubeMechanic : vPushActionController
                 {
                     if (currentCubeFloor == null || currentCubeFloor != sphereHit.transform.gameObject)
                     {
-                        Debug.Log($"asigning new targetPos using {sphereHit.transform.name}");
-                        Debug.Log($"targetPos: {sphereHit.transform.position}");
+                        //Debug.Log($"asigning new targetPos using {sphereHit.transform.name}");
+                        //Debug.Log($"targetPos: {sphereHit.transform.position}");
                         currentCubeFloor = sphereHit.transform.gameObject;
                         targetPos = currentCubeFloor.transform.position;
                         targetPos += detectionOffSets;
@@ -363,42 +368,48 @@ public class MoveCubeMechanic : vPushActionController
                         }
                     }
                 }
-                else if (!hitCubeUnderneath && !hitCubeInCurrentDirection /*&& CheckDistance(transform.position, hit1.transform.position)*/)
+                else if (!hitCubeUnderneath && !hitCubeInCurrentDirection)
                 {
-                    switch (i)
+                    if (CheckDistance(transform.position,downwardPosition))
                     {
-                        // behind player
-                        case 0:
-                            Debug.Log("no cube underneath you from behind!");
-                            if (inputDirection.z < 0)
-                                inputDirection.z = 0;
+                        switch (i)
+                        {
+                            // behind player
+                            case 0:
+                                Debug.Log("no cube underneath you from behind!");
+                                if (inputDirection.z < 0)
+                                    inputDirection.z = 0;
 
-                            break;
+                                break;
 
-                        // behind player - left-side
-                        case 1:
-                            Debug.Log("no cube underneath you from left-side!");
-                            if (inputDirection.x < 0)
-                                inputDirection.x = 0;
+                            // behind player - left-side
+                            case 1:
+                                Debug.Log("no cube underneath you from left-side!");
+                                if (inputDirection.x < 0)
+                                    inputDirection.x = 0;
 
-                            break;
+                                break;
 
-                        // behind player - right-side
-                        case 2:
-                            Debug.Log("no cube underneath you from right-side!");
-                            if (inputDirection.x > 0)
-                                inputDirection.x = 0;
+                            // behind player - right-side
+                            case 2:
+                                Debug.Log("no cube underneath you from right-side!");
+                                if (inputDirection.x > 0)
+                                    inputDirection.x = 0;
 
-                            break;
+                                break;
 
-                        default: 
-                            break;
+                            default:
+                                break;
+                        }
+
                     }
+
 
                     Gizmos.color = sphereHits.Length == 0 ? Color.red : Color.green;
                     Gizmos.DrawSphere(downwardPosition + Vector3.down * downwardCheckDistance, .1f);
                 }
 
+                Debug.Log($"inputDirection.magnitude: {inputDirection.magnitude}");
                 if (inputDirection.magnitude > 0.1f)
                     inputWeight = Mathf.Lerp(inputWeight, 1, Time.deltaTime * animAcceleration);
                 else
