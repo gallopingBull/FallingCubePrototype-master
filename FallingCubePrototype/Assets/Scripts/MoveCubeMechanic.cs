@@ -27,6 +27,9 @@ public class MoveCubeMechanic : vPushActionController
     private int layerMask;
     public float maxDistance = 4; //2.3f;
 
+
+    public float Distance = 0;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -190,10 +193,11 @@ public class MoveCubeMechanic : vPushActionController
     bool CheckDistance(Vector3 position1, Vector3 position2)
     {
         // Calculate the distance between the two positions
-        float distance = Vector3.Distance(position1, position2);
+        Distance = Vector3.Distance(position1, position2);
+        //Debug.Log($"distance: {distance}");
 
         // Return true if the distance is less than maxDistance, otherwise return false
-        return distance < maxDistance;
+        return Distance < maxDistance;
     }
 
     private void OnDestroy()
@@ -206,13 +210,14 @@ public class MoveCubeMechanic : vPushActionController
     {
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider  || tpInput.enabled || !isPushingPulling || !pushPoint || isStoping) return;
 
-        tpInput.CameraInput();
+        bool _isCollidingLeft = false;
+        bool _isCollidingRight = false;
+        bool _isCollidingBack = false;
 
         inputHorizontal = tpInput.horizontalInput.GetAxis();
         inputVertical = tpInput.verticallInput.GetAxis();
         if (Mathf.Abs(inputHorizontal) > 0.5f)
         {
-            
             Debug.Log("inputHorizontal > 0.5f");
             inputVertical = 0;
         }
@@ -224,11 +229,9 @@ public class MoveCubeMechanic : vPushActionController
         else if (Mathf.Abs(inputHorizontal) < 0.8f)
         {
             Debug.Log("inputHorizontal < 0.8f");
-
             inputHorizontal = 0;
         }
-
-        else if (Mathf.Abs(inputVertical) < 0.8f)
+        else if (Mathf.Abs(inputVertical) < 0.8)
         {
             Debug.Log("inputVertical < 0.8f");
             inputVertical = 0;
@@ -298,7 +301,8 @@ public class MoveCubeMechanic : vPushActionController
                 {
                     // TODO: I want to check against the correct cube position that hit1 is suppose to be hitting.
                     // Maybe I should offset hit1.transform.position by cube size so the player stops exactly on top or next to a cube.
-                    Debug.Log($"is pushbody in position: {transform.position == hit1.transform.position}");
+                    //  Debug.Log($"is pushbody in position: {transform.position == hit1.transform.position}");
+                    Debug.Log($"checking distance to {hit1.transform.name}");
                     if (CheckDistance(transform.position, hit1.transform.position))
                     {
                         switch (i)
@@ -307,7 +311,11 @@ public class MoveCubeMechanic : vPushActionController
                             case 0:
                                 Debug.Log("Colliding from the back!");
                                 if (inputDirection.z < 0)
+                                {
                                     inputDirection.z = 0;
+                                    _isCollidingBack = true;
+
+                                }
 
                                 break;
 
@@ -315,7 +323,11 @@ public class MoveCubeMechanic : vPushActionController
                             case 1:
                                 Debug.Log("Colliding from the left!");
                                 if (inputDirection.x < 0)
+                                {
                                     inputDirection.x = 0;
+                                    _isCollidingLeft = true;
+
+                                }
 
                                 break;
 
@@ -323,18 +335,24 @@ public class MoveCubeMechanic : vPushActionController
                             case 2:
                                 Debug.Log("Colliding from the right!");
                                 if (inputDirection.x > 0)
+                                {
                                     inputDirection.x = 0;
+                                    _isCollidingRight = true;
+
+                                }
 
                                 break;
                             
                             default: 
                                 break;
                         }
+                        pushPoint.targetBody.position = pushPoint.targetBody.position;
                         //continue;
                     }
                     else
                     {
                         // TODO: is there a better way of freezing the cube in place if its near another cube?
+                        Debug.Log("wont move push body position");
                         pushPoint.targetBody.position = pushPoint.targetBody.position;
                     }
                 }
@@ -378,7 +396,10 @@ public class MoveCubeMechanic : vPushActionController
                             case 0:
                                 Debug.Log("no cube underneath you from behind!");
                                 if (inputDirection.z < 0)
+                                {
                                     inputDirection.z = 0;
+                                    _isCollidingBack = true;    
+                                }
 
                                 break;
 
@@ -386,7 +407,10 @@ public class MoveCubeMechanic : vPushActionController
                             case 1:
                                 Debug.Log("no cube underneath you from left-side!");
                                 if (inputDirection.x < 0)
+                                {
                                     inputDirection.x = 0;
+                                    _isCollidingLeft = true;
+                                }
 
                                 break;
 
@@ -394,7 +418,10 @@ public class MoveCubeMechanic : vPushActionController
                             case 2:
                                 Debug.Log("no cube underneath you from right-side!");
                                 if (inputDirection.x > 0)
+                                {
                                     inputDirection.x = 0;
+                                    _isCollidingRight = true;
+                                }
 
                                 break;
 
@@ -409,7 +436,7 @@ public class MoveCubeMechanic : vPushActionController
                     Gizmos.DrawSphere(downwardPosition + Vector3.down * downwardCheckDistance, .1f);
                 }
 
-                Debug.Log($"inputDirection.magnitude: {inputDirection.magnitude}");
+                //Debug.Log($"inputDirection.magnitude: {inputDirection.magnitude}");
                 if (inputDirection.magnitude > 0.1f)
                     inputWeight = Mathf.Lerp(inputWeight, 1, Time.deltaTime * animAcceleration);
                 else
@@ -421,5 +448,8 @@ public class MoveCubeMechanic : vPushActionController
                 Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
             }
         }
+        isCollidingRight = _isCollidingRight;
+        isCollidingLeft = _isCollidingLeft;
+        isCollidingBack = _isCollidingBack;
     }
 }
