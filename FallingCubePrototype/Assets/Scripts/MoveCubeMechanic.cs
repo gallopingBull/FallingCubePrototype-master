@@ -30,6 +30,11 @@ public class MoveCubeMechanic : vPushActionController
 
     public float Distance = 0;
 
+
+    private bool isDetectingBack = false;
+    private bool isDetectingBackLeft = false;
+    private bool isDetectingBackRight = false;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -210,9 +215,9 @@ public class MoveCubeMechanic : vPushActionController
     {
         if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider  || tpInput.enabled || !isPushingPulling || !pushPoint || isStoping) return;
 
-        bool _isCollidingLeft = false;
-        bool _isCollidingRight = false;
-        bool _isCollidingBack = false;
+        bool _isDetectingLeft = false;
+        bool _isDetectingRight = false;
+        bool _isDetectingBack = false;
 
         inputHorizontal = tpInput.horizontalInput.GetAxis();
         inputVertical = tpInput.verticallInput.GetAxis();
@@ -313,7 +318,7 @@ public class MoveCubeMechanic : vPushActionController
                                 if (inputDirection.z < 0)
                                 {
                                     inputDirection.z = 0;
-                                    _isCollidingBack = true;
+                                    _isDetectingBack = true;
 
                                 }
 
@@ -325,8 +330,7 @@ public class MoveCubeMechanic : vPushActionController
                                 if (inputDirection.x < 0)
                                 {
                                     inputDirection.x = 0;
-                                    _isCollidingLeft = true;
-
+                                    _isDetectingLeft = true;
                                 }
 
                                 break;
@@ -337,7 +341,7 @@ public class MoveCubeMechanic : vPushActionController
                                 if (inputDirection.x > 0)
                                 {
                                     inputDirection.x = 0;
-                                    _isCollidingRight = true;
+                                    _isDetectingRight = true;
 
                                 }
 
@@ -398,7 +402,7 @@ public class MoveCubeMechanic : vPushActionController
                                 if (inputDirection.z < 0)
                                 {
                                     inputDirection.z = 0;
-                                    _isCollidingBack = true;    
+                                    //_isDetectingBack = true;    
                                 }
 
                                 break;
@@ -409,7 +413,7 @@ public class MoveCubeMechanic : vPushActionController
                                 if (inputDirection.x < 0)
                                 {
                                     inputDirection.x = 0;
-                                    _isCollidingLeft = true;
+                                    //_isDetectingLeft = true;
                                 }
 
                                 break;
@@ -420,7 +424,7 @@ public class MoveCubeMechanic : vPushActionController
                                 if (inputDirection.x > 0)
                                 {
                                     inputDirection.x = 0;
-                                    _isCollidingRight = true;
+                                    //_isDetectingRight = true;
                                 }
 
                                 break;
@@ -448,8 +452,8 @@ public class MoveCubeMechanic : vPushActionController
                 Gizmos.DrawLine(downwardPosition, downwardPosition + Vector3.down * downwardRayDistance);
             }
         }
-        isCollidingRight = _isCollidingRight;
-        isCollidingLeft = _isCollidingLeft;
-        isCollidingBack = _isCollidingBack;
+        isDetectingBack = _isDetectingBack;
+        isDetectingBackRight = _isDetectingRight;
+        isDetectingBackLeft = _isDetectingLeft;
     }
 }
