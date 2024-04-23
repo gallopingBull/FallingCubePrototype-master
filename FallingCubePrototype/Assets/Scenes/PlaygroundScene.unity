@@ -2690,83 +2690,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: f528e4334b3ce3c468fa3edc3f04156a, type: 3}
   m_PrefabInstance: {fileID: 300316074}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &904371638
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 7351282938336633251, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_Name
-      value: vPushController_MyChanges
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336633251, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_RootOrder
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5.96
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 2.59
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.70710665
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.707107
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 270
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938336876751, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938374057749, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938374057749, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938374233537, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7351282938374233537, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 4a5d140d9661ac74598892718ce1e739, type: 3}
 --- !u!4 &935412612 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: f528e4334b3ce3c468fa3edc3f04156a, type: 3}
@@ -6625,26 +6548,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: debugWindow
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: selectedToolbar
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: groundLayer.m_Bits
-      value: 524289
-      objectReference: {fileID: 0}
-    - target: {fileID: 1092062235473313719, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: debugMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1092062235473313719, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: selectedToolbar
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313722, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -6691,7 +6594,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313725, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_Name
-      value: PlayerPushTest
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 1092062236474384383, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_AnchorMax.x
@@ -6699,46 +6602,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1092062236474384383, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355439397174700, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: debugRays
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: sphereSize
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: maxDistance
-      value: 2.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: checkDistance
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: selectedToolbar
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: downwardCheckDistance
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: startPushPullInput.joystickAxis
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: startPushPullInput.keyboardAxis
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: startPushPullInput.joystickAxisInvert
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: startPushPullInput.keyboardAxisInvert
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
