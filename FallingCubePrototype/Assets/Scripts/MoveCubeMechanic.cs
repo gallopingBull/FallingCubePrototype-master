@@ -2,6 +2,7 @@
 using Invector;
 using Invector.vCharacterController;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MoveCubeMechanic : vPushActionController
 {
@@ -53,8 +54,8 @@ public class MoveCubeMechanic : vPushActionController
     protected override void MoveObject()
     {
         // Stop moving cube if camera is rotating
-        if ((Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0) || (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0))
-            return;
+        //if ((Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0) || (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0))
+        //    return;
 
         var strengthFactor = Mathf.Clamp(strength / pushPoint.targetBody.mass, 0, 1);
         var intendedDirection = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
@@ -223,33 +224,8 @@ public class MoveCubeMechanic : vPushActionController
         bool _isDetectingRight = false;
         bool _isDetectingBack = false;
 
-
         inputHorizontal = tpInput.horizontalInput.GetAxis();
         inputVertical = tpInput.verticallInput.GetAxis();
-        if ((Mathf.Abs(inputHorizontal) != 0 || Mathf.Abs(inputVertical) != 0) && (!_isDetectingBack || !_isDetectingLeft || _isDetectingRight))
-        {
-            if (Mathf.Abs(inputHorizontal) > 0.5f)
-            {
-                Debug.Log("inputHorizontal > 0.5f");
-                inputVertical = 0;
-            }
-            else if (Mathf.Abs(inputVertical) > 0.5f)
-            {
-                Debug.Log("inputVertical > 0.5f");
-                inputHorizontal = 0;
-            }
-            else if (Mathf.Abs(inputHorizontal) < 0.8f)
-            {
-                Debug.Log("inputHorizontal < 0.8f");    
-                inputHorizontal = 0;
-            }
-            else if (Mathf.Abs(inputVertical) < 0.8)
-            {
-                Debug.Log("inputVertical < 0.8f");
-                inputVertical = 0;
-            }
-
-        }
 
         Vector3 cameraRight = cameraTransform.right;
         cameraRight.y = 0;
@@ -262,6 +238,18 @@ public class MoveCubeMechanic : vPushActionController
         playerForward.Normalize();
 
         inputDirection = cameraForward * inputVertical + cameraRight * inputHorizontal;
+
+        // Ensure movement only along the X or Z axis, not diagonally
+        if (Mathf.Abs(inputDirection.x) > Mathf.Abs(inputDirection.z))
+        {
+            inputDirection.z = 0f;
+        }
+        else
+        {
+            inputDirection.x = 0f;
+        }
+
+        inputDirection.Normalize();
         inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
 
         // Perform a spherecast to check for game objects with a "Block" tag
