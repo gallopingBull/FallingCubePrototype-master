@@ -52,6 +52,10 @@ public class MoveCubeMechanic : vPushActionController
 
     protected override void MoveObject()
     {
+        // Stop moving cube if camera is rotating
+        if ((Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0) || (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0))
+            return;
+
         var strengthFactor = Mathf.Clamp(strength / pushPoint.targetBody.mass, 0, 1);
         var intendedDirection = ClampDirection(pushPoint.transform.TransformDirection(inputDirection));
         movementDirection = intendedDirection;
@@ -213,33 +217,38 @@ public class MoveCubeMechanic : vPushActionController
     // TODO: A lot of thhs code should be moved in to MoveInput()
     private void OnDrawGizmos()
     {
-        if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider  || tpInput.enabled || !isPushingPulling || !pushPoint || isStoping) return;
+        if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider || tpInput.enabled || !isPushingPulling || !pushPoint || isStoping) return;
 
         bool _isDetectingLeft = false;
         bool _isDetectingRight = false;
         bool _isDetectingBack = false;
 
+
         inputHorizontal = tpInput.horizontalInput.GetAxis();
         inputVertical = tpInput.verticallInput.GetAxis();
-        if (Mathf.Abs(inputHorizontal) > 0.5f)
+        if ((Mathf.Abs(inputHorizontal) != 0 || Mathf.Abs(inputVertical) != 0) && (!_isDetectingBack || !_isDetectingLeft || _isDetectingRight))
         {
-            Debug.Log("inputHorizontal > 0.5f");
-            inputVertical = 0;
-        }
-        else if (Mathf.Abs(inputVertical) > 0.5f)
-        {
-            Debug.Log("inputVertical > 0.5f");
-            inputHorizontal = 0;
-        }
-        else if (Mathf.Abs(inputHorizontal) < 0.8f)
-        {
-            Debug.Log("inputHorizontal < 0.8f");
-            inputHorizontal = 0;
-        }
-        else if (Mathf.Abs(inputVertical) < 0.8)
-        {
-            Debug.Log("inputVertical < 0.8f");
-            inputVertical = 0;
+            if (Mathf.Abs(inputHorizontal) > 0.5f)
+            {
+                Debug.Log("inputHorizontal > 0.5f");
+                inputVertical = 0;
+            }
+            else if (Mathf.Abs(inputVertical) > 0.5f)
+            {
+                Debug.Log("inputVertical > 0.5f");
+                inputHorizontal = 0;
+            }
+            else if (Mathf.Abs(inputHorizontal) < 0.8f)
+            {
+                Debug.Log("inputHorizontal < 0.8f");    
+                inputHorizontal = 0;
+            }
+            else if (Mathf.Abs(inputVertical) < 0.8)
+            {
+                Debug.Log("inputVertical < 0.8f");
+                inputVertical = 0;
+            }
+
         }
 
         Vector3 cameraRight = cameraTransform.right;
