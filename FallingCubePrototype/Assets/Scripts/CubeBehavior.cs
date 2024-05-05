@@ -208,9 +208,10 @@ public class CubeBehavior : MonoBehaviour
                 if (state == States.falling)
                 {
                     PlaySFX(landingSFX);
+                    RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
                 }
-
-                //RoundCubeLocation();
+                
+               
                 state = _state;
                 cubeCollider.enabled = true;
                 DisableRB();
@@ -279,6 +280,7 @@ public class CubeBehavior : MonoBehaviour
                 }
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
+                RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
                 break;
             default:
                 break;

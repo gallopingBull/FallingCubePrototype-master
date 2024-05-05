@@ -80,7 +80,7 @@ public class GetAdjacentCubes : MonoBehaviour
             return;
         }
 
-        cubeBehavior.isDestroying = true;
+        cubeBehavior.isDestroying = true;           
         if (tmp.tag == "Block" /*&& cubeBehavior.isDestroying*/)
         {
             if (tmp.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
