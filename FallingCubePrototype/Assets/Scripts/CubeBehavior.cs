@@ -144,6 +144,8 @@ public class CubeBehavior : MonoBehaviour
 
                 // cube underneath this one is gone, this cube should fall
                 // TODO: explore not allowing a cube to fall until its reaches the center of a grid space.
+                // TODO: Automatically release cube if space undearneath is empty
+
                 if ((!m_HitDetect || m_Hit.distance > .75) && transform.position.y != 0)
                 {
                     EnterState(States.falling);
@@ -372,12 +374,12 @@ public class CubeBehavior : MonoBehaviour
         // Snap to whole numbers if close enough
         if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
         {
-            Debug.Log("snapping x!");
+            //Debug.Log("snapping x!");
             targetPosition.x = snappedX;
         }
         if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
         {
-            Debug.Log("snapping z!");
+            //Debug.Log("snapping z!");
             targetPosition.z = snappedZ;
         }
 
