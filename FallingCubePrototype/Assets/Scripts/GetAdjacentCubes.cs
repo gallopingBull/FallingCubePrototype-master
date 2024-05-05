@@ -25,7 +25,7 @@ public class GetAdjacentCubes : MonoBehaviour
             other.GetComponentInParent<CubeBehavior>().color == cubeBehavior.color &&
             !cubeBehavior.isDestroying)
         {
-            Debug.Log($"this object ({transform.parent.parent.name}) || other.transform.name: {other.transform.parent.name}");
+            //Debug.Log($"this object ({transform.parent.parent.name}) || other.transform.name: {other.transform.parent.name}");
             tmp = other.transform.parent.gameObject;
             if (cubeBehavior.state == CubeBehavior.States.grounded && CheckPosition())
             {
@@ -62,7 +62,6 @@ public class GetAdjacentCubes : MonoBehaviour
 
     private void DestoryAdjacentCubes()
     {
-        Debug.Log("Stepping into DestoryAdjacentCubes()");
         #region testing shit
         /*
         print("*************");
@@ -76,7 +75,6 @@ public class GetAdjacentCubes : MonoBehaviour
         //if other block hasnt been destoryed yet
         if (tmp == null) 
         {
-            Debug.Log("\tDestoryAdjacentCubes.tmp == null");
             return;
         }
 
@@ -85,7 +83,7 @@ public class GetAdjacentCubes : MonoBehaviour
         {
             if (tmp.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
             {
-                Debug.Log("\tDestroying " + tmp.name + " from " + transform.parent.parent.gameObject.name);
+                //Debug.Log("\tDestroying " + tmp.name + " from " + transform.parent.parent.gameObject.name);
 
                 // check if this cube and the other cuber (tmp) are in game manager's target list
                 // if not add them in
@@ -96,6 +94,5 @@ public class GetAdjacentCubes : MonoBehaviour
 
             }
         }
-        Debug.Log("Stepping out of DestoryAdjacentCubes()");
     }
 }

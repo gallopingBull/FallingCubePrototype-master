@@ -148,11 +148,9 @@ public class CubeManager : MonoBehaviour
         // Check each cube
         foreach (var cube in cubes)
         {
-            if (cube == null) 
-            {
-                Debug.Log("this cube is null in cubes - skip!");
-                continue; 
-            } 
+            if (cube == null)
+                continue;
+
             // Calculate the distance between the current cube and the target position
             float distance = Vector3.Distance(position, cube.transform.position);
 
