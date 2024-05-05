@@ -25,8 +25,8 @@ public class GetAdjacentCubes : MonoBehaviour
             other.GetComponentInParent<CubeBehavior>().color == cubeBehavior.color &&
             !cubeBehavior.isDestroying)
         {
-            Debug.Log($"this object ({transform.parent.parent.name}) || other.transform.name: {other.transform.name}");
-            tmp = other.gameObject;
+            Debug.Log($"this object ({transform.parent.parent.name}) || other.transform.name: {other.transform.parent.name}");
+            tmp = other.transform.parent.gameObject;
             if (cubeBehavior.state == CubeBehavior.States.grounded && CheckPosition())
             {
                 DestoryAdjacentCubes();
@@ -96,5 +96,6 @@ public class GetAdjacentCubes : MonoBehaviour
 
             }
         }
+        Debug.Log("Stepping out of DestoryAdjacentCubes()");
     }
 }
