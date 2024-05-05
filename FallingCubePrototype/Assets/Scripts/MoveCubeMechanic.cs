@@ -258,7 +258,7 @@ public class MoveCubeMechanic : vPushActionController
         Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
         //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock.Length}");
 
-        // Check cubes underneath player
+        // output cubes underneath player
         //foreach (var GO in sphereHitsBlock)
         //{
         //    Debug.Log($"this GO is in the current sphereHitBlock: {GO.transform.gameObject}");
@@ -304,14 +304,14 @@ public class MoveCubeMechanic : vPushActionController
                     // TODO: I want to check against the correct cube position that hit1 is suppose to be hitting.
                     // Maybe I should offset hit1.transform.position by cube size so the player stops exactly on top or next to a cube.
                     //  Debug.Log($"is pushbody in position: {transform.position == hit1.transform.position}");
-                    Debug.Log($"checking distance to {hit1.transform.name}");
+                    //Debug.Log($"checking distance to {hit1.transform.name}");
                     if (CheckDistance(transform.position, hit1.transform.position))
                     {
                         switch (i)
                         {
                             // behind player
                             case 0:
-                                Debug.Log("Colliding from the back!");
+                                //Debug.Log("Colliding from the back!");
                                 if (inputDirection.z < 0)
                                 {
                                     inputDirection.z = 0;
@@ -323,7 +323,7 @@ public class MoveCubeMechanic : vPushActionController
 
                             // behind player - left-side
                             case 1:
-                                Debug.Log("Colliding from the left!");
+                                //Debug.Log("Colliding from the left!");
                                 if (inputDirection.x < 0)
                                 {
                                     inputDirection.x = 0;
@@ -334,7 +334,7 @@ public class MoveCubeMechanic : vPushActionController
 
                             // behind player - right-side
                             case 2:
-                                Debug.Log("Colliding from the right!");
+                                //Debug.Log("Colliding from the right!");
                                 if (inputDirection.x > 0)
                                 {
                                     inputDirection.x = 0;
@@ -395,7 +395,7 @@ public class MoveCubeMechanic : vPushActionController
                         {
                             // behind player
                             case 0:
-                                Debug.Log("no cube underneath you from behind!");
+                                //Debug.Log("no cube underneath you from behind!");
                                 if (inputDirection.z < 0)
                                 {
                                     inputDirection.z = 0;
@@ -406,7 +406,7 @@ public class MoveCubeMechanic : vPushActionController
 
                             // behind player - left-side
                             case 1:
-                                Debug.Log("no cube underneath you from left-side!");
+                                //Debug.Log("no cube underneath you from left-side!");
                                 if (inputDirection.x < 0)
                                 {
                                     inputDirection.x = 0;
@@ -417,7 +417,7 @@ public class MoveCubeMechanic : vPushActionController
 
                             // behind player - right-side
                             case 2:
-                                Debug.Log("no cube underneath you from right-side!");
+                                //Debug.Log("no cube underneath you from right-side!");
                                 if (inputDirection.x > 0)
                                 {
                                     inputDirection.x = 0;

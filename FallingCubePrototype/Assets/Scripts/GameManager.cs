@@ -246,14 +246,15 @@ public class GameManager : MonoBehaviour
 
     public void AddCubeTarget(GameObject target)
     {
-        // hacky fix to prevent cube meshes to be added to cube target
+        // prevent cube meshes to be added as a cube target
         if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
         {
-            Debug.Log($"target.GetComponent<CubeBehavior>(): {target.GetComponent<CubeBehavior>()}");
-            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
-            CubeTargets.Add(target);
+           
         }
-        Invoke("DestoryCubeTargets", .15f);
+        Debug.Log($"target.GetComponent<CubeBehavior>(): {target.GetComponent<CubeBehavior>()}");
+        target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
+        CubeTargets.Add(target);
+        Invoke("DestoryCubeTargets", 5f);
         //DestoryCubeTargets();
     }
 
@@ -274,10 +275,11 @@ public class GameManager : MonoBehaviour
                     AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
                     aerialCubeSpawner.Spawn();
                     target.GetComponent<CubeBehavior>().DestroyCube();
+                    Time.timeScale = 0; 
                 }
             }
         }
-        CubeTargets.Clear();
+        //CubeTargets.Clear();
     }
 
     private void SpawnPlayer()

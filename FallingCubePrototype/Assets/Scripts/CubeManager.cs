@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class CubeManager : MonoBehaviour
 {
-
     public GameObject cubePrefab;
     public int gridSizeX = 10;
     public int gridSizeZ = 10;

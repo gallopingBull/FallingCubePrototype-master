@@ -37,7 +37,7 @@ public class CubeBehavior : MonoBehaviour
 
     public ColorOption color = ColorOption.Neutral; // this should be private.
 
-    [HideInInspector] public bool isDestroying;
+    public bool isDestroying;
     public int ScoreValue = 1;
 
     private bool enableAlarm;
