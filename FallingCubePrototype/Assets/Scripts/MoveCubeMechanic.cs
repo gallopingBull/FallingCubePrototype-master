@@ -204,10 +204,10 @@ public class MoveCubeMechanic : vPushActionController
     {
         // Calculate the distance between the two positions
         Distance = Vector3.Distance(position1, position2);
-        //Debug.Log($"distance: {distance}");
+        //debug.Log($"distance: {Distance}");
 
         // Return true if the distance is less than maxDistance, otherwise return false
-        return Distance < maxDistance;
+        return Distance <= maxDistance;
     }
 
     private void OnDestroy()
@@ -305,25 +305,32 @@ public class MoveCubeMechanic : vPushActionController
                     // Maybe I should offset hit1.transform.position by cube size so the player stops exactly on top or next to a cube.
                     //  Debug.Log($"is pushbody in position: {transform.position == hit1.transform.position}");
                     //Debug.Log($"checking distance to {hit1.transform.name}");
-                    if (CheckDistance(transform.position, hit1.transform.position))
+                    float roundedX, roundedZ;
+                    roundedX = Mathf.Round(targetPos.x);
+                    Debug.Log($"roundedX: {roundedX}");
+                    roundedZ = Mathf.Round(targetPos.z);
+                    Debug.Log($"roundedz: {roundedZ}");
+
+                    var tmpPos = new Vector3(roundedX, hit1.transform.position.y, roundedZ);
+                    Debug.Log($"distance: {Mathf.Round(Distance)}");
+                    if (CheckDistance(tmpPos, hit1.transform.position))
                     {
                         switch (i)
                         {
                             // behind player
                             case 0:
-                                //Debug.Log("Colliding from the back!");
+                                Debug.Log("Colliding from the back!");
                                 if (inputDirection.z < 0)
                                 {
                                     inputDirection.z = 0;
                                     _isDetectingBack = true;
-
                                 }
 
                                 break;
 
                             // behind player - left-side
                             case 1:
-                                //Debug.Log("Colliding from the left!");
+                                Debug.Log("Colliding from the left!");
                                 if (inputDirection.x < 0)
                                 {
                                     inputDirection.x = 0;
@@ -334,12 +341,11 @@ public class MoveCubeMechanic : vPushActionController
 
                             // behind player - right-side
                             case 2:
-                                //Debug.Log("Colliding from the right!");
+                                Debug.Log("Colliding from the right!");
                                 if (inputDirection.x > 0)
                                 {
                                     inputDirection.x = 0;
                                     _isDetectingRight = true;
-
                                 }
 
                                 break;
