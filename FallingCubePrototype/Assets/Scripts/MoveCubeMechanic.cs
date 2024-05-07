@@ -212,7 +212,7 @@ public class MoveCubeMechanic : vPushActionController
            transform.position.y,
            currentCubeFloor.transform.position.z);
         Distance = Vector3.Distance(transform.position, tmpPos);
-        return Distance <= .45f;
+        return Distance <= .45f; // .45-.65f seems to work the best but the former causes issues when cubes fall to early
     }
     private bool CheckDistance(Vector3 position1, Vector3 position2)
     {
