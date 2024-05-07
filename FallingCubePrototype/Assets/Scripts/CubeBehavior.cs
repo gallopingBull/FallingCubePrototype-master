@@ -156,6 +156,14 @@ public class CubeBehavior : MonoBehaviour
                     audioSource.loop = true;
 
                 }
+                if ((!m_HitDetect || m_Hit.distance > .75) && transform.position.y != 0)
+                {
+                    // release cube here 
+                    // TODO: check if player is dragging to avoid unecessary call StopPush... also if user has ability to move cubes over gaps.
+                    player.StopPushAndPullCaller();
+                    EnterState(States.falling);
+                    //Debug.Log(gameObject.name + " should start falling");
+                }
 
                 break;
             case States.init:

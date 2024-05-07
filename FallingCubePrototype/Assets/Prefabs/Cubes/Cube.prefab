@@ -84705,7 +84705,7 @@ GameObject:
   - component: {fileID: 213847337142301523}
   - component: {fileID: 4522649829613096203}
   m_Layer: 0
-  m_Name: CubeTest
+  m_Name: Cube
   m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84790,7 +84790,7 @@ MonoBehaviour:
   rend: {fileID: 8473027575434832621}
   isSpawned: 1
   m_MaxDistance: 15
-  BoxColliderSize: 0.5
+  BoxColliderSize: 1.7
   ClimbingCollider: {fileID: 4172563618177574095}
   snapThreshold: 0.1
 --- !u!114 &213847337142301523

@@ -1,6 +1,7 @@
 ﻿using System;
 using Invector;
 using Invector.vCharacterController;
+using ProBuilder2.Common;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
@@ -136,6 +137,11 @@ public class MoveCubeMechanic : vPushActionController
         }
     }
 
+    public void StopPushAndPullCaller()
+    {
+        StartCoroutine(StopPushAndPull(true));
+    }
+
     // TODO: change this method so instead of a snap its more of
     // a discrete "push" to the nearest whole number
     private void DiscretePushToNearestWholeNumber(Vector3 targetPosition)
@@ -212,7 +218,7 @@ public class MoveCubeMechanic : vPushActionController
            transform.position.y,
            currentCubeFloor.transform.position.z);
         Distance = Vector3.Distance(transform.position, tmpPos);
-        return Distance <= .45f; // .45-.65f seems to work the best but the former causes issues when cubes fall to early
+        return Distance <= .25f; // .45-.65f seems to work the best but the former causes issues when cubes fall to early
     }
     private bool CheckDistance(Vector3 position1, Vector3 position2)
     {
