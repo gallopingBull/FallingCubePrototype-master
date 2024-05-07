@@ -315,7 +315,7 @@ public class MoveCubeMechanic : vPushActionController
 
                     Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
                     
-                    Debug.Log($"distance: {Distance}");
+                    //Debug.Log($"distance: {Distance}");
 
                     if (Distance <= maxDistance)
                     {
@@ -399,7 +399,18 @@ public class MoveCubeMechanic : vPushActionController
                 }
                 else if (!hitCubeUnderneath && !hitCubeInCurrentDirection)
                 {
-                    if (CheckDistance(transform.position, downwardPosition))
+                    maxDistance = 2f;
+
+                    var tmpPos = new Vector3();
+                    tmpPos = new Vector3(
+                       currentCubeFloor.transform.position.x,
+                       pushPoint.pushableObject.transform.position.y,
+                       currentCubeFloor.transform.position.z);
+
+                    Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
+                    Debug.Log($"distance: {Distance}");
+    
+                    if (Distance <= maxDistance)
                     {
                         switch (i)
                         {
