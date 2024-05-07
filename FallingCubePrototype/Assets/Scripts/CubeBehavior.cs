@@ -58,6 +58,8 @@ public class CubeBehavior : MonoBehaviour
     private Collider cubeKillZone;
     private float fallDrag;
 
+    private MoveCubeMechanic player;
+
     #endregion
 
     #region functions 
@@ -66,6 +68,8 @@ public class CubeBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();
+
         EnterState(States.init);
     }
 
@@ -89,16 +93,6 @@ public class CubeBehavior : MonoBehaviour
             if (enableAlarm)
                 ExplosionAlert();
         }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        
     }
 
     void StateManager(float _tmpYVel)
@@ -282,7 +276,9 @@ public class CubeBehavior : MonoBehaviour
                 }
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
-                RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
+              
+                if (player.CheckDistance())
+                    RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
                 break;
             default:
                 break;

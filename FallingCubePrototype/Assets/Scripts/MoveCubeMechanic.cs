@@ -201,7 +201,20 @@ public class MoveCubeMechanic : vPushActionController
 
     private void RemoveNewFloorCube() => currentCubeFloor = null;
 
-    bool CheckDistance(Vector3 position1, Vector3 position2)
+    public bool CheckDistance()
+    {
+        Debug.Log($"currentCubeFloor: {currentCubeFloor}");
+        //Debug.Log($"pushPoint.pushableObject: {pushPoint.pushableObject}");
+
+        var tmpPos = new Vector3();
+        tmpPos = new Vector3(
+           currentCubeFloor.transform.position.x,
+           transform.position.y,
+           currentCubeFloor.transform.position.z);
+        Distance = Vector3.Distance(transform.position, tmpPos);
+        return Distance <= .45f;
+    }
+    private bool CheckDistance(Vector3 position1, Vector3 position2)
     {
         // Calculate the distance between the two positions
         Distance = Vector3.Distance(position1, position2);
