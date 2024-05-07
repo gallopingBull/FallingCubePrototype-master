@@ -302,15 +302,19 @@ public class MoveCubeMechanic : vPushActionController
                 //Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
                 if (hitCubeInCurrentDirection)
                 {
-                    var tmpPos = new Vector3(
-                        hit1.transform.position.x,
-                        pushPoint.pushableObject.transform.position.y, 
-                        hit1.transform.position.z);
-                    //Debug.Log($"distance: {Mathf.Round(Distance)}");
-                    //pushPoint.pushableObject ;
+                    var tmpPos = new Vector3();
+                    if (i == 0)
+                        maxDistance = 4f;
+                    else
+                        maxDistance = 2.83f;
+
+                    tmpPos = new Vector3(
+                       hit1.transform.position.x,
+                       pushPoint.pushableObject.transform.position.y,
+                       hit1.transform.position.z);
 
                     Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
-                    //  float roundedDist = Mathf.Round(Distance);
+                    
                     Debug.Log($"distance: {Distance}");
 
                     if (Distance <= maxDistance)
@@ -395,7 +399,7 @@ public class MoveCubeMechanic : vPushActionController
                 }
                 else if (!hitCubeUnderneath && !hitCubeInCurrentDirection)
                 {
-                    if (CheckDistance(transform.position,downwardPosition))
+                    if (CheckDistance(transform.position, downwardPosition))
                     {
                         switch (i)
                         {
