@@ -3,6 +3,7 @@ using Invector;
 using Invector.vCharacterController;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 public class MoveCubeMechanic : vPushActionController
 {
@@ -301,19 +302,18 @@ public class MoveCubeMechanic : vPushActionController
                 //Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
                 if (hitCubeInCurrentDirection)
                 {
-                    // TODO: I want to check against the correct cube position that hit1 is suppose to be hitting.
-                    // Maybe I should offset hit1.transform.position by cube size so the player stops exactly on top or next to a cube.
-                    //  Debug.Log($"is pushbody in position: {transform.position == hit1.transform.position}");
-                    //Debug.Log($"checking distance to {hit1.transform.name}");
-                    float roundedX, roundedZ;
-                    roundedX = Mathf.Round(targetPos.x);
-                    Debug.Log($"roundedX: {roundedX}");
-                    roundedZ = Mathf.Round(targetPos.z);
-                    Debug.Log($"roundedz: {roundedZ}");
+                    var tmpPos = new Vector3(
+                        hit1.transform.position.x,
+                        pushPoint.pushableObject.transform.position.y, 
+                        hit1.transform.position.z);
+                    //Debug.Log($"distance: {Mathf.Round(Distance)}");
+                    //pushPoint.pushableObject ;
 
-                    var tmpPos = new Vector3(roundedX, hit1.transform.position.y, roundedZ);
-                    Debug.Log($"distance: {Mathf.Round(Distance)}");
-                    if (CheckDistance(tmpPos, hit1.transform.position))
+                    Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
+                    //  float roundedDist = Mathf.Round(Distance);
+                    Debug.Log($"distance: {Distance}");
+
+                    if (Distance <= maxDistance)
                     {
                         switch (i)
                         {

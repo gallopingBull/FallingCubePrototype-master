@@ -178,6 +178,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: CubeManager
       objectReference: {fileID: 0}
+    - target: {fileID: 4201830530435554295, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
+      propertyPath: gridSizeX
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4201830530435554295, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
+      propertyPath: gridSizeZ
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
 --- !u!1 &25315536
@@ -585,12 +593,12 @@ MonoBehaviour:
   Player: {fileID: 0}
   isTesting: 0
   gameCompleted: 0
-  MAXScore: 20
+  MAXScore: 50
   Score: 0
   ScoreText: {fileID: 370015015}
   TimeGameMode: 1
   CountdownTime: 0
-  MAXCountdownTime: 90
+  MAXCountdownTime: 125
   text: {fileID: 3160835673993520569}
   _time: 0
   Text_InitialTimer: {fileID: 4670893352264992204}
