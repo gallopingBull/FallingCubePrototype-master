@@ -2,6 +2,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CubeBehavior : MonoBehaviour
 {
@@ -57,9 +58,9 @@ public class CubeBehavior : MonoBehaviour
     private RaycastHit m_Hit;
     private Collider cubeKillZone;
     private float fallDrag;
-
+    LayerMask layerMask;
     private MoveCubeMechanic player;
-
+    Collider[] colliders;
     #endregion
 
     #region functions 
@@ -69,7 +70,8 @@ public class CubeBehavior : MonoBehaviour
     void Start()
     {
         player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();
-
+        // Temporarily ignore collisions with the same game object
+        colliders = GetComponentsInChildren<Collider>();
         EnterState(States.init);
     }
 
@@ -78,6 +80,12 @@ public class CubeBehavior : MonoBehaviour
     {
         if (state != States.init)
         {
+   
+            //foreach (Collider col in colliders)
+            //{
+            //    Physics.IgnoreCollision(cubeCollider, col);
+            //}
+
             // custom velocity calculation since blocbehavior doesn't use rb at times.
             float tmpYVel = Mathf.Round(rb.velocity.y);
             velocity = (transform.position - prevVel) / Time.deltaTime;
@@ -87,6 +95,12 @@ public class CubeBehavior : MonoBehaviour
                 transform.localScale * BoxColliderSize,
                 -transform.up, out m_Hit,
                 transform.rotation, m_MaxDistance);
+
+            // Re-enable collisions
+            //foreach (Collider col in colliders)
+            //{
+            //    Physics.IgnoreCollision(cubeCollider, col, false);
+            //}
 
             StateManager(tmpYVel);
 
