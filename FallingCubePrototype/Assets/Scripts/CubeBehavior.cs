@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 public class CubeBehavior : MonoBehaviour
-{
+{ 
     public enum States
     {
         falling, grounded, dragging, init
@@ -61,6 +61,15 @@ public class CubeBehavior : MonoBehaviour
     LayerMask layerMask;
     private MoveCubeMechanic player;
     Collider[] colliders;
+
+    // cube infor panel text game objects
+    [SerializeField] GameObject cubeInfoPanel;
+    [SerializeField] TextMeshProUGUI cubeIDText;
+    [SerializeField] TextMeshProUGUI cubeStateText;
+    [SerializeField] TextMeshProUGUI cubeColorText;
+    [SerializeField] TextMeshProUGUI cubePosText;
+
+
     #endregion
 
     #region functions 
@@ -72,6 +81,7 @@ public class CubeBehavior : MonoBehaviour
         player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();
         // Temporarily ignore collisions with the same game object
         colliders = GetComponentsInChildren<Collider>();
+
         EnterState(States.init);
     }
 
@@ -168,8 +178,21 @@ public class CubeBehavior : MonoBehaviour
                 {
                     PlaySFX(dragSFX);
                     audioSource.loop = true;
-
                 }
+                
+                // TODO: update cubeInfoPanel text objects here
+                if (cubeInfoPanel && cubeInfoPanel.activeInHierarchy)
+                {
+                    cubeIDText.text = id.ToString();   
+                    cubeStateText.text = state.ToString();
+                    cubeColorText.text = color.ToString();  
+                    cubePosText.text = 
+                        $"x: {Mathf.Floor(transform.position.x * 10) / 10}, y: {Mathf.Floor(transform.position.y * 10) / 10}, z: {Mathf.Floor(transform.position.z * 10) / 10}";
+
+                    //cubeInfoPanel.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.back, Camera.main.transform.rotation * Vector3.up);
+                }
+           
+
                 if ((!m_HitDetect || m_Hit.distance > .75) && transform.position.y != 0)
                 {
                     // release cube here 
@@ -245,6 +268,8 @@ public class CubeBehavior : MonoBehaviour
                         _go.GetComponent<ParticleSystem>().Play();
                     }
                 }
+                if (!cubeInfoPanel.activeInHierarchy)
+                    cubeInfoPanel.SetActive(true);
                 rb.mass = 1;
                 rb.isKinematic = false;
                 rb.useGravity = true;
@@ -296,6 +321,8 @@ public class CubeBehavior : MonoBehaviour
                     audioSource.Stop();
                     audioSource.loop = false;
                 }
+                if (cubeInfoPanel.activeInHierarchy)
+                    cubeInfoPanel.SetActive(false);
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
               
