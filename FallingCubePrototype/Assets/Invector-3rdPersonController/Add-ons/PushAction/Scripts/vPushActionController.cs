@@ -143,7 +143,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
             if (Physics.Raycast(ray, out hit, 1.5f, pushpullLayer))
             {
                 var _object = hit.collider.gameObject.GetComponent<vPushObjectPoint>();
-                if (_object && pushPoint != _object && _object.canUse)
+                if (_object && pushPoint != _object && _object.canUse && _object.pushableObject.GetComponent<CubeBehavior>().state != CubeBehavior.States.falling)
                 {
                     pushPoint = _object;
                     onFindObject.Invoke();
@@ -160,14 +160,14 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
                 onLostObject.Invoke();
             }
 
-            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton())
+            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton() && pushPoint.pushableObject.GetComponent<CubeBehavior>().state != CubeBehavior.States.falling)
             {
                 StartCoroutine(StartPushAndPull());
 
             }
 
         }
-        else if (isPushingPulling && !startPushPullInput.GetButton())
+        else if ((isPushingPulling && !startPushPullInput.GetButton()) || pushPoint && pushPoint.pushableObject.GetComponent<CubeBehavior>().state == CubeBehavior.States.falling)
         {
             StartCoroutine(StopPushAndPull());
         }   

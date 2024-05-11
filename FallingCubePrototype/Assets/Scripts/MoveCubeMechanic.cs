@@ -30,9 +30,7 @@ public class MoveCubeMechanic : vPushActionController
     private int layerMask;
     public float maxDistance = 4; //2.3f;
 
-
     public float Distance = 0;
-
 
     private bool isDetectingBack = false;
     private bool isDetectingBackLeft = false;
@@ -51,6 +49,14 @@ public class MoveCubeMechanic : vPushActionController
 
         OnNewCubePosition += SetNewFloorCube;
         OnExitCubePosition += RemoveNewFloorCube;
+    }
+
+    protected override void MoveInput()
+    {
+        if (pushPoint && pushPoint.pushableObject.GetComponent<CubeBehavior>().state == CubeBehavior.States.falling)
+            return;
+
+        base.MoveInput();
     }
 
     protected override void MoveObject()
@@ -342,7 +348,7 @@ public class MoveCubeMechanic : vPushActionController
                         {
                             // behind player
                             case 0:
-                                Debug.Log("Colliding from the back!");
+                                //Debug.Log("Colliding from the back!");
                                 if (inputDirection.z < 0)
                                 {
                                     inputDirection.z = 0;
@@ -353,7 +359,7 @@ public class MoveCubeMechanic : vPushActionController
 
                             // behind player - left-side
                             case 1:
-                                Debug.Log("Colliding from the left!");
+                                //Debug.Log("Colliding from the left!");
                                 if (inputDirection.x < 0)
                                 {
                                     inputDirection.x = 0;
@@ -364,7 +370,7 @@ public class MoveCubeMechanic : vPushActionController
 
                             // behind player - right-side
                             case 2:
-                                Debug.Log("Colliding from the right!");
+                                //Debug.Log("Colliding from the right!");
                                 if (inputDirection.x > 0)
                                 {
                                     inputDirection.x = 0;
@@ -382,7 +388,7 @@ public class MoveCubeMechanic : vPushActionController
                     else
                     {
                         // TODO: is there a better way of freezing the cube in place if its near another cube?
-                        Debug.Log("wont move push body position");
+                        //Debug.Log("wont move push body position");
                         pushPoint.targetBody.position = pushPoint.targetBody.position;
                     }
                 }

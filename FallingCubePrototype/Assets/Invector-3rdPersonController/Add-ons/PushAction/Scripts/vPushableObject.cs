@@ -41,6 +41,9 @@ public class vPushableObject : MonoBehaviour
 
     internal virtual void StartPushAndPull()
     {
+        //if (GetComponent<CubeBehavior>().state == CubeBehavior.States.falling)
+        //    return;
+
         if (controlBodyKinematics)
         {
             body.isKinematic = false;
