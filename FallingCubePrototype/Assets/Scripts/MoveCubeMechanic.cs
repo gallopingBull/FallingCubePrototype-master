@@ -51,14 +51,6 @@ public class MoveCubeMechanic : vPushActionController
         OnExitCubePosition += RemoveNewFloorCube;
     }
 
-    protected override void MoveInput()
-    {
-        if (pushPoint && pushPoint.pushableObject.GetComponent<CubeBehavior>().state == CubeBehavior.States.falling)
-            return;
-
-        base.MoveInput();
-    }
-
     protected override void MoveObject()
     {
         // Stop moving cube if camera is rotating

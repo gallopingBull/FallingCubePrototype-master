@@ -194,7 +194,7 @@ public class CubeBehavior : MonoBehaviour
                 {
                     // release cube here 
                     // TODO: check if player is dragging to avoid unecessary call StopPush... also if user has ability to move cubes over gaps.
-                    //player.StopPushAndPullCaller();
+                    player.StopPushAndPullCaller();
                     EnterState(States.falling);
                     //Debug.Log(gameObject.name + " should start falling");
                 }
