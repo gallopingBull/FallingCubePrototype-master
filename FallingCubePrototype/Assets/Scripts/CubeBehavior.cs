@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -63,12 +64,13 @@ public class CubeBehavior : MonoBehaviour
     Collider[] colliders;
 
     // cube infor panel text game objects
+    private bool disablingCubeInfo = false;
     [SerializeField] GameObject cubeInfoPanel;
     [SerializeField] TextMeshProUGUI cubeIDText;
     [SerializeField] TextMeshProUGUI cubeStateText;
     [SerializeField] TextMeshProUGUI cubeColorText;
     [SerializeField] TextMeshProUGUI cubePosText;
-
+    private Coroutine lastRoutine = null;
 
     #endregion
 
@@ -111,6 +113,14 @@ public class CubeBehavior : MonoBehaviour
             //{
             //    Physics.IgnoreCollision(cubeCollider, col, false);
             //}
+
+            // TODO: update cubeInfoPanel text objects here
+            if (cubeInfoPanel && cubeInfoPanel.activeInHierarchy)
+            {
+                cubeStateText.text = state.ToString();
+                cubePosText.text =
+                    $"x: {Mathf.Floor(transform.position.x * 10) / 10}, y: {Mathf.Floor(transform.position.y * 10) / 10}, z: {Mathf.Floor(transform.position.z * 10) / 10}";
+            }
 
             StateManager(tmpYVel);
 
@@ -179,19 +189,6 @@ public class CubeBehavior : MonoBehaviour
                     PlaySFX(dragSFX);
                     audioSource.loop = true;
                 }
-                
-                // TODO: update cubeInfoPanel text objects here
-                if (cubeInfoPanel && cubeInfoPanel.activeInHierarchy)
-                {
-                    cubeIDText.text = id.ToString();   
-                    cubeStateText.text = state.ToString();
-                    cubeColorText.text = color.ToString();  
-                    cubePosText.text = 
-                        $"x: {Mathf.Floor(transform.position.x * 10) / 10}, y: {Mathf.Floor(transform.position.y * 10) / 10}, z: {Mathf.Floor(transform.position.z * 10) / 10}";
-
-               
-                }
-           
 
                 if ((!m_HitDetect || m_Hit.distance > .75) && transform.position.y != 0)
                 {
@@ -268,8 +265,13 @@ public class CubeBehavior : MonoBehaviour
                         _go.GetComponent<ParticleSystem>().Play();
                     }
                 }
-                if (!cubeInfoPanel.activeInHierarchy)
-                    cubeInfoPanel.SetActive(true);
+
+                cubeInfoPanel.SetActive(true);
+                if (disablingCubeInfo)
+                {
+                    StopCoroutine(lastRoutine);
+                    disablingCubeInfo = false;
+                }
                 rb.mass = 1;
                 rb.isKinematic = false;
                 rb.useGravity = true;
@@ -321,8 +323,8 @@ public class CubeBehavior : MonoBehaviour
                     audioSource.Stop();
                     audioSource.loop = false;
                 }
-                if (cubeInfoPanel.activeInHierarchy)
-                    cubeInfoPanel.SetActive(false);
+                if (!disablingCubeInfo)
+                    lastRoutine = StartCoroutine(HideCubeInfo());
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
               
@@ -343,6 +345,10 @@ public class CubeBehavior : MonoBehaviour
             rend = GetComponentInChildren<Renderer>();
 
         SetMaterialColor();
+        
+        cubeIDText.text = id.ToString();
+        cubeColorText.text = color.ToString();
+
         //cubeCollider = GetComponent<Collider>();
         cubeCollider = gameObject.transform.Find("CubeMesh").GetComponent<Collider>();
         cubeKillZone = gameObject.transform.Find("CubeKillZone").GetComponent<Collider>();
@@ -527,6 +533,14 @@ public class CubeBehavior : MonoBehaviour
         }
     }
 
+    private IEnumerator HideCubeInfo()
+    {
+        disablingCubeInfo = true;
+        yield return new WaitForSeconds(3f);
+        cubeInfoPanel.SetActive(false);
+        disablingCubeInfo = false;
+    }
+    
     public void DestroyCube()
     {
         StartCoroutine("DestoryCube");
