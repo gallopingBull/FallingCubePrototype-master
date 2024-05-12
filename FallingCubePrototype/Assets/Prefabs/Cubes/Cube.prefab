@@ -85822,6 +85822,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 499352249980255593, guid: ada4d199739c4424692bdd60c37231a9, type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 499352249980255593, guid: ada4d199739c4424692bdd60c37231a9, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 499352249980255593, guid: ada4d199739c4424692bdd60c37231a9, type: 3}
+      propertyPath: m_enableWordWrapping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 499352249980255593, guid: ada4d199739c4424692bdd60c37231a9, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 671455615463977137, guid: ada4d199739c4424692bdd60c37231a9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
