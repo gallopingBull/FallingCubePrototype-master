@@ -189,7 +189,7 @@ public class CubeBehavior : MonoBehaviour
                     cubePosText.text = 
                         $"x: {Mathf.Floor(transform.position.x * 10) / 10}, y: {Mathf.Floor(transform.position.y * 10) / 10}, z: {Mathf.Floor(transform.position.z * 10) / 10}";
 
-                    //cubeInfoPanel.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.back, Camera.main.transform.rotation * Vector3.up);
+               
                 }
            
 

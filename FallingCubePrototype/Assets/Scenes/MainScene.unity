@@ -3581,22 +3581,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1092062234696018615, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1092062234696018615, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: debugWindow
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: selectedToolbar
-      value: 7
-      objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313722, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -3644,18 +3628,6 @@ PrefabInstance:
     - target: {fileID: 1092062235473313725, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 1092062236474384383, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1092062236474384383, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
-      propertyPath: selectedToolbar
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
