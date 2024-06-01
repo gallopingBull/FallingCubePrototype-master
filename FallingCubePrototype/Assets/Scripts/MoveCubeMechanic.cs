@@ -28,7 +28,7 @@ public class MoveCubeMechanic : vPushActionController
 
     private Vector3 targetPos = new Vector3();
     private int layerMask;
-    public float maxDistance = 4; //2.3f;
+    public float maxDetectionDistance = 4; //2.3f;
 
     public float Distance = 0;
 
@@ -51,7 +51,55 @@ public class MoveCubeMechanic : vPushActionController
         OnExitCubePosition += RemoveNewFloorCube;
     }
 
-    protected override void MoveObject()
+
+    protected override void UpdateInput()
+    {
+        EnterExitInput();
+        MoveInput();
+    }
+
+    // I changed GetButtonDown() ti GetButton() to remove toggle input. I also check if the button is being held
+    // down in the final stop condition. 
+    protected override void EnterExitInput()
+    {
+        if (tpInput.enabled || !isStarted || !pushPoint)
+        {
+            Ray ray = new Ray(transform.position + Vector3.up * 0.5f, transform.forward);
+
+            if (Physics.Raycast(ray, out hit, .45f, pushpullLayer))
+            {
+                var _object = hit.collider.gameObject.GetComponent<vPushObjectPoint>();
+                Debug.Log($"_object.gameObject.name: {_object.gameObject.name}");
+                if (_object && pushPoint != _object && _object.canUse && _object.gameObject.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded) 
+                {
+                    pushPoint = _object;
+                    onFindObject.Invoke();
+                }
+                else if (_object == null && pushPoint)
+                {
+                    pushPoint = null;
+                    onLostObject.Invoke();
+                }
+            }
+            else if (pushPoint)
+            {
+                pushPoint = null;
+                onLostObject.Invoke();
+            }
+
+            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton())
+            {
+                StartCoroutine(StartPushAndPull());
+
+            }
+
+        }
+        else if (isPushingPulling && !startPushPullInput.GetButton())
+        {
+            StartCoroutine(StopPushAndPull());
+        }
+    }
+    protected override void MoveObject()    
     {
         // Stop moving cube if camera is rotating
         //if ((Input.GetAxis("RightAnalogHorizontal") != 0 || Input.GetAxis("RightAnalogVertical") != 0) || (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0))
@@ -137,6 +185,16 @@ public class MoveCubeMechanic : vPushActionController
 
     public void StopPushAndPullCaller()
     {
+        // I'd like to stop player movement as soon as the cube starts falling.
+        // Right now there's a lag between player 
+        //weight = 0;
+        //tpInput.cc.ResetInputAnimatorParameters();
+        //tpInput.cc.inputSmooth = Vector3.zero;
+        //tpInput.cc.input = Vector3.zero;
+        //tpInput.cc.inputMagnitude = 0;
+        //tpInput.cc.StopCharacter();
+        //tpInput.cc._rigidbody.velocity = Vector3.zero;
+        //tpInput.cc.moveDirection = Vector3.zero;
         StartCoroutine(StopPushAndPull(true));
     }
 
@@ -225,7 +283,7 @@ public class MoveCubeMechanic : vPushActionController
         //debug.Log($"distance: {Distance}");
 
         // Return true if the distance is less than maxDistance, otherwise return false
-        return Distance <= maxDistance;
+        return Distance <= maxDetectionDistance;
     }
 
     private void OnDestroy()
@@ -321,9 +379,9 @@ public class MoveCubeMechanic : vPushActionController
                 {
                     var tmpPos = new Vector3();
                     if (i == 0)
-                        maxDistance = 4f;
+                        maxDetectionDistance = 4f;
                     else
-                        maxDistance = 2.83f;
+                        maxDetectionDistance = 2.83f;
 
                     tmpPos = new Vector3(
                        hit1.transform.position.x,
@@ -334,7 +392,7 @@ public class MoveCubeMechanic : vPushActionController
                     
                     //Debug.Log($"distance: {Distance}");
 
-                    if (Distance <= maxDistance)
+                    if (Distance <= maxDetectionDistance)
                     {
                         switch (i)
                         {
@@ -416,7 +474,7 @@ public class MoveCubeMechanic : vPushActionController
                 }
                 else if (!hitCubeUnderneath && !hitCubeInCurrentDirection)
                 {
-                    maxDistance = 2f;
+                    maxDetectionDistance = 2f;
 
                     var tmpPos = new Vector3();
                     tmpPos = new Vector3(
@@ -427,7 +485,7 @@ public class MoveCubeMechanic : vPushActionController
                     Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
                     Debug.Log($"distance: {Distance}");
     
-                    if (Distance <= maxDistance)
+                    if (Distance <= maxDetectionDistance)
                     {
                         switch (i)
                         {

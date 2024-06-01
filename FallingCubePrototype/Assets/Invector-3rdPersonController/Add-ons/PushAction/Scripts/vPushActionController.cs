@@ -132,9 +132,7 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
         MoveInput();
     }
 
-    // I changed GetButtonDown() ti GetButton() to remove toggle input. I also check if the button is being held
-    // down in the final stop condition. 
-    protected void EnterExitInput()
+    protected virtual void EnterExitInput()
     {
         if (tpInput.enabled || !isStarted || !pushPoint)
         {
@@ -160,14 +158,14 @@ public class vPushActionController : vMonoBehaviour, vIAnimatorMoveReceiver
                 onLostObject.Invoke();
             }
 
-            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton())
+            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButtonDown())
             {
                 StartCoroutine(StartPushAndPull());
 
             }
 
         }
-        else if (isPushingPulling && !startPushPullInput.GetButton())
+        else if (isPushingPulling)
         {
             StartCoroutine(StopPushAndPull());
         }   
