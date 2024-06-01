@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class UIPanelFaceCamera : MonoBehaviour
 {
-    
     void Start()
     {
         GetComponent<Canvas>().worldCamera = GameObject.Find("UICamera").GetComponent<Camera>();
