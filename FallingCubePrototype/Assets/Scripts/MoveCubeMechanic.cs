@@ -71,7 +71,6 @@ public class MoveCubeMechanic : vPushActionController
             if (Physics.Raycast(ray, out hit, minGrabDistance, pushpullLayer))
             {
                 var _object = hit.collider.gameObject.GetComponent<vPushObjectPoint>();
-                Debug.Log($"_object.gameObject.name: {_object.gameObject.name}");
                 if (_object && pushPoint != _object && _object.canUse && _object.gameObject.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded) 
                 {
                     pushPoint = _object;

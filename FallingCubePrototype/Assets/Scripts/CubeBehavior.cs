@@ -85,6 +85,7 @@ public class CubeBehavior : MonoBehaviour
         colliders = GetComponentsInChildren<Collider>();
 
         EnterState(States.init);
+        layerMask = LayerMask.NameToLayer("Cube");
     }
 
     // Update is called once per frame
@@ -189,7 +190,7 @@ public class CubeBehavior : MonoBehaviour
                     PlaySFX(dragSFX);
                     audioSource.loop = true;
                 }
-
+                Debug.Log($"m_Hit.name: {m_Hit.transform.gameObject.name} - m_HitDetect: {m_HitDetect} - m_Hit.distance: {m_Hit.distance}");
                 if ((!m_HitDetect || m_Hit.distance > .75) && transform.position.y != 0)
                 {
                     // release cube here 
