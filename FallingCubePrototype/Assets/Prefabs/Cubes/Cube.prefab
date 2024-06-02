@@ -84791,7 +84791,7 @@ MonoBehaviour:
   rend: {fileID: 8473027575434832621}
   isSpawned: 1
   m_MaxDistance: 15
-  BoxColliderSize: 1.7
+  BoxColliderSize: 1.85
   ClimbingCollider: {fileID: 4172563618177574095}
   cubeInfoPanel: {fileID: 8139241442079927878}
   cubeIDText: {fileID: 5073345286375138265}
@@ -85540,7 +85540,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5886772369871705021
 Transform:
   m_ObjectHideFlags: 0
@@ -85580,7 +85580,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f6b16cef2c9411428b90020bea51fe0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openCloseEvents: 1
+  openCloseEvents: 0
   openCloseWindow: 0
   selectedToolbar: 0
   useFilter: 1
