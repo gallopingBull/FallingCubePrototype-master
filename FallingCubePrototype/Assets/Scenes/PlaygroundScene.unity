@@ -6610,7 +6610,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: selectedToolbar
-      value: 2
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
+      propertyPath: distanceBetweenObject
+      value: 0.85
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}

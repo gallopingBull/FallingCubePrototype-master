@@ -32,6 +32,8 @@ public class MoveCubeMechanic : vPushActionController
 
     public float Distance = 0;
 
+    public float minGrabDistance = .85f;
+
     private bool isDetectingBack = false;
     private bool isDetectingBackLeft = false;
     private bool isDetectingBackRight = false;
@@ -66,7 +68,7 @@ public class MoveCubeMechanic : vPushActionController
         {
             Ray ray = new Ray(transform.position + Vector3.up * 0.5f, transform.forward);
 
-            if (Physics.Raycast(ray, out hit, .45f, pushpullLayer))
+            if (Physics.Raycast(ray, out hit, minGrabDistance, pushpullLayer))
             {
                 var _object = hit.collider.gameObject.GetComponent<vPushObjectPoint>();
                 Debug.Log($"_object.gameObject.name: {_object.gameObject.name}");
