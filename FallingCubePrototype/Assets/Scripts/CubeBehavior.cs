@@ -80,7 +80,7 @@ public class CubeBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();    
+        //player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();    
         // Temporarily ignore collisions with the same game object
         colliders = GetComponentsInChildren<Collider>();
 
