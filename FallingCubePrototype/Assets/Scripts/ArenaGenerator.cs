@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ArenaGenerator : MonoBehaviour
@@ -210,6 +211,14 @@ public class ArenaGenerator : MonoBehaviour
         var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
         cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
         cubes.Add(cube);
+    }
+
+    public GameObject GetCubeByPosition(Vector3 position) 
+    {
+        GameObject cube = cubes.Find(c => c.transform.position == position);
+        if(cube == null)
+            return null;
+        return cube;
     }
 
     public void DestoryAllCubes()

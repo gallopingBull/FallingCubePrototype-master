@@ -23,8 +23,11 @@ public class LevelEditor : MonoBehaviour
 
     public List<GameObject> gridPoints = new List<GameObject>();
     private Transform gridMapParent;
+    private GameObject currentGridPoint;
     //public List<GameObject> cubes = new List<GameObject>();
+    [SerializeField] List<Material> selectionMats = new List<Material>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
+
 
     // Start is called before the first frame update
     void Start()
@@ -36,18 +39,20 @@ public class LevelEditor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //InputHandler();
+        InputHandler();
     }
 
     private void Init()
     {
-        // SelectGridPoint(0, 0)
-        InputHandler();
         GenerateSelectionGrid();
+        SelectGridPoint(Vector3.zero);
     }
 
     private void GenerateSelectionGrid()
     {
+        if (gridPoints != null)
+            DeleteAllGridPoints();
+
         for (int i = 0; i < maxGridSizeX; i++) 
         {
             for(int j = 0; j < maxGridSizeY; j++)
@@ -66,31 +71,77 @@ public class LevelEditor : MonoBehaviour
 
     private void InputHandler() 
     {
-
+        if (Input.GetAxis("LeftAnalogHorizontal") == 0 || Input.GetAxis("LeftAnalogVertical") == 0)
+            return;
         if (Input.GetAxis("LeftAnalogHorizontal") != 0 || Input.GetAxis("LeftAnalogVertical") != 0)
         {
             h = Input.GetAxis("LeftAnalogHorizontal");
             z = Input.GetAxis("LeftAnalogVertical");
 
             // Check if gamepad stick input is within dead zone
-            if (Mathf.Abs(h) < gamepadDeadzone)
-            {
-                h = 0f;
-            }
-            if (Mathf.Abs(z) < gamepadDeadzone)
-            {
-                z = 0f;
-            }
+            //if (Mathf.Abs(h) < gamepadDeadzone)
+            //{
+            //    h = 0f;
+            //}
+            //if (Mathf.Abs(z) < gamepadDeadzone)
+            //{
+            //    z = 0f;
+            //}
+        }
+        //else
+        //{
+        //    h = Input.GetAxis("Horizontal");
+        //    z = Input.GetAxis("Vertical");
+        //}
+
+        int y = 0;
+        //if (Input.GetButtonDown("Up"))
+        //{
+        //    y = 1;  
+        //}
+        //
+        //if (Input.GetButtonDown("Down"))
+        //{
+        //    y = -1;
+        //}
+
+        Vector3 position = new Vector3(h, y, z);
+        // Get this grid point, if em
+        SelectGridPoint(position);  
+    }
+
+    private void SelectGridPoint(Vector3 position) 
+    {
+        Debug.Log($"position: {position}");
+        if (currentGridPoint == null)
+        {
+            currentGridPoint = GetGridPointByPosition(position);
+            currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
+
         }
         else
         {
-            h = Input.GetAxis("Horizontal");
-            z = Input.GetAxis("Vertical");
-        }
+            // same grid point! 
+            if (currentGridPoint.transform.position == (position * 2) + currentGridPoint.transform.position)
+                return;
 
+            //DeSelectGridPoint();
+
+            // Select grid point here
+            currentGridPoint = GetGridPointByPosition((position * 2) + currentGridPoint.transform.position);
+            currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
+        }
     }
 
-    private void SelectGridPoint() { }
+    private void DeSelectGridPoint() 
+    {
+        if (currentGridPoint == null)
+            return;
+
+        // change material is the
+        currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[1];
+        currentGridPoint = null;
+    }
 
     private void SelectCubeType() { }
 
@@ -98,5 +149,28 @@ public class LevelEditor : MonoBehaviour
 
     private void DeleteCube() { }
 
-    private void DeleteAllCubes() { }
+    private void DeleteAllCubes() 
+    {
+        // I should be able to do this.
+        //ArenaGenerator.DestroyAllCubes();
+    }
+
+    public GameObject GetGridPointByPosition(Vector3 position)
+    {
+        GameObject gridPoint = gridPoints.Find(gp => gp.transform.position == position);
+        if (gridPoint == null)
+            return null;
+        return gridPoint;
+    }
+
+    private void DeleteAllGridPoints() 
+    {
+        foreach (GameObject gridPoint in gridPoints)
+            Destroy(gridPoint);
+        gridPoints.Clear();
+    }
+
+    private void SaveSpawnData() { }
+
+    private void LoadSpawnData() { }
 }
