@@ -145,9 +145,17 @@ public class LevelEditor : MonoBehaviour
 
     private void SelectCubeType() { }
 
-    private void GenerateCube() { }
+    private void GenerateCube() 
+    {
+        // I should be able to do this.
+        //ArenaGenerator.GenerateCube();
+    }
 
-    private void DeleteCube() { }
+    private void DeleteCube() 
+    {
+        // I should be able to do this.
+        //ArenaGenerator.DeleteCube();
+    }
 
     private void DeleteAllCubes() 
     {
