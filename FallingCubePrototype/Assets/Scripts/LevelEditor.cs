@@ -170,7 +170,9 @@ public class LevelEditor : MonoBehaviour
         gridPoints.Clear();
     }
 
+    // Serialize SpawnData to json file
     private void SaveSpawnData() { }
-
+    
+    // Load serialize SpawnData from json file
     private void LoadSpawnData() { }
 }
