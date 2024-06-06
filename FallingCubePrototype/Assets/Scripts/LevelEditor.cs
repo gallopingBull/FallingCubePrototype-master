@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class LevelEditor : MonoBehaviour
@@ -17,6 +18,7 @@ public class LevelEditor : MonoBehaviour
 
     public int minHeight = 1;
     public int maxHeight = 5;
+    private int cubeScale = 2; 
 
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
     private float h, z;
@@ -37,7 +39,7 @@ public class LevelEditor : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         InputHandler();
     }
@@ -45,7 +47,7 @@ public class LevelEditor : MonoBehaviour
     private void Init()
     {
         GenerateSelectionGrid();
-        SelectGridPoint(Vector3.zero);
+        StartCoroutine(SelectGridPoint(Vector3.zero));
     }
 
     private void GenerateSelectionGrid()
@@ -60,7 +62,7 @@ public class LevelEditor : MonoBehaviour
                 for (int k = 0; k < maxGridSizeZ + 1; k++) 
                 {
                     Vector3 pos = new Vector3(i, j, k);
-                    var gridPoint = Instantiate(gridPointPrefab, pos, transform.rotation); // assume rotation is (0,0,0).
+                    var gridPoint = Instantiate(gridPointPrefab, pos * cubeScale, transform.rotation); // assume rotation is (0,0,0).
                     //GridPoint p = new GridPoint();      
                     gridPoint.transform.parent = gridMapParent;
                     gridPoints.Add(gridPoint);
@@ -72,28 +74,25 @@ public class LevelEditor : MonoBehaviour
     private void InputHandler() 
     {
         if (Input.GetAxis("LeftAnalogHorizontal") == 0 || Input.GetAxis("LeftAnalogVertical") == 0)
+        {
             return;
+        }
         if (Input.GetAxis("LeftAnalogHorizontal") != 0 || Input.GetAxis("LeftAnalogVertical") != 0)
         {
             h = Input.GetAxis("LeftAnalogHorizontal");
             z = Input.GetAxis("LeftAnalogVertical");
 
             // Check if gamepad stick input is within dead zone
-            //if (Mathf.Abs(h) < gamepadDeadzone)
-            //{
-            //    h = 0f;
-            //}
-            //if (Mathf.Abs(z) < gamepadDeadzone)
-            //{
-            //    z = 0f;
-            //}
+            if (Mathf.Abs(h) < gamepadDeadzone)
+            {
+                h = 0f;
+            }
+            if (Mathf.Abs(z) < gamepadDeadzone)
+            {
+                z = 0f;
+            }
         }
-        //else
-        //{
-        //    h = Input.GetAxis("Horizontal");
-        //    z = Input.GetAxis("Vertical");
-        //}
-
+       
         int y = 0;
         //if (Input.GetButtonDown("Up"))
         //{
@@ -105,42 +104,60 @@ public class LevelEditor : MonoBehaviour
         //    y = -1;
         //}
 
-        Vector3 position = new Vector3(h, y, z);
+        Vector3 targetPosition = new Vector3(Mathf.RoundToInt(h), Mathf.RoundToInt(y), Mathf.RoundToInt(z));
+        // Clamp target position within the boundaries of the map
+        targetPosition.x = Mathf.Clamp(targetPosition.x * cubeScale, 0, maxGridSizeX * cubeScale);
+        targetPosition.z = Mathf.Clamp(targetPosition.z * cubeScale, 0, maxGridSizeY * cubeScale);
         // Get this grid point, if em
-        SelectGridPoint(position);  
+        StartCoroutine(SelectGridPoint(targetPosition));
+        //SelectGridPoint(targetPosition);  
     }
 
-    private void SelectGridPoint(Vector3 position) 
+    private IEnumerator SelectGridPoint(Vector3 position) 
     {
         Debug.Log($"position: {position}");
+        yield return new WaitForSeconds(1f);
+
         if (currentGridPoint == null)
         {
             currentGridPoint = GetGridPointByPosition(position);
+            Debug.Log($"currentGridPoint.name: {currentGridPoint.name}");
             currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
 
         }
         else
         {
-            // same grid point! 
-            if (currentGridPoint.transform.position == (position * 2) + currentGridPoint.transform.position)
-                return;
+            var prevGP = currentGridPoint;
 
-            //DeSelectGridPoint();
+            if (position.x >= maxGridSizeX)
+            {
+                yield return null;
+            }
+
+            if (position.z >= maxGridSizeZ)
+            {
+                yield return null;
+            }
+
+            // same grid point! 
+            if (currentGridPoint.transform.position == position + currentGridPoint.transform.position)
+                yield return null;
+
+            DeSelectGridPoint(prevGP);
 
             // Select grid point here
-            currentGridPoint = GetGridPointByPosition((position * 2) + currentGridPoint.transform.position);
+            currentGridPoint = GetGridPointByPosition(position + currentGridPoint.transform.position);
             currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
         }
     }
 
-    private void DeSelectGridPoint() 
+    private void DeSelectGridPoint(GameObject gp) 
     {
-        if (currentGridPoint == null)
+        if (gp == null)
             return;
 
         // change material is the
-        currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[1];
-        currentGridPoint = null;
+        gp.GetComponentInChildren<Renderer>().material = selectionMats[1];
     }
 
     private void SelectCubeType() { }
