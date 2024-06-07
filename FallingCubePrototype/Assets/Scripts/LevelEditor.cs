@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class LevelEditor : MonoBehaviour
 {
@@ -30,6 +32,16 @@ public class LevelEditor : MonoBehaviour
     [SerializeField] List<Material> selectionMats = new List<Material>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
 
+    /// //// //// 
+    // Allows you to hold down a key for movement.
+    [SerializeField] private bool isRepeatedMovement = false;
+    // Time in seconds to move between one grid position and the next.
+    [SerializeField] private float moveDuration = 0.1f;
+    // The size of the grid
+    [SerializeField] private float gridSize = 2f;
+    private bool isMoving = false;
+    /// //// //// 
+
 
     // Start is called before the first frame update
     void Start()
@@ -41,7 +53,42 @@ public class LevelEditor : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        InputHandler();
+        // Only process on move at a time.
+        if (!isMoving)
+        {
+            InputHandler();
+
+            // Accomodate two different types of moving.
+            //Func<KeyCode, bool> inputFunction;
+            //if (isRepeatedMovement)
+            //{
+            //    // GetKey repeatedly fires.
+            //    inputFunction = Input.GetKey;
+            //}
+            //else
+            //{
+            //    // GetKeyDown fires once per keypress
+            //    inputFunction = Input.GetKeyDown;
+            //}
+            //
+            //// If the input function is active, move in the appropriate direction.
+            //if (inputFunction(KeyCode.UpArrow))
+            //{
+            //    StartCoroutine(Move(Vector2.up));
+            //}
+            //else if (inputFunction(KeyCode.DownArrow))
+            //{
+            //    StartCoroutine(Move(Vector2.down));
+            //}
+            //else if (inputFunction(KeyCode.LeftArrow))
+            //{
+            //    StartCoroutine(Move(Vector2.left));
+            //}
+            //else if (inputFunction(KeyCode.RightArrow))
+            //{
+            //    StartCoroutine(Move(Vector2.right));
+            //}
+        }
     }
 
     private void Init()
@@ -73,6 +120,7 @@ public class LevelEditor : MonoBehaviour
 
     private void InputHandler() 
     {
+      
         if (Input.GetAxis("LeftAnalogHorizontal") == 0 || Input.GetAxis("LeftAnalogVertical") == 0)
         {
             return;
@@ -115,8 +163,9 @@ public class LevelEditor : MonoBehaviour
 
     private IEnumerator SelectGridPoint(Vector3 position) 
     {
+        isMoving = true;
         Debug.Log($"position: {position}");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.1f);
 
         if (currentGridPoint == null)
         {
@@ -129,27 +178,36 @@ public class LevelEditor : MonoBehaviour
         {
             var prevGP = currentGridPoint;
 
-            if (position.x >= maxGridSizeX)
+            if (position.x == maxGridSizeX)
             {
+                //isMoving = false;
+
                 yield return null;
             }
 
-            if (position.z >= maxGridSizeZ)
+            if (position.z == maxGridSizeZ)
             {
+                //isMoving = false;
+
                 yield return null;
             }
 
-            // same grid point! 
-            if (currentGridPoint.transform.position == position + currentGridPoint.transform.position)
-                yield return null;
+            currentGridPoint = GetGridPointByPosition(position + currentGridPoint.transform.position);
+            if (currentGridPoint)
+            {
+                DeSelectGridPoint(prevGP);
+                currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
 
-            DeSelectGridPoint(prevGP);
+            }
+            else
+            { currentGridPoint = prevGP; }
 
             // Select grid point here
-            currentGridPoint = GetGridPointByPosition(position + currentGridPoint.transform.position);
-            currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
         }
+        isMoving = false;
+
     }
+
 
     private void DeSelectGridPoint(GameObject gp) 
     {
@@ -158,6 +216,45 @@ public class LevelEditor : MonoBehaviour
 
         // change material is the
         gp.GetComponentInChildren<Renderer>().material = selectionMats[1];
+    }
+
+    // Smooth movement between grid positions.
+    private IEnumerator Move(Vector2 direction)
+    {
+        // Record that we're moving so we don't accept more input.
+        isMoving = true;
+
+        // Make a note of where we are and where we are going.
+        Vector2 startPosition = currentGridPoint.transform.position;
+        Vector2 endPosition = startPosition + (direction * gridSize);
+
+        // Smoothly move in the desired direction taking the required time.
+        float elapsedTime = 0;
+        while (elapsedTime < moveDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float percent = elapsedTime / moveDuration;
+            var test = Vector2.Lerp(startPosition, endPosition, percent);
+            yield return null;
+        }
+
+
+        // same grid point! 
+        //if (currentGridPoint.transform.position == endPosition)
+        //    yield return null;
+
+       // DeSelectGridPoint(prevGP);
+
+        // Select grid point here
+        currentGridPoint = GetGridPointByPosition(endPosition);
+        currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
+
+
+        // Make sure we end up exactly where we want.
+        //transform.position = endPosition;
+     
+        // We're no longer moving so we can accept another move input.
+        isMoving = false;
     }
 
     private void SelectCubeType() { }
