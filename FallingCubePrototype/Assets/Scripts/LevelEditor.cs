@@ -41,9 +41,7 @@ public class LevelEditor : MonoBehaviour
     void Update()
     {
         if (!isMoving)
-        {
             InputHandler();
-        }
     }
 
     private void Init()
@@ -79,12 +77,23 @@ public class LevelEditor : MonoBehaviour
         h = Input.GetAxis("LeftAnalogHorizontal");
         z = Input.GetAxis("LeftAnalogVertical");
 
-        // Apply deadzone filtering
-        if (Mathf.Abs(h) < gamepadDeadzone)
-            h = 0f;
+        // Get the forward and right vectors of the camera without vertical component
+        Vector3 cameraForward = Camera.main.transform.forward;
+        cameraForward.y = 0f;
+        cameraForward.Normalize();
 
-        if (Mathf.Abs(z) < gamepadDeadzone)
-            z = 0f;
+        Vector3 cameraRight = Camera.main.transform.right;
+        cameraRight.y = 0f;
+        cameraRight.Normalize();
+
+        Vector3 direction = cameraForward * z + cameraRight * h;
+
+        // Apply deadzone filtering
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
+            direction.z = 0f;
+        else
+            direction.x = 0f;
+        direction.Normalize();
 
 
         int y = 0;
@@ -92,27 +101,12 @@ public class LevelEditor : MonoBehaviour
             y = 1;
         else if (Input.GetButton("LB"))
             y = -1;
-
+        direction.y = y;    
 
         // Only proceed if there's any movement input
         if (h != 0 || z != 0 || y != 0)
-        {
-            // Get the forward and right vectors of the camera without vertical component
-            //Vector3 cameraForward = Camera.main.transform.forward;
-            //cameraForward.y = 0f;
-            //cameraForward.Normalize();
-            //
-            //Vector3 cameraRight = Camera.main.transform.right;
-            //cameraRight.y = 0f;
-            //cameraRight.Normalize();
-
-
-            Vector3 direction = new Vector3(Mathf.RoundToInt(h), y, Mathf.RoundToInt(z));
-            //Vector3 direction = cameraForward * Mathf.RoundToInt(z) + cameraRight * Mathf.RoundToInt(h);
-            //direction.Normalize();
-
             StartCoroutine(MoveToSelection(direction));
-        }
+
     }
 
     private IEnumerator MoveToSelection(Vector3 dir)
@@ -122,8 +116,8 @@ public class LevelEditor : MonoBehaviour
         Vector3 targetPosition = currentGridPoint.transform.position + (dir * cubeScale);
 
         // Clamp target position within the boundaries of the map
-        targetPosition.x = Mathf.Clamp(targetPosition.x, 0, (maxGridSizeX - 1) * cubeScale);
-        targetPosition.z = Mathf.Clamp(targetPosition.z, 0, (maxGridSizeZ - 1) * cubeScale);
+        targetPosition.x = Mathf.Clamp(Mathf.RoundToInt(targetPosition.x), 0, (maxGridSizeX - 1) * cubeScale);
+        targetPosition.z = Mathf.Clamp(Mathf.RoundToInt(targetPosition.z), 0, (maxGridSizeZ - 1) * cubeScale);
 
         yield return new WaitForSeconds(moveDuration);
 
