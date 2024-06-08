@@ -1,9 +1,7 @@
-using Invector.vCamera;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+
 
 public class LevelEditor : MonoBehaviour
 {
@@ -40,7 +38,7 @@ public class LevelEditor : MonoBehaviour
         Init();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (!isMoving)
         {
@@ -99,7 +97,20 @@ public class LevelEditor : MonoBehaviour
         // Only proceed if there's any movement input
         if (h != 0 || z != 0 || y != 0)
         {
+            // Get the forward and right vectors of the camera without vertical component
+            //Vector3 cameraForward = Camera.main.transform.forward;
+            //cameraForward.y = 0f;
+            //cameraForward.Normalize();
+            //
+            //Vector3 cameraRight = Camera.main.transform.right;
+            //cameraRight.y = 0f;
+            //cameraRight.Normalize();
+
+
             Vector3 direction = new Vector3(Mathf.RoundToInt(h), y, Mathf.RoundToInt(z));
+            //Vector3 direction = cameraForward * Mathf.RoundToInt(z) + cameraRight * Mathf.RoundToInt(h);
+            //direction.Normalize();
+
             StartCoroutine(MoveToSelection(direction));
         }
     }
