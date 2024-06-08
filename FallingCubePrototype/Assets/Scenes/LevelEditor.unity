@@ -293,6 +293,9 @@ MonoBehaviour:
   selectionMats:
   - {fileID: 2100000, guid: 7b1dfb24c710a4d49ab1cef7e302de87, type: 2}
   - {fileID: 2100000, guid: d6b67e4233e230642999e0777daa0ef2, type: 2}
+  isRepeatedMovement: 0
+  moveDuration: 0.1
+  gridSize: 2
 --- !u!4 &430467973
 Transform:
   m_ObjectHideFlags: 0

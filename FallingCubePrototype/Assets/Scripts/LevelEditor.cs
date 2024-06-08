@@ -1,3 +1,4 @@
+using Invector.vCamera;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ public class LevelEditor : MonoBehaviour
     public int maxGridSizeX = 10;
     public int maxGridSizeY = 10;
     public int maxGridSizeZ = 10;
+
 
     //Vector3 maxGridSize = new Vecto3(10, 10); // Maximum grid size of the map
 
@@ -40,6 +42,7 @@ public class LevelEditor : MonoBehaviour
     // The size of the grid
     [SerializeField] private float gridSize = 2f;
     private bool isMoving = false;
+
     /// //// //// 
 
 
@@ -94,7 +97,8 @@ public class LevelEditor : MonoBehaviour
     private void Init()
     {
         GenerateSelectionGrid();
-        StartCoroutine(SelectGridPoint(Vector3.zero));
+        currentGridPoint = GetGridPointByPosition(Vector3.zero);
+        currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
     }
 
     private void GenerateSelectionGrid()
@@ -152,60 +156,49 @@ public class LevelEditor : MonoBehaviour
         //    y = -1;
         //}
 
-        Vector3 targetPosition = new Vector3(Mathf.RoundToInt(h), Mathf.RoundToInt(y), Mathf.RoundToInt(z));
+        Vector3 direction = new Vector3(Mathf.RoundToInt(h), Mathf.RoundToInt(y), Mathf.RoundToInt(z));
         // Clamp target position within the boundaries of the map
-        targetPosition.x = Mathf.Clamp(targetPosition.x * cubeScale, 0, maxGridSizeX * cubeScale);
-        targetPosition.z = Mathf.Clamp(targetPosition.z * cubeScale, 0, maxGridSizeY * cubeScale);
+        direction.x = Mathf.Clamp(direction.x, y, maxGridSizeX);
+        direction.z = Mathf.Clamp(direction.z, y, maxGridSizeY);
         // Get this grid point, if em
-        StartCoroutine(SelectGridPoint(targetPosition));
-        //SelectGridPoint(targetPosition);  
+        StartCoroutine(MoveToSelection(direction));  
     }
 
-    private IEnumerator SelectGridPoint(Vector3 position) 
+    private IEnumerator MoveToSelection(Vector3 dir) 
     {
         isMoving = true;
-        Debug.Log($"position: {position}");
+
+        Vector3 targetPosition = currentGridPoint.transform.position + (dir * cubeScale);
+        Debug.Log($"targetPosition: {targetPosition}");
+        Debug.Log($"dir: {dir}");
+
         yield return new WaitForSeconds(.1f);
 
-        if (currentGridPoint == null)
-        {
-            currentGridPoint = GetGridPointByPosition(position);
-            Debug.Log($"currentGridPoint.name: {currentGridPoint.name}");
-            currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
+        SelectGridPoint(targetPosition);
 
+        isMoving = false;
+    }
+
+    private void SelectGridPoint(Vector3 targetPosition)
+    {
+        var prevGP = currentGridPoint;
+
+        // Select grid point here
+        if (targetPosition.x >= maxGridSizeX || targetPosition.z >= maxGridSizeZ)
+        {
+            Debug.Log("returning null");
+            currentGridPoint = prevGP;
+            currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
         }
         else
         {
-            var prevGP = currentGridPoint;
-
-            if (position.x == maxGridSizeX)
-            {
-                //isMoving = false;
-
-                yield return null;
-            }
-
-            if (position.z == maxGridSizeZ)
-            {
-                //isMoving = false;
-
-                yield return null;
-            }
-
-            currentGridPoint = GetGridPointByPosition(position + currentGridPoint.transform.position);
-            if (currentGridPoint)
-            {
-                DeSelectGridPoint(prevGP);
-                currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
-
-            }
-            else
-            { currentGridPoint = prevGP; }
-
-            // Select grid point here
+            currentGridPoint = GetGridPointByPosition(targetPosition);
+            DeSelectGridPoint(prevGP);
+            if (currentGridPoint == null)
+                currentGridPoint = prevGP;
         }
-        isMoving = false;
 
+        currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
     }
 
 
@@ -216,45 +209,6 @@ public class LevelEditor : MonoBehaviour
 
         // change material is the
         gp.GetComponentInChildren<Renderer>().material = selectionMats[1];
-    }
-
-    // Smooth movement between grid positions.
-    private IEnumerator Move(Vector2 direction)
-    {
-        // Record that we're moving so we don't accept more input.
-        isMoving = true;
-
-        // Make a note of where we are and where we are going.
-        Vector2 startPosition = currentGridPoint.transform.position;
-        Vector2 endPosition = startPosition + (direction * gridSize);
-
-        // Smoothly move in the desired direction taking the required time.
-        float elapsedTime = 0;
-        while (elapsedTime < moveDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float percent = elapsedTime / moveDuration;
-            var test = Vector2.Lerp(startPosition, endPosition, percent);
-            yield return null;
-        }
-
-
-        // same grid point! 
-        //if (currentGridPoint.transform.position == endPosition)
-        //    yield return null;
-
-       // DeSelectGridPoint(prevGP);
-
-        // Select grid point here
-        currentGridPoint = GetGridPointByPosition(endPosition);
-        currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
-
-
-        // Make sure we end up exactly where we want.
-        //transform.position = endPosition;
-     
-        // We're no longer moving so we can accept another move input.
-        isMoving = false;
     }
 
     private void SelectCubeType() { }
