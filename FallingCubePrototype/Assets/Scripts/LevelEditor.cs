@@ -77,27 +77,31 @@ public class LevelEditor : MonoBehaviour
 
     private void InputHandler()
     {
+        // Get horizontal and vertical analog stick input
         h = Input.GetAxis("LeftAnalogHorizontal");
         z = Input.GetAxis("LeftAnalogVertical");
 
+        // Apply deadzone filtering
         if (Mathf.Abs(h) < gamepadDeadzone)
-        {
             h = 0f;
-        }
-        if (Mathf.Abs(z) < gamepadDeadzone)
-        {
-            z = 0f;
-        }
 
-        if (h == 0 && z == 0)
-        {
-            return;
-        }
+        if (Mathf.Abs(z) < gamepadDeadzone)
+            z = 0f;
+
 
         int y = 0;
+        if (Input.GetButton("RB"))
+            y = 1;
+        else if (Input.GetButton("LB"))
+            y = -1;
 
-        Vector3 direction = new Vector3(Mathf.RoundToInt(h), Mathf.RoundToInt(y), Mathf.RoundToInt(z));
-        StartCoroutine(MoveToSelection(direction));
+
+        // Only proceed if there's any movement input
+        if (h != 0 || z != 0 || y != 0)
+        {
+            Vector3 direction = new Vector3(Mathf.RoundToInt(h), y, Mathf.RoundToInt(z));
+            StartCoroutine(MoveToSelection(direction));
+        }
     }
 
     private IEnumerator MoveToSelection(Vector3 dir)
@@ -153,6 +157,26 @@ public class LevelEditor : MonoBehaviour
     public GameObject GetGridPointByPosition(Vector3 position)
     {
         return gridPoints.Find(gp => gp.transform.position == position);
+    }
+
+    private void SelectCubeType() { }
+
+    private void GenerateCube()
+    {
+        // I should be able to do this.
+        //ArenaGenerator.GenerateCube();
+    }
+
+    private void DeleteCube()
+    {
+        // I should be able to do this.
+        //ArenaGenerator.DeleteCube();
+    }
+
+    private void DeleteAllCubes()
+    {
+        // I should be able to do this.
+        //ArenaGenerator.DestroyAllCubes();
     }
 
     // Serialize SpawnData to json file
