@@ -117,6 +117,7 @@ public class LevelEditor : MonoBehaviour
 
         // Clamp target position within the boundaries of the map
         targetPosition.x = Mathf.Clamp(Mathf.RoundToInt(targetPosition.x), 0, (maxGridSizeX - 1) * cubeScale);
+        targetPosition.y = Mathf.Clamp(Mathf.RoundToInt(targetPosition.y), 0, (maxGridSizeY - 1) * cubeScale);
         targetPosition.z = Mathf.Clamp(Mathf.RoundToInt(targetPosition.z), 0, (maxGridSizeZ - 1) * cubeScale);
 
         yield return new WaitForSeconds(moveDuration);
@@ -132,14 +133,7 @@ public class LevelEditor : MonoBehaviour
 
         // Select grid point here
         currentGridPoint = GetGridPointByPosition(targetPosition);
-        if (currentGridPoint == null)
-        {
-            currentGridPoint = prevGP;
-        }
-        else
-        {
-            DeSelectGridPoint(prevGP);
-        }
+        DeSelectGridPoint(prevGP);
 
         currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
     }
