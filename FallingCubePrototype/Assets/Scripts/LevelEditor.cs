@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class LevelEditor : MonoBehaviour
 {
     public GameObject gridPointPrefab;
@@ -14,9 +13,7 @@ public class LevelEditor : MonoBehaviour
     public int maxGridSizeY = 10;
     public int maxGridSizeZ = 10;
 
-    public int minHeight = 1;
-    public int maxHeight = 5;
-    private int cubeScale = 2;
+    private int gridSize = 2; // grid size is based off cube scale
 
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
     private float h, z;
@@ -27,9 +24,7 @@ public class LevelEditor : MonoBehaviour
     [SerializeField] List<Material> selectionMats = new List<Material>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
 
-    [SerializeField] private bool isRepeatedMovement = false;
     [SerializeField] private float moveDuration = 0.1f;
-    [SerializeField] private float gridSize = 2f;
     private bool isMoving = false;
 
     void Start()
@@ -63,7 +58,7 @@ public class LevelEditor : MonoBehaviour
                 for (int k = 0; k < maxGridSizeZ + 1; k++)
                 {
                     Vector3 pos = new Vector3(i, j, k);
-                    var gridPoint = Instantiate(gridPointPrefab, pos * cubeScale, transform.rotation); // assume rotation is (0,0,0).
+                    var gridPoint = Instantiate(gridPointPrefab, pos * gridSize, transform.rotation); // assume rotation is (0,0,0).
                     gridPoint.transform.parent = gridMapParent;
                     gridPoints.Add(gridPoint);
                 }
@@ -113,12 +108,12 @@ public class LevelEditor : MonoBehaviour
     {
         isMoving = true;
 
-        Vector3 targetPosition = currentGridPoint.transform.position + (dir * cubeScale);
+        Vector3 targetPosition = currentGridPoint.transform.position + (dir * gridSize);
 
         // Clamp target position within the boundaries of the map
-        targetPosition.x = Mathf.Clamp(Mathf.RoundToInt(targetPosition.x), 0, (maxGridSizeX - 1) * cubeScale);
-        targetPosition.y = Mathf.Clamp(Mathf.RoundToInt(targetPosition.y), 0, (maxGridSizeY - 1) * cubeScale);
-        targetPosition.z = Mathf.Clamp(Mathf.RoundToInt(targetPosition.z), 0, (maxGridSizeZ - 1) * cubeScale);
+        targetPosition.x = Mathf.Clamp(Mathf.RoundToInt(targetPosition.x), 0, (maxGridSizeX - 1) * gridSize);
+        targetPosition.y = Mathf.Clamp(Mathf.RoundToInt(targetPosition.y), 0, (maxGridSizeY - 1) * gridSize);
+        targetPosition.z = Mathf.Clamp(Mathf.RoundToInt(targetPosition.z), 0, (maxGridSizeZ - 1) * gridSize);
 
         yield return new WaitForSeconds(moveDuration);
 
