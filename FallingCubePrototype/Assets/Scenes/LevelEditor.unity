@@ -157,16 +157,12 @@ MonoBehaviour:
   maxGridSizeX: 5
   maxGridSizeY: 5
   maxGridSizeZ: 5
-  minHeight: 1
-  maxHeight: 5
   gamepadDeadzone: 0.25
   gridPoints: []
   selectionMats:
   - {fileID: 2100000, guid: 7b1dfb24c710a4d49ab1cef7e302de87, type: 2}
   - {fileID: 2100000, guid: d6b67e4233e230642999e0777daa0ef2, type: 2}
-  isRepeatedMovement: 0
   moveDuration: 0.275
-  gridSize: 2
 --- !u!4 &430467973
 Transform:
   m_ObjectHideFlags: 0
@@ -175,7 +171,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 430467971}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.468264, y: 8.121208, z: 2.8736978}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

@@ -72,7 +72,7 @@ public class LevelEditor : MonoBehaviour
         h = Input.GetAxis("LeftAnalogHorizontal");
         z = Input.GetAxis("LeftAnalogVertical");
 
-        // Get the forward and right vectors of the camera without vertical component
+        // Get the forward and right vectors of the camera without vertical component   
         Vector3 cameraForward = Camera.main.transform.forward;
         cameraForward.y = 0f;
         cameraForward.Normalize();
