@@ -34,7 +34,7 @@ public class ImguiDemo : MonoBehaviour
     private int selected = 0;
     private void OnLayout()
     {
-        //ImGui.SetNextWindowSize(new Vector2(500, 440), ImGuiCond.FirstUseEver);
+        ImGui.SetNextWindowSize(new Vector2(900,500), ImGuiCond.Always);
         // Begins ImGui window
         if (!ImGui.Begin("Level Editor",
                          ref m_WindowEnabled))
@@ -83,116 +83,9 @@ public class ImguiDemo : MonoBehaviour
         ImGui.SameLine();
         if (ImGui.Button("Delete")) { }
         ImGui.EndGroup();
-
-
-        //if (ImGui.TreeNode("Select Saved Level"))
-        //{
-        //    if (ImGui.TreeNode("Basic"))
-        //    {
-        //        ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
-        //
-        //        if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
-        //        {
-        //            if (ImGui.BeginTabItem("Level 1 Title"))
-        //            {
-        //                ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
-        //                ImGui.NewLine();
-        //                ImGui.EndTabItem();
-        //            }
-        //
-        //            if (ImGui.BeginTabItem("Level 2 Title"))
-        //            {
-        //                ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
-        //                ImGui.NewLine();
-        //                ImGui.EndTabItem();
-        //            }
-        //
-        //            if (ImGui.BeginTabItem("Level 3 Title"))
-        //            {
-        //                ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
-        //                ImGui.NewLine();
-        //                ImGui.EndTabItem();
-        //            }
-        //
-        //            ImGui.EndTabBar();
-        //        }
-        //
-        //        ImGui.Separator();
-        //        ImGui.TreePop();
-        //    }
-        //
-        //    if (ImGui.TreeNode("Intermediate"))
-        //    {
-        //        ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
-        //
-        //        if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
-        //        {
-        //            if (ImGui.BeginTabItem("Level 1 Title"))
-        //            {
-        //                ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
-        //                ImGui.NewLine();
-        //                ImGui.EndTabItem();
-        //            }
-        //
-        //            if (ImGui.BeginTabItem("Level 2 Title"))
-        //            {
-        //                ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
-        //                ImGui.NewLine();
-        //                ImGui.EndTabItem();
-        //            }
-        //
-        //            if (ImGui.BeginTabItem("Level 3 Title"))
-        //            {
-        //                ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
-        //                ImGui.NewLine();
-        //                ImGui.EndTabItem();
-        //            }
-        //
-        //            ImGui.EndTabBar();
-        //        }
-        //
-        //        ImGui.Separator();
-        //        ImGui.TreePop();
-        //    }
-        //
-        //    if (ImGui.TreeNode("Expert"))
-        //    {
-        //        ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
-        //
-        //        if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
-        //        {
-        //            if (ImGui.BeginTabItem("Level 1 Title"))
-        //            {
-        //                ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
-        //                ImGui.NewLine();
-        //                ImGui.EndTabItem();
-        //            }
-        //
-        //            if (ImGui.BeginTabItem("Level 2 Title"))
-        //            {
-        //                ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
-        //                ImGui.NewLine();
-        //                ImGui.EndTabItem();
-        //            }
-        //
-        //            if (ImGui.BeginTabItem("Level 3 Title"))
-        //            {
-        //                ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
-        //                ImGui.NewLine();
-        //                ImGui.EndTabItem();
-        //            }
-        //            ImGui.EndTabBar();
-        //        }
-        //
-        //        ImGui.Separator();
-        //        ImGui.TreePop();
-        //    }
-        //
-        //}
-
-
-        ImGui.NewLine();
         ImGui.Separator();
+
+        ImGui.BeginGroup();
         ImGui.Checkbox("Randomize Grid Size", ref m_EnableRandomizeGridSize);
         if (ImGui.Button("Generate Level"))
         {
@@ -200,8 +93,9 @@ public class ImguiDemo : MonoBehaviour
             Debug.Log("Generating random level...");
         }
         ImGui.NewLine();
+        ImGui.EndGroup();
         ImGui.Separator();
-        ImGui.Separator();
+
         ImGui.Checkbox("Randomize Grid Size", ref m_EnableRandomizeGridSize);
         if (ImGui.Button("Generate Random Level"))
         {
