@@ -20,7 +20,7 @@ public class ImguiDemo : MonoBehaviour
     private string m_Password = string.Empty;
     private Vector3 m_SunColor = new Vector4(1.0f, 0.9f, 0f);
     private bool m_WindowEnabled = false;
-    private bool m_EnableDayAndNightCycle = true;
+    private bool m_EnableRandomizeGridSize = false;
     private int m_DragInt = 0;
     private int m_AccountCount = 0;
     private bool m_ShowImGuiDemoWindow;
@@ -31,19 +31,188 @@ public class ImguiDemo : MonoBehaviour
      * DearImGui
      * Manual - https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html
      */
-
+    private int selected = 0;
     private void OnLayout()
     {
+        //ImGui.SetNextWindowSize(new Vector2(500, 440), ImGuiCond.FirstUseEver);
         // Begins ImGui window
-        if (!ImGui.Begin("Game Manager",
-                         ref m_WindowEnabled,
-                         ImGuiWindowFlags.MenuBar))
+        if (!ImGui.Begin("Level Editor",
+                         ref m_WindowEnabled))
             return;
 
-        ImGui.Checkbox("Enable Day And Night Cycle", ref m_EnableDayAndNightCycle);
+        // Display contents in a scrolling region
+        ImGui.TextColored(TEXT_COLOR, "Saved Levels");
+        // Left
+        ImGui.BeginChild("left pane", new Vector2(150, 0), true, ImGuiWindowFlags.None);
+        for (int i = 0; i < 15; i++)
+        {
+            string label = $"MyObject {i}";
+            if (ImGui.Selectable(label, selected == i))
+                selected = i;
+        }
+        ImGui.EndChild();
+
+        ImGui.SameLine();
+
+        // Right
+        ImGui.BeginGroup();
+        ImGui.BeginChild("item view", new Vector2(0, -ImGui.GetFrameHeightWithSpacing()), false, ImGuiWindowFlags.None); // Leave room for 1 line below us
+        ImGui.Text($"MyObject: {selected}");
+        ImGui.Separator();
+        if (ImGui.BeginTabBar("##Tabs", ImGuiTabBarFlags.None))
+        {
+            if (ImGui.BeginTabItem("Description"))
+            {
+                ImGui.TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
+                ImGui.EndTabItem();
+            }
+            if (ImGui.BeginTabItem("Details"))
+            {
+                ImGui.Text("ID: 0123456789");
+                ImGui.EndTabItem();
+            }
+            ImGui.EndTabBar();
+        }
+        ImGui.EndChild();
+        if (ImGui.Button("Load"))
+        {
+            OnLoadGame?.Invoke();
+            Debug.Log("Loading level...");
+        }
+
+        ImGui.SameLine();
+        if (ImGui.Button("Delete")) { }
+        ImGui.EndGroup();
+
+
+        //if (ImGui.TreeNode("Select Saved Level"))
+        //{
+        //    if (ImGui.TreeNode("Basic"))
+        //    {
+        //        ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
+        //
+        //        if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
+        //        {
+        //            if (ImGui.BeginTabItem("Level 1 Title"))
+        //            {
+        //                ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
+        //                ImGui.NewLine();
+        //                ImGui.EndTabItem();
+        //            }
+        //
+        //            if (ImGui.BeginTabItem("Level 2 Title"))
+        //            {
+        //                ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
+        //                ImGui.NewLine();
+        //                ImGui.EndTabItem();
+        //            }
+        //
+        //            if (ImGui.BeginTabItem("Level 3 Title"))
+        //            {
+        //                ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
+        //                ImGui.NewLine();
+        //                ImGui.EndTabItem();
+        //            }
+        //
+        //            ImGui.EndTabBar();
+        //        }
+        //
+        //        ImGui.Separator();
+        //        ImGui.TreePop();
+        //    }
+        //
+        //    if (ImGui.TreeNode("Intermediate"))
+        //    {
+        //        ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
+        //
+        //        if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
+        //        {
+        //            if (ImGui.BeginTabItem("Level 1 Title"))
+        //            {
+        //                ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
+        //                ImGui.NewLine();
+        //                ImGui.EndTabItem();
+        //            }
+        //
+        //            if (ImGui.BeginTabItem("Level 2 Title"))
+        //            {
+        //                ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
+        //                ImGui.NewLine();
+        //                ImGui.EndTabItem();
+        //            }
+        //
+        //            if (ImGui.BeginTabItem("Level 3 Title"))
+        //            {
+        //                ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
+        //                ImGui.NewLine();
+        //                ImGui.EndTabItem();
+        //            }
+        //
+        //            ImGui.EndTabBar();
+        //        }
+        //
+        //        ImGui.Separator();
+        //        ImGui.TreePop();
+        //    }
+        //
+        //    if (ImGui.TreeNode("Expert"))
+        //    {
+        //        ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
+        //
+        //        if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
+        //        {
+        //            if (ImGui.BeginTabItem("Level 1 Title"))
+        //            {
+        //                ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
+        //                ImGui.NewLine();
+        //                ImGui.EndTabItem();
+        //            }
+        //
+        //            if (ImGui.BeginTabItem("Level 2 Title"))
+        //            {
+        //                ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
+        //                ImGui.NewLine();
+        //                ImGui.EndTabItem();
+        //            }
+        //
+        //            if (ImGui.BeginTabItem("Level 3 Title"))
+        //            {
+        //                ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
+        //                ImGui.NewLine();
+        //                ImGui.EndTabItem();
+        //            }
+        //            ImGui.EndTabBar();
+        //        }
+        //
+        //        ImGui.Separator();
+        //        ImGui.TreePop();
+        //    }
+        //
+        //}
+
+
+        ImGui.NewLine();
+        ImGui.Separator();
+        ImGui.Checkbox("Randomize Grid Size", ref m_EnableRandomizeGridSize);
+        if (ImGui.Button("Generate Level"))
+        {
+            //OnLoadGame?.Invoke();
+            Debug.Log("Generating random level...");
+        }
+        ImGui.NewLine();
+        ImGui.Separator();
+        ImGui.Separator();
+        ImGui.Checkbox("Randomize Grid Size", ref m_EnableRandomizeGridSize);
+        if (ImGui.Button("Generate Random Level"))
+        {
+            //OnLoadGame?.Invoke();
+            Debug.Log("Generating random level...");
+        }
+        ImGui.NewLine();
+        ImGui.Separator();
 
         // Make a float slider (label, value, min, max) 
-        if (ImGui.SliderFloat("Time [%]", ref m_Timeline, 0f, 1f) && m_EnableDayAndNightCycle)
+        if (ImGui.SliderFloat("Time [%]", ref m_Timeline, 0f, 1f) && m_EnableRandomizeGridSize)
         {
             m_Time = System.TimeSpan.FromSeconds(m_Timeline * 86400f);
             OnUpdateLighting?.Invoke();
@@ -52,67 +221,26 @@ public class ImguiDemo : MonoBehaviour
         // Display text of current in-game time
         ImGui.TextColored(TEXT_COLOR, $"In-game Time: {m_Time:hh\\:mm}");
 
-        // Create color editor for Vector3
-        ImGui.ColorEdit3("Sun Color", ref m_SunColor);
 
-        // Creates a menu bar
-        if (ImGui.BeginMenuBar())
-        {
-            if (ImGui.BeginMenu("File"))
-            {
-                if (ImGui.MenuItem("Open", shortcut: "Ctrl+O"))
-                    Debug.Log("Opening a file...");
-
-                if (ImGui.MenuItem("Save", shortcut: "Ctrl+S"))
-                    Debug.Log("Saving a file...");
-
-                if (ImGui.MenuItem("Close", shortcut: "Ctrl+W"))
-                {
-                    m_WindowEnabled = false;
-                    Debug.Log("Closing this window...");
-                }
-
-                ImGui.EndMenu();
-            }
-
-            ImGui.EndMenuBar();
-        }
-
-        if (ImGui.Button("Load Game"))
-        {
-            OnLoadGame?.Invoke();
-            Debug.Log("Loading the game...");
-        }
-
-        if (ImGui.Button("Save Game"))
+        if (ImGui.Button("Save Level"))
         {
             OnSaveGame?.Invoke();
-            Debug.Log("Saving the game...");
+            Debug.Log("Saving level...");
         }
 
-        if (ImGui.Button("Create Account"))
-        {
-            Debug.Log("Creating account...");
-            m_AccountCount++;
-        }
+
 
         ImGui.SameLine(0, -1);
         ImGui.Text($"Account Count = {m_AccountCount}");
 
         // Create input field (label, value, maxLength [uint])
-        ImGui.InputText("Username", ref m_Username, maxLength: 12u);
-        ImGui.InputText("Password", ref m_Password, maxLength: 16u);
+        ImGui.InputText("Level Name", ref m_Username, maxLength: 12u);
+        ImGui.InputText("Level Description", ref m_Password, maxLength: 16u);
 
         ImGui.Text($"Mouse position: {ImGui.GetMousePos()}");
 
         // Display contents in a scrolling region
         ImGui.TextColored(TEXT_COLOR, "Important Stuff");
-        ImGui.BeginChild("Scrolling");
-
-        for (int n = 0; n < 50; n++)
-            ImGui.Text($"{n:0000}: Some text");
-
-        ImGui.EndChild();
 
         // Generate samples and plot them
         float[] samples = new float[100];
@@ -135,85 +263,12 @@ public class ImguiDemo : MonoBehaviour
             ImGui.ShowDemoWindow(ref m_ShowImGuiDemoWindow);
         }
 
-        if (ImGui.TreeNode("Tabs"))
+
+        if (ImGui.Button("Clear Level"))
         {
-            if (ImGui.TreeNode("Basic"))
-            {
-                ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags.None;
-
-                if (ImGui.BeginTabBar("MyTabBar", tab_bar_flags))
-                {
-                    if (ImGui.BeginTabItem("Avocado"))
-                    {
-                        ImGui.Text("This is the Avocado tab!\nblah blah blah blah blah");
-                        ImGui.EndTabItem();
-                    }
-
-                    if (ImGui.BeginTabItem("Broccoli"))
-                    {
-                        ImGui.Text("This is the Broccoli tab!\nblah blah blah blah blah");
-                        ImGui.EndTabItem();
-                    }
-
-                    if (ImGui.BeginTabItem("Cucumber"))
-                    {
-                        ImGui.Text("This is the Cucumber tab!\nblah blah blah blah blah");
-                        ImGui.EndTabItem();
-                    }
-
-                    ImGui.EndTabBar();
-                }
-
-                ImGui.Separator();
-                ImGui.TreePop();
-            }
-
-            if (ImGui.TreeNode("Advanced & Close Button"))
-            {
-                // Expose a couple of the available flags. In most cases you may just call BeginTabBar() with no flags (0).
-                ImGui.CheckboxFlags("ImGuiTabBarFlags_Reorderable", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.Reorderable);
-                ImGui.CheckboxFlags("ImGuiTabBarFlags_AutoSelectNewTabs", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.AutoSelectNewTabs);
-                ImGui.CheckboxFlags("ImGuiTabBarFlags_NoCloseWithMiddleMouseButton", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.NoCloseWithMiddleMouseButton);
-                if ((s_tab_bar_flags & (uint)ImGuiTabBarFlags.FittingPolicyMask) == 0)
-                    s_tab_bar_flags |= (uint)ImGuiTabBarFlags.FittingPolicyDefault;
-                if (ImGui.CheckboxFlags("ImGuiTabBarFlags_FittingPolicyResizeDown", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.FittingPolicyResizeDown))
-                    s_tab_bar_flags &= ~((uint)ImGuiTabBarFlags.FittingPolicyMask ^ (uint)ImGuiTabBarFlags.FittingPolicyResizeDown);
-                if (ImGui.CheckboxFlags("ImGuiTabBarFlags_FittingPolicyScroll", ref s_tab_bar_flags, (uint)ImGuiTabBarFlags.FittingPolicyScroll))
-                    s_tab_bar_flags &= ~((uint)ImGuiTabBarFlags.FittingPolicyMask ^ (uint)ImGuiTabBarFlags.FittingPolicyScroll);
-
-                // Tab Bar
-                string[] names = { "Artichoke", "Beetroot", "Celery", "Daikon" };
-
-                for (int n = 0; n < s_opened.Length; n++)
-                {
-                    if (n > 0) { ImGui.SameLine(); }
-                    ImGui.Checkbox(names[n], ref s_opened[n]);
-                }
-
-                // Passing a bool* to BeginTabItem() is similar to passing one to Begin(): the underlying bool will be set to false when the tab is closed.
-                if (ImGui.BeginTabBar("MyTabBar", (ImGuiTabBarFlags)s_tab_bar_flags))
-                {
-                    for (int n = 0; n < s_opened.Length; n++)
-                    {
-                        if (s_opened[n] && ImGui.BeginTabItem(names[n], ref s_opened[n]))
-                        {
-                            ImGui.Text($"This is the {names[n]} tab!");
-                            if ((n & 1) != 0)
-                                ImGui.Text("I am an odd tab.");
-                            ImGui.EndTabItem();
-                        }
-                    }
-
-                    ImGui.EndTabBar();
-                }
-
-                ImGui.Separator();
-                ImGui.TreePop();
-            }
-
-            ImGui.TreePop();
+            Debug.Log("Clearing level...");
+            //m_AccountCount++;
         }
-
         // Ends ImGui window
         ImGui.End();
     }
