@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        cubeManager = FindObjectOfType<CubeManager>();
+        cubeManager = FindObjectOfType<CubeManager>();  
         aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
         ArenaGenerator.OnFloorComplete += StartGame;
 
