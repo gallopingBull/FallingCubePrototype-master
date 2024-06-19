@@ -578,7 +578,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    1: INVECTOR_BASIC
+    1: INVECTOR_BASIC;IMGUI_FEATURE_CUSTOM_ASSERT;IMGUI_FEATURE_FREETYPE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
