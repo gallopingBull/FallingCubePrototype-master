@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -35,17 +36,13 @@ public class LevelEditor : MonoBehaviour
     public float zoomSpeed = 10.0f; // Speed of zooming
     public float minZoomDistance = 5.0f; // Minimum distance to the target
     public float maxZoomDistance = 20.0f; // Maximum distance from the target
+    public float transitionSpeed = 2.0f; // Speed of smooth transition to the new target
     private float currentZoomDistance; // Current distance from the target
+    private Vector3 targetPosition;
+    private Quaternion targetRotation;
+    private bool isTransitioning = false;
 
-    void Start()
-    {
-        gridMapParent = new GameObject("SelectionGridMap").transform;
-        cam = Camera.main;
-        // Initialize current zoom distance based on initial camera position
-
-    
-        Init();
-    }
+    void Start() => Init(); 
 
     void Update()
     {
@@ -54,23 +51,35 @@ public class LevelEditor : MonoBehaviour
 
         if (cameraTarget)
         {
-            Debug.Log("dddddddddddddddddddddd");
-            // Rotate the camera around the target object based on input
-            RotateAroundCameraTarget();
+            if (isTransitioning)
+            {
+                SmoothTransition();
+            }
+            else
+            {
+                // Rotate the camera around the target object based on input
+                RotateAroundCameraTarget();
 
-            // Zoom the camera in and out based on input
-            ZoomOnCameraTarget();
+                // Zoom the camera in and out based on input
+                ZoomOnCameraTarget();
+            }
+
         }
     }
 
     private void Init()
     {
-        Debug.Log("sssssssssssssssssssssssssssssssss");
+        gridMapParent = new GameObject("SelectionGridMap").transform;
+        cam = Camera.main;
+        
         GenerateSelectionGrid();
         currentGridPoint = GetGridPointByPosition(Vector3.zero);
-        cameraTarget = currentGridPoint.transform;
-        currentZoomDistance = Vector3.Distance(transform.position, cameraTarget.position);
         currentGridPoint.GetComponentInChildren<Renderer>().material = selectionMats[0];
+
+        cameraTarget = currentGridPoint.transform;
+        //cameraTarget.position = transform.position;
+        //cameraTarget.rotation = transform.rotation;
+        currentZoomDistance = Vector3.Distance(cam.transform.position, cameraTarget.position);
     }
 
     private void GenerateSelectionGrid()
@@ -200,25 +209,37 @@ public class LevelEditor : MonoBehaviour
 
     private void ZoomOnCameraTarget()
     {
-
+        // Change these controls
         float scrollInput = Input.GetAxis("Mouse ScrollWheel"); // Mouse scroll wheel input
-        float controllerInput = Input.GetAxis("RightAnalogVertical") * 0.1f; // Optional joystick zoom control
+        //float controllerInput = Input.GetAxis("RightAnalogVertical") * 0.1f; // Optional joystick zoom control
 
         // Calculate the zoom amount
-        float zoomAmount = scrollInput + controllerInput;
+        float zoomAmount = scrollInput; //+ controllerInput;
 
         // Adjust the current zoom distance
         currentZoomDistance -= zoomAmount * zoomSpeed;
         currentZoomDistance = Mathf.Clamp(currentZoomDistance, minZoomDistance, maxZoomDistance);
 
         // Update the camera position to reflect the new zoom distance
-        transform.position = cameraTarget.position - transform.forward * currentZoomDistance;
+        cam.transform.position = cameraTarget.position - cam.transform.forward * currentZoomDistance;
     }
 
     public void SetTarget(Transform newTarget)
     {
         cameraTarget = newTarget;
-        currentZoomDistance = Vector3.Distance(transform.position, cameraTarget.position);
+        currentZoomDistance = Vector3.Distance(cam.transform.position, cameraTarget.position);
+    }
+    private void SmoothTransition()
+    {
+        // Interpolate the camera's position and rotation smoothly towards the target
+        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * transitionSpeed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * transitionSpeed);
+
+        // Check if the transition is complete
+        if (Vector3.Distance(transform.position, targetPosition) < 0.01f && Quaternion.Angle(transform.rotation, targetRotation) < 0.1f)
+        {
+            isTransitioning = false;
+        }
     }
 
     private void SelectCubeType() { }
