@@ -184,7 +184,6 @@ public class CubeBehavior : MonoBehaviour
 
             case States.dragging:
                 //Debug.Log("In Dragging State"
-
                 if (!audioSource.isPlaying)
                 {
                     PlaySFX(dragSFX);

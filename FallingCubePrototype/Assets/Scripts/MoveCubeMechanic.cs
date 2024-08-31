@@ -35,10 +35,13 @@ public class MoveCubeMechanic : vPushActionController
 
     public float minGrabDistance = .85f;
 
-    //RaycastHit[] sphereHitsBlock;
+    RaycastHit[] sphereHitsBlock;
     //RaycastHit hit1;
-    //bool hitCubeInCurrentDirection;
-    //float currentDirectionDistance;
+    bool hitCubeInCurrentDirection;
+    float currentDirectionDistance;
+    Vector3[] directions;
+    Vector3 currentRelativedirection;
+    Vector3 downwardPosition;
 
     private bool isDetectingBack = false;
     private bool isDetectingBackLeft = false;
@@ -346,7 +349,7 @@ public class MoveCubeMechanic : vPushActionController
         inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
 
         // Perform a spherecast to check for game objects with a "Block" tag
-        RaycastHit[] sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layerMask);
+        sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layerMask);
         //Gizmos.color = sphereHitsBlock.Length > 1 ? Color.red : Color.green;
         //Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
         //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock.Length}");
@@ -381,15 +384,15 @@ public class MoveCubeMechanic : vPushActionController
         }
 
         if (isPushingPulling)
-        {   
+        {
             // Check each adjacent direction relative to the player's forward direction
             Vector3[] directions = { -transform.forward, -transform.right, transform.right };
             for (int i = 0; i < directions.Length; i++)
             {
                 // Shoot a ray in the current direction
                 RaycastHit hit1;
-                bool hitCubeInCurrentDirection = Physics.Raycast(targetPos, directions[i], out hit1, checkDistance, layerMask);
-                float currentDirectionDistance = hitCubeInCurrentDirection ? hit1.distance : checkDistance;
+                hitCubeInCurrentDirection = Physics.Raycast(targetPos, directions[i], out hit1, checkDistance, layerMask);
+                currentDirectionDistance = hitCubeInCurrentDirection ? hit1.distance : checkDistance;
                 //Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
                 //Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
                 if (hitCubeInCurrentDirection)
@@ -463,7 +466,7 @@ public class MoveCubeMechanic : vPushActionController
                 //Gizmos.DrawLine(targetPos, targetPos + directions[i] * currentDirectionDistance);
                 //Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
 
-                Vector3 downwardPosition = targetPos + directions[i] * currentDirectionDistance;
+                downwardPosition = targetPos + directions[i] * currentDirectionDistance;
                 //Gizmos.DrawSphere(downwardPosition, .1f);
 
                 // Shoot a ray downward from the end point of the previous ray
@@ -565,6 +568,23 @@ public class MoveCubeMechanic : vPushActionController
         isDetectingBack = _isDetectingBack;
         isDetectingBackRight = _isDetectingRight;
         isDetectingBackLeft = _isDetectingLeft;
+    }
+
+    private void OnDrawGizmos()
+    {   
+        Gizmos.color = sphereHitsBlock?.Length > 1 ? Color.red : Color.green;
+        Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
+        //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock?.Length}");
+
+        Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
+        //Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
+
+
+        Gizmos.DrawLine(targetPos, targetPos + currentRelativedirection * currentDirectionDistance);
+        Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
+
+        Gizmos.DrawSphere(downwardPosition, .1f);
+
     }
 
     // TODO: A lot of thhs code should be moved in to MoveInput()
