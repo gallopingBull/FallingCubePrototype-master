@@ -36,7 +36,13 @@ public class MoveCubeMechanic : vPushActionController
     public float minGrabDistance = .85f;
 
     RaycastHit[] sphereHitsBlock;
-    
+
+    /// <summary>
+    /// this is just an idea. this code is not implemented yet. 
+    /// </summary>
+    //CubeDetectionData[] orthogonalCubeHitDetectionData = new orthogonalCubeHitDetectionData[3]; 
+    //CubeDetectionData[] vertCubeHitDetectionData = new vertCubeHitDetectionData[3]; 
+
     RaycastHit[] orthogonalHits = new RaycastHit[3];
     bool[] OrthoHitCubes = new bool[3];
     float[] curDirectionDistances = new float[3];
@@ -558,9 +564,7 @@ public class MoveCubeMechanic : vPushActionController
                             default:
                                 break;
                         }
-
                     }
-
 
                     //Gizmos.color = sphereHits.Length == 0 ? Color.red : Color.green;
                     //Gizmos.DrawSphere(downwardPosition + Vector3.down * downwardCheckDistance, .1f);
@@ -581,6 +585,14 @@ public class MoveCubeMechanic : vPushActionController
         isDetectingBack = _isDetectingBack;
         isDetectingBackRight = _isDetectingRight;
         isDetectingBackLeft = _isDetectingLeft;
+    }
+
+    public class CubeDetectionData
+    {
+        RaycastHit raycastHit;
+        bool raycastHitCubeDetected;
+        float raycastDirDistance;
+        //Vector3 curRelativeDirection;
     }
 
     private void OnDrawGizmos()
