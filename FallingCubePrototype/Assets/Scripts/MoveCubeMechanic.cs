@@ -128,7 +128,13 @@ public class MoveCubeMechanic : vPushActionController
             StartCoroutine(StopPushAndPull());
         }
     }
-    
+
+
+    bool CanUseInput()
+    {
+        return Time.time - grabStartTime >= cooldownTime;
+    }
+
     protected override void MoveObject()
     {
         // Stop moving cube if camera is rotating
