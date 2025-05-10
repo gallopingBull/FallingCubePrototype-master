@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using Invector;
 using Invector.vCharacterController;
 using ProBuilder2.Common;
@@ -59,6 +60,11 @@ public class MoveCubeMechanic : vPushActionController
     private bool isDetectingBackLeft = false;
     private bool isDetectingBackRight = false;
 
+
+
+    float cooldownTime = 2f; // input delay
+    float grabStartTime = -Mathf.Infinity;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -77,11 +83,12 @@ public class MoveCubeMechanic : vPushActionController
 
     protected override void UpdateInput()
     {
+
         EnterExitInput();
         MoveInput();
     }
 
-    // I changed GetButtonDown() ti GetButton() to remove toggle input. I also check if the button is being held
+    // I changed GetButtonDown() to GetButton() to remove toggle input. I also check if the button is being held
     // down in the final stop condition. 
     protected override void EnterExitInput()
     {
@@ -109,10 +116,10 @@ public class MoveCubeMechanic : vPushActionController
                 onLostObject.Invoke();
             }
 
-            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton())
+            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton() && CanUseInput() && pushPoint.gameObject.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
             {
                 StartCoroutine(StartPushAndPull());
-
+                grabStartTime = Time.time;
             }
 
         }
