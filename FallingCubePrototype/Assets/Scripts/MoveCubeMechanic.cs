@@ -535,7 +535,7 @@ public class MoveCubeMechanic : vPushActionController
                        currentCubeFloor.transform.position.z);
 
                     Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
-                    Debug.Log($"distance: {Distance}");
+                    //Debug.Log($"distance: {Distance}");
 
                     if (Distance <= maxDetectionDistance)
                     {

@@ -54,7 +54,9 @@ public class CubeBehavior : MonoBehaviour
     private bool m_HitDetect;
 
     public float BoxColliderSize = 1.5f;
-    private Collider cubeCollider;
+    private Collider cubeCollider; // used for general mesh detecting.
+    private Collider cubePushZoneCollider; // used for when to push player while cube falls.
+
     public Collider ClimbingCollider;
     private RaycastHit m_Hit;
     private Collider cubeKillZone;
@@ -78,12 +80,12 @@ public class CubeBehavior : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();    
         // Temporarily ignore collisions with the same game object
         colliders = GetComponentsInChildren<Collider>();
-
+        cubePushZoneCollider = transform.Find("PushZone").GetComponent<Collider>();
         EnterState(States.init);
         layerMask = LayerMask.NameToLayer("Cube");
     }
@@ -99,7 +101,7 @@ public class CubeBehavior : MonoBehaviour
             //    Physics.IgnoreCollision(cubeCollider, col);
             //}
 
-            // custom velocity calculation since blocbehavior doesn't use rb at times.
+            // custom velocity calculation since cube behavior doesn't use rb at times.
             float tmpYVel = Mathf.Round(rb.velocity.y);
             velocity = (transform.position - prevVel) / Time.deltaTime;
             prevVel = transform.position;
@@ -129,15 +131,54 @@ public class CubeBehavior : MonoBehaviour
                 ExplosionAlert();
         }
     }
+    //void OnCollisionStay(Collision collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Player") && state == States.falling && collision.contactCount > 0)
+    //    {
+    //
+    //        ContactPoint contact = collision.contacts[0];
+    //
+    //        Debug.Log("******doooooing this*******");
+    //        collision.rigidbody.velocity = Vector3.zero;
+    //        //foreach (var col in colliders)
+    //        //{
+    //        //    Physics.IgnoreCollision(collision.collider, col);
+    //        //}
+    //
+    //        // Calculate direction from object to player
+    //        Vector3 pushDirection = (collision.transform.position - contact.point).normalized;
+    //
+    //        // Optional: ignore vertical force if you want only horizontal push
+    //        //pushDirection.y = 0f;
+    //
+    //        // Apply the force
+    //        float pushForce = 150f;
+    //        collision.rigidbody.AddForce(pushDirection * pushForce, ForceMode.Force);
+    //    }
+    //}
 
+    //void OnCollisionExit(Collision collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Player"))
+    //    {
+    //        foreach (var col in colliders)
+    //        {
+    //            Physics.IgnoreCollision(collision.collider, col, false);
+    //        }
+    //       
+    //        //Physics.IgnoreCollision(collision.collider, cubeCollider, false);
+    //    }
+    //}
     void StateManager(float _tmpYVel)
     {
         float tmpYVel = _tmpYVel;
         switch (state)
         {
             case States.falling:
+              
                 if (m_HitDetect)
                 {
+                  
                     // Debug.Log(gameObject.name+ " Hit : " + m_Hit.collider.name);
                     EnableLandingMarker();
 
@@ -183,13 +224,13 @@ public class CubeBehavior : MonoBehaviour
                 break;
 
             case States.dragging:
-                //Debug.Log("In Dragging State"
+                //Debug.Log("In Dragging State");
                 if (!audioSource.isPlaying)
                 {
                     PlaySFX(dragSFX);
                     audioSource.loop = true;
                 }
-                Debug.Log($"m_Hit.name: {m_Hit.transform.gameObject.name} - m_HitDetect: {m_HitDetect} - m_Hit.distance: {m_Hit.distance}");
+                //Debug.Log($"m_Hit.name: {m_Hit.transform.gameObject.name} - m_HitDetect: {m_HitDetect} - m_Hit.distance: {m_Hit.distance}");
                 if ((!m_HitDetect || m_Hit.distance > .75) && transform.position.y != 0)
                 {
                     // release cube here 
@@ -224,6 +265,7 @@ public class CubeBehavior : MonoBehaviour
                 PlaySFX(fallingSFX);
 
                 cubeCollider.enabled = false;
+                cubePushZoneCollider.enabled = true;   
                 EnableRB();
                 state = _state;
 
@@ -304,6 +346,7 @@ public class CubeBehavior : MonoBehaviour
         {
             case States.falling:
                 DisableLandingMarker();
+                cubePushZoneCollider.enabled = false;
                 break;
             case States.grounded:
                 break;
