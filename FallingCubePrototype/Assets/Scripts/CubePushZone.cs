@@ -1,5 +1,5 @@
-
-
+//Handles slightly pushing player away from falling cubes.
+ 
 using UnityEngine;
 
 public class CubePushZone : MonoBehaviour

@@ -96,11 +96,6 @@ public class CubeBehavior : MonoBehaviour
         if (state != States.init)
         {
    
-            //foreach (Collider col in colliders)
-            //{
-            //    Physics.IgnoreCollision(cubeCollider, col);
-            //}
-
             // custom velocity calculation since cube behavior doesn't use rb at times.
             float tmpYVel = Mathf.Round(rb.velocity.y);
             velocity = (transform.position - prevVel) / Time.deltaTime;
@@ -111,11 +106,6 @@ public class CubeBehavior : MonoBehaviour
                 -transform.up, out m_Hit,
                 transform.rotation, m_MaxDistance);
 
-            // Re-enable collisions
-            //foreach (Collider col in colliders)
-            //{
-            //    Physics.IgnoreCollision(cubeCollider, col, false);
-            //}
 
             // TODO: update cubeInfoPanel text objects here
             if (cubeInfoPanel && cubeInfoPanel.activeInHierarchy)
@@ -131,44 +121,7 @@ public class CubeBehavior : MonoBehaviour
                 ExplosionAlert();
         }
     }
-    //void OnCollisionStay(Collision collision)
-    //{
-    //    if (collision.gameObject.CompareTag("Player") && state == States.falling && collision.contactCount > 0)
-    //    {
-    //
-    //        ContactPoint contact = collision.contacts[0];
-    //
-    //        Debug.Log("******doooooing this*******");
-    //        collision.rigidbody.velocity = Vector3.zero;
-    //        //foreach (var col in colliders)
-    //        //{
-    //        //    Physics.IgnoreCollision(collision.collider, col);
-    //        //}
-    //
-    //        // Calculate direction from object to player
-    //        Vector3 pushDirection = (collision.transform.position - contact.point).normalized;
-    //
-    //        // Optional: ignore vertical force if you want only horizontal push
-    //        //pushDirection.y = 0f;
-    //
-    //        // Apply the force
-    //        float pushForce = 150f;
-    //        collision.rigidbody.AddForce(pushDirection * pushForce, ForceMode.Force);
-    //    }
-    //}
 
-    //void OnCollisionExit(Collision collision)
-    //{
-    //    if (collision.gameObject.CompareTag("Player"))
-    //    {
-    //        foreach (var col in colliders)
-    //        {
-    //            Physics.IgnoreCollision(collision.collider, col, false);
-    //        }
-    //       
-    //        //Physics.IgnoreCollision(collision.collider, cubeCollider, false);
-    //    }
-    //}
     void StateManager(float _tmpYVel)
     {
         float tmpYVel = _tmpYVel;
