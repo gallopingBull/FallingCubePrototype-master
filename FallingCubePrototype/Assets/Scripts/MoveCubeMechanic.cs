@@ -642,9 +642,11 @@ public class MoveCubeMechanic : vPushActionController
                 Gizmos.color = Color.white;
                 Gizmos.DrawSphere(downwardPosition[i], .1f);
 
+                Debug.Log($"verticalHitCubes[{i}]: {verticalHitCubes[i]}");
 
                 if (verticalHitCubes[i])
                 {
+                    Debug.Log($"true - downwardPosition[{i}]: {downwardPosition[i]}");
                     Gizmos.color = Color.yellow;
                     Gizmos.DrawLine(downwardPosition[i], (downwardPosition[i] + Vector3.down) * downwardRayDistances[i]);
                     Gizmos.color = Color.yellow;
@@ -652,6 +654,7 @@ public class MoveCubeMechanic : vPushActionController
                 }
                 else
                 {
+                    Debug.Log($"false - downwardPosition[{i}]: {downwardPosition[i]}");
                     Gizmos.color = Color.white;
                     Gizmos.DrawLine(downwardPosition[i], (downwardPosition[i] + Vector3.down) * downwardRayDistances[i]);
                     Gizmos.color = Color.red;
