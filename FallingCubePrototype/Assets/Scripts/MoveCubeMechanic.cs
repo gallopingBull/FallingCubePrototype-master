@@ -52,7 +52,7 @@ public class MoveCubeMechanic : vPushActionController
     RaycastHit[] verticalHits = new RaycastHit[3];
     bool[] verticalHitCubes = new bool[3];
     float[] downwardRayDistances = new float[3];
-    Vector3 downwardPosition;
+    Vector3[] downwardPosition = new Vector3[3];
 
     Vector3[] directions;
 
@@ -505,15 +505,15 @@ public class MoveCubeMechanic : vPushActionController
                 //Gizmos.DrawLine(targetPos, targetPos + directions[i] * currentDirectionDistance);
                 //Gizmos.color = hitCubeInCurrentDirection ? Color.yellow : Color.white;
 
-                downwardPosition = targetPos + curRelativeDirection * curDirectionDistances[i];
+                downwardPosition[i] = targetPos + curRelativeDirection * curDirectionDistances[i];
                 //Gizmos.DrawSphere(downwardPosition, .1f);
 
                 // Shoot a ray downward from the end point of the previous ray
-                verticalHitCubes[i] = Physics.Raycast(downwardPosition, Vector3.down, out verticalHits[i], downwardCheckDistance, layerMask);
+                verticalHitCubes[i] = Physics.Raycast(downwardPosition[i], Vector3.down, out verticalHits[i], downwardCheckDistance, layerMask);
                 downwardRayDistances[i] = verticalHitCubes[i] ? verticalHits[i].distance : downwardCheckDistance;
 
                 // Perform a spherecast at the downward position
-                RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition, 0.1f, Vector3.down, downwardCheckDistance, layerMask);
+                RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition[i], 0.1f, Vector3.down, downwardCheckDistance, layerMask);
                 //Gizmos.DrawSphere(downwardPosition, .1f);
 
                 if (verticalHitCubes[i])
@@ -626,7 +626,6 @@ public class MoveCubeMechanic : vPushActionController
         {
             for (int i = 0; i < directions.Length; i++)
             {
-                Debug.Log($"i:{i}");
                 Gizmos.color = OrthoHitCubes[i] ? Color.yellow : Color.white;
                 Gizmos.DrawLine(targetPos, targetPos + directions[i] * curDirectionDistances[i]);
 
@@ -635,34 +634,30 @@ public class MoveCubeMechanic : vPushActionController
 
                     //Gizmos.color = OrthoHitCubes[i] ? Color.yellow : Color.white;
                     Gizmos.color = Color.red;
-                    Gizmos.DrawSphere(downwardPosition, .1f);
+                    Gizmos.DrawSphere(downwardPosition[i], .1f);
                     continue;
               
                 }
-        
+
                 Gizmos.color = Color.white;
-                Gizmos.DrawSphere(downwardPosition, .1f);
+                Gizmos.DrawSphere(downwardPosition[i], .1f);
 
 
                 if (verticalHitCubes[i])
                 {
                     Gizmos.color = Color.yellow;
-                    Gizmos.DrawLine(downwardPosition, (downwardPosition + Vector3.down) * downwardRayDistances[i]);
+                    Gizmos.DrawLine(downwardPosition[i], (downwardPosition[i] + Vector3.down) * downwardRayDistances[i]);
                     Gizmos.color = Color.yellow;
-                    Gizmos.DrawSphere((downwardPosition + Vector3.down) * downwardRayDistances[i], .1f);
-
+                    Gizmos.DrawSphere((downwardPosition[i] + Vector3.down) * downwardRayDistances[i], .1f);
                 }
                 else
                 {
                     Gizmos.color = Color.white;
-                    Gizmos.DrawLine(downwardPosition, (downwardPosition + Vector3.down) * downwardRayDistances[i]);
+                    Gizmos.DrawLine(downwardPosition[i], (downwardPosition[i] + Vector3.down) * downwardRayDistances[i]);
                     Gizmos.color = Color.red;
-                    Gizmos.DrawSphere((downwardPosition + Vector3.down) * downwardRayDistances[i], .1f);
+                    Gizmos.DrawSphere((downwardPosition[i] + Vector3.down) * downwardRayDistances[i], .1f);
                 }
-                //Gizmos.DrawRay(downwardPosition, Vector3.down * (downwardRayDistances + 0.1f));
-
             }
-
         }
     }
 
