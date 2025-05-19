@@ -83,7 +83,6 @@ public class MoveCubeMechanic : vPushActionController
 
     protected override void UpdateInput()
     {
-
         EnterExitInput();
         MoveInput();
     }
@@ -99,7 +98,8 @@ public class MoveCubeMechanic : vPushActionController
             if (Physics.Raycast(ray, out hit, minGrabDistance, pushpullLayer))
             {
                 var _object = hit.collider.gameObject.GetComponent<vPushObjectPoint>();
-                if (_object && pushPoint != _object && _object.canUse && _object.gameObject.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
+                if (_object && pushPoint != _object && _object.canUse && 
+                    _object.gameObject.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
                 {
                     pushPoint = _object;
                     onFindObject.Invoke();
@@ -116,7 +116,8 @@ public class MoveCubeMechanic : vPushActionController
                 onLostObject.Invoke();
             }
 
-            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton() && CanUseInput() && pushPoint.gameObject.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
+            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton() && CanUseInput() && 
+                pushPoint.gameObject.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
             {
                 StartCoroutine(StartPushAndPull());
                 grabStartTime = Time.time;
@@ -342,7 +343,13 @@ public class MoveCubeMechanic : vPushActionController
 
         base.FixedUpdate();
 
-        if (!tpInput || !tpInput.cc || !tpInput.cc._capsuleCollider || tpInput.enabled || !isPushingPulling || !pushPoint || isStoping) return;
+        if (!tpInput || 
+            !tpInput.cc || 
+            !tpInput.cc._capsuleCollider || 
+            tpInput.enabled || 
+            !isPushingPulling || 
+            !pushPoint || 
+            isStoping) return;
 
         bool _isDetectingLeft = false;
         bool _isDetectingRight = false;
@@ -414,7 +421,7 @@ public class MoveCubeMechanic : vPushActionController
         if (isPushingPulling)
         {
             // Check each adjacent direction relative to the player's forward direction
-            Vector3[] directions = { -transform.forward, -transform.right, transform.right };
+            directions = new Vector3[] { -transform.forward, -transform.right, transform.right };
             for (int i = 0; i < directions.Length; i++)
             {
                 curRelativeDirection = directions[i];
@@ -610,31 +617,53 @@ public class MoveCubeMechanic : vPushActionController
 
     private void OnDrawGizmos()
     {   
-        //Debug.Log("OnDrawGizmos");  
+        // I think this is checking underneath the player to detwemine if theyre under more than
+        // one cube. this helps resolve any issues that may comeform walking over two cubes...
         Gizmos.color = sphereHitsBlock?.Length > 1 ? Color.red : Color.green;
         Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
-        //Debug.Log($"sphereHitsBlock.Length: {sphereHitsBlock?.Length}");
 
-        //Gizmos.color = OrthoHitCubes ? Color.yellow : Color.white;
-        //Debug.Log($"hitCubeInCurrentDirection[{i}]: {hitCubeInCurrentDirection}");
+        if (isPushingPulling && directions != null)
+        {
+            for (int i = 0; i < directions.Length; i++)
+            {
+                Debug.Log($"i:{i}");
+                Gizmos.color = OrthoHitCubes[i] ? Color.yellow : Color.white;
+                Gizmos.DrawLine(targetPos, targetPos + directions[i] * curDirectionDistances[i]);
+
+                if (OrthoHitCubes[i])
+                {
+
+                    //Gizmos.color = OrthoHitCubes[i] ? Color.yellow : Color.white;
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawSphere(downwardPosition, .1f);
+                    continue;
+              
+                }
+        
+                Gizmos.color = Color.white;
+                Gizmos.DrawSphere(downwardPosition, .1f);
 
 
-        //Gizmos.DrawLine(targetPos, targetPos + curRelativeDirection * curDirectionDistances);
-        //Gizmos.color = OrthoHitCubes ? Color.yellow : Color.white;
+                if (verticalHitCubes[i])
+                {
+                    Gizmos.color = Color.yellow;
+                    Gizmos.DrawLine(downwardPosition, (downwardPosition + Vector3.down) * downwardRayDistances[i]);
+                    Gizmos.color = Color.yellow;
+                    Gizmos.DrawSphere((downwardPosition + Vector3.down) * downwardRayDistances[i], .1f);
 
-        Gizmos.DrawSphere(downwardPosition, .1f);
+                }
+                else
+                {
+                    Gizmos.color = Color.white;
+                    Gizmos.DrawLine(downwardPosition, (downwardPosition + Vector3.down) * downwardRayDistances[i]);
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawSphere((downwardPosition + Vector3.down) * downwardRayDistances[i], .1f);
+                }
+                //Gizmos.DrawRay(downwardPosition, Vector3.down * (downwardRayDistances + 0.1f));
 
-        Gizmos.color = Color.yellow;
+            }
 
-        //Gizmos.DrawRay(downwardPosition, Vector3.down * (downwardRayDistances + 0.1f));
-
-
-
-        //for (int i = 0; i < orthogonalHits.Length; i++)
-        //{
-        //   
-        //}   
-
+        }
     }
 
     // TODO: A lot of thhs code should be moved in to MoveInput()
