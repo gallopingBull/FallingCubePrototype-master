@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
 
     public List<GameObject> CubeTargets;
 
-    private GameObject cameraTargt; // this is the camera target for the invector 3rd person controller
+    private GameObject cameraTarget; // this is the camera target for the invector 3rd person controller
     [SerializeField]
     private GameObject ObjectiveGate;
     private CubeManager cubeManager;
@@ -73,11 +73,19 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         cubeManager = FindObjectOfType<CubeManager>();
+        // Assume in main menu scene if cube manager not present
+        if (cubeManager == null)
+        {
+            Debug.Log("cameraTarget is null");
+            return;
+        }
+
         aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
         ArenaGenerator.OnFloorComplete += StartGame;
 
         Player = GameObject.FindGameObjectWithTag("Player");
-        cameraTargt = GameObject.Find("MainCameraTarget");
+        cameraTarget = GameObject.Find("MainCameraTarget");
+
         Player.SetActive(false);
         //SpawnPlayer();
 
@@ -290,7 +298,7 @@ public class GameManager : MonoBehaviour
         //Debug.Log($"player spawn point - x: {x}, z: {z}");
         Player.transform.position = new Vector3(x, 6, z);
         Player.SetActive(true);
-        cameraTargt.transform.position = new Vector3(x, 0, z);
+        cameraTarget.transform.position = new Vector3(x, 0, z);
     }
     #endregion
 }
