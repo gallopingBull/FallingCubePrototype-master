@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
 using Invector;
 using Invector.vCharacterController;
-using ProBuilder2.Common;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 
 public class MoveCubeMechanic : vPushActionController
 {
@@ -60,8 +55,6 @@ public class MoveCubeMechanic : vPushActionController
     private bool isDetectingBackLeft = false;
     private bool isDetectingBackRight = false;
 
-
-
     float cooldownTime = 2f; // input delay
     float grabStartTime = -Mathf.Infinity;
 
@@ -78,13 +71,6 @@ public class MoveCubeMechanic : vPushActionController
 
         OnNewCubePosition += SetNewFloorCube;
         OnExitCubePosition += RemoveNewFloorCube;
-    }
-
-
-    protected override void UpdateInput()
-    {
-        EnterExitInput();
-        MoveInput();
     }
 
     // I changed GetButtonDown() to GetButton() to remove toggle input. I also check if the button is being held
@@ -130,10 +116,246 @@ public class MoveCubeMechanic : vPushActionController
         }
     }
 
-
     bool CanUseInput()
     {
         return Time.time - grabStartTime >= cooldownTime;
+    }
+
+    protected override void MoveInput()
+    {
+        if (!tpInput ||
+            !tpInput.cc ||
+            !tpInput.cc._capsuleCollider ||
+            tpInput.enabled ||
+            !isPushingPulling ||
+            !pushPoint ||
+            isStoping) return;
+
+        tpInput.CameraInput();
+
+        bool _isDetectingLeft = false;
+        bool _isDetectingRight = false;
+        bool _isDetectingBack = false;
+
+        inputHorizontal = tpInput.horizontalInput.GetAxis();
+        inputVertical = tpInput.verticallInput.GetAxis();
+
+        Vector3 cameraRight = cameraTransform.right;
+        cameraRight.y = 0;
+        cameraRight.Normalize();
+        Vector3 cameraForward = Quaternion.AngleAxis(-90, Vector3.up) * cameraRight;
+
+        // Calculate the forward direction of the player (or game object) on the XZ plane
+        Vector3 playerForward = transform.forward;
+        playerForward.y = 0;
+        playerForward.Normalize();
+
+        inputDirection = cameraForward * inputVertical + cameraRight * inputHorizontal;
+
+        // Ensure movement only along the X or Z axis, not diagonally
+        if (Mathf.Abs(inputDirection.x) > Mathf.Abs(inputDirection.z))
+        {
+            inputDirection.z = 0f;
+        }
+        else
+        {
+            inputDirection.x = 0f;
+        }
+
+        inputDirection.Normalize();
+        inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
+
+        // Perform a spherecast to check for game objects with a "Block" tag
+        sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layerMask);
+
+        foreach (RaycastHit sphereHit in sphereHitsBlock)
+        {
+            if (sphereHit.collider.CompareTag("Block"))
+            {
+                if (sphereHitsBlock.Length == 1)
+                {
+                    if (currentCubeFloor == null || currentCubeFloor != sphereHit.transform.gameObject)
+                    {
+                        //Debug.Log($"asigning new targetPos using {sphereHit.transform.name}");
+                        //Debug.Log($"targetPos: {sphereHit.transform.position}");
+                        currentCubeFloor = sphereHit.transform.gameObject;
+                        targetPos = currentCubeFloor.transform.position;
+                        targetPos += detectionOffSets;
+                        break; // Exit the loop after drawing the first hit
+                    }
+                }
+                else if (sphereHitsBlock.Length > 1)
+                {
+
+                }
+            }
+        }
+
+        if (isPushingPulling)
+        {
+            // Check each adjacent direction relative to the player's forward direction
+            directions = new Vector3[] { -transform.forward, -transform.right, transform.right };
+            for (int i = 0; i < directions.Length; i++)
+            {
+
+                // Shoot a ray in the current direction
+                curRelativeDirection = directions[i];
+                OrthoHitCubes[i] = Physics.Raycast(targetPos, curRelativeDirection, out orthogonalHits[i], checkDistance, layerMask);
+                curDirectionDistances[i] = OrthoHitCubes[i] ? orthogonalHits[i].distance : checkDistance;
+
+                if (OrthoHitCubes[i])
+                {
+                    var tmpPos = new Vector3();
+                    if (i == 0)
+                        maxDetectionDistance = 4f;
+                    else
+                        maxDetectionDistance = 2.83f;
+
+                    tmpPos = new Vector3(
+                        orthogonalHits[i].transform.position.x,
+                        pushPoint.pushableObject.transform.position.y,
+                        orthogonalHits[i].transform.position.z
+                        );
+
+                    Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
+
+                    //Debug.Log($"distance: {Distance}");
+
+                    if (Distance <= maxDetectionDistance)
+                    {
+                        switch (i)
+                        {
+                            // behind player
+                            case 0:
+                                //Debug.Log("Colliding from the back!");
+                                if (inputDirection.z < 0)
+                                {
+                                    inputDirection.z = 0;
+                                    _isDetectingBack = true;
+                                }
+
+                                break;
+
+                            // behind player - left-side
+                            case 1:
+                                //Debug.Log("Colliding from the left!");
+                                if (inputDirection.x < 0)
+                                {
+                                    inputDirection.x = 0;
+                                    _isDetectingLeft = true;
+                                }
+
+                                break;
+
+                            // behind player - right-side
+                            case 2:
+                                //Debug.Log("Colliding from the right!");
+                                if (inputDirection.x > 0)
+                                {
+                                    inputDirection.x = 0;
+                                    _isDetectingRight = true;
+                                }
+
+                                break;
+
+                            default:
+                                break;
+                        }
+                        pushPoint.targetBody.position = pushPoint.targetBody.position;
+                        //continue;
+                    }
+                    else
+                    {
+                        // TODO: is there a better way of freezing the cube in place if its near another cube?
+                        //Debug.Log("wont move push body position");
+                        pushPoint.targetBody.position = pushPoint.targetBody.position;
+                    }
+                }
+
+                downwardPosition[i] = targetPos + curRelativeDirection * curDirectionDistances[i];
+
+                // Shoot a ray downward from the end point of the previous ray
+                verticalHitCubes[i] = Physics.Raycast(downwardPosition[i], Vector3.down, out verticalHits[i], downwardCheckDistance, layerMask);
+                downwardRayDistances[i] = verticalHitCubes[i] ? verticalHits[i].distance : downwardCheckDistance;
+
+                // Perform a spherecast at the downward position
+                RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition[i], 0.1f, Vector3.down, downwardCheckDistance, layerMask);
+
+                if (verticalHitCubes[i])
+                {
+                    // Check if any cube is found underneath
+                    foreach (RaycastHit sphereHit in sphereHits)
+                    {
+                        if (sphereHit.collider.CompareTag("Block"))
+                            break; // Exit the loop after drawing the ray to the first cube found
+                    }
+                }
+                else if (!verticalHitCubes[i] && !OrthoHitCubes[i])
+                {
+                    maxDetectionDistance = 2f;
+
+                    var tmpPos = new Vector3();
+                    tmpPos = new Vector3(
+                       currentCubeFloor.transform.position.x,
+                       pushPoint.pushableObject.transform.position.y,
+                       currentCubeFloor.transform.position.z);
+
+                    Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
+                    //Debug.Log($"distance: {Distance}");
+
+                    if (Distance <= maxDetectionDistance)
+                    {
+                        switch (i)
+                        {
+                            // behind player
+                            case 0:
+                                //Debug.Log("no cube underneath you from behind!");
+                                if (inputDirection.z < 0)
+                                {
+                                    inputDirection.z = 0;
+                                    //_isDetectingBack = true;    
+                                }
+
+                                break;
+
+                            // behind player - left-side
+                            case 1:
+                                //Debug.Log("no cube underneath you from left-side!");
+                                if (inputDirection.x < 0)
+                                {
+                                    inputDirection.x = 0;
+                                    //_isDetectingLeft = true;
+                                }
+
+                                break;
+
+                            // behind player - right-side
+                            case 2:
+                                //Debug.Log("no cube underneath you from right-side!");
+                                if (inputDirection.x > 0)
+                                {
+                                    inputDirection.x = 0;
+                                    //_isDetectingRight = true;
+                                }
+
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                //Debug.Log($"inputDirection.magnitude: {inputDirection.magnitude}");
+                if (inputDirection.magnitude > 0.1f)
+                    inputWeight = Mathf.Lerp(inputWeight, 1, Time.deltaTime * animAcceleration);
+                else
+                    inputWeight = Mathf.Lerp(inputWeight, 0, Time.deltaTime * animAcceleration);
+            }
+        }
+        isDetectingBack = _isDetectingBack;
+        isDetectingBackRight = _isDetectingRight;
+        isDetectingBackLeft = _isDetectingLeft;
     }
 
     protected override void MoveObject()
@@ -322,256 +544,9 @@ public class MoveCubeMechanic : vPushActionController
         return Distance <= .25f; // .45-.65f seems to work the best but the former causes issues when cubes fall to early
     }
     
-    private bool CheckDistance(Vector3 position1, Vector3 position2)
-    {
-        // Calculate the distance between the two positions
-        Distance = Vector3.Distance(position1, position2);
-        //debug.Log($"distance: {Distance}");
-
-        // Return true if the distance is less than maxDistance, otherwise return false
-        return Distance <= maxDetectionDistance;
-    }
-
     private void OnDestroy()
     {
         OnNewCubePosition -= SetNewFloorCube;
-    }
-
-    protected override void FixedUpdate()
-    {
-        base.FixedUpdate();
-
-        if (!tpInput || 
-            !tpInput.cc || 
-            !tpInput.cc._capsuleCollider || 
-            tpInput.enabled || 
-            !isPushingPulling || 
-            !pushPoint || 
-            isStoping) return;
-
-        bool _isDetectingLeft = false;
-        bool _isDetectingRight = false;
-        bool _isDetectingBack = false;
-
-        inputHorizontal = tpInput.horizontalInput.GetAxis();
-        inputVertical = tpInput.verticallInput.GetAxis();
-
-        Vector3 cameraRight = cameraTransform.right;
-        cameraRight.y = 0;
-        cameraRight.Normalize();
-        Vector3 cameraForward = Quaternion.AngleAxis(-90, Vector3.up) * cameraRight;
-
-        // Calculate the forward direction of the player (or game object) on the XZ plane
-        Vector3 playerForward = transform.forward;
-        playerForward.y = 0;
-        playerForward.Normalize();
-
-        inputDirection = cameraForward * inputVertical + cameraRight * inputHorizontal;
-
-        // Ensure movement only along the X or Z axis, not diagonally
-        if (Mathf.Abs(inputDirection.x) > Mathf.Abs(inputDirection.z))
-        {
-            inputDirection.z = 0f;
-        }
-        else
-        {
-            inputDirection.x = 0f;
-        }
-
-        inputDirection.Normalize();
-        inputDirection = pushPoint.transform.InverseTransformDirection(inputDirection);
-
-        // Perform a spherecast to check for game objects with a "Block" tag
-        sphereHitsBlock = Physics.SphereCastAll(transform.position, sphereSize, Vector3.down, 0, layerMask);
-
-        foreach (RaycastHit sphereHit in sphereHitsBlock)
-        {
-            if (sphereHit.collider.CompareTag("Block"))
-            {
-                if (sphereHitsBlock.Length == 1)
-                {
-                    if (currentCubeFloor == null || currentCubeFloor != sphereHit.transform.gameObject)
-                    {
-                        //Debug.Log($"asigning new targetPos using {sphereHit.transform.name}");
-                        //Debug.Log($"targetPos: {sphereHit.transform.position}");
-                        currentCubeFloor = sphereHit.transform.gameObject;
-                        targetPos = currentCubeFloor.transform.position;
-                        targetPos += detectionOffSets;
-                        break; // Exit the loop after drawing the first hit
-                    }
-                }
-                else if (sphereHitsBlock.Length > 1)
-                {
-
-                }
-            }
-        }
-
-        if (isPushingPulling)
-        {
-            // Check each adjacent direction relative to the player's forward direction
-            directions = new Vector3[] { -transform.forward, -transform.right, transform.right };
-            for (int i = 0; i < directions.Length; i++)
-            {
-
-                // Shoot a ray in the current direction
-                curRelativeDirection = directions[i];
-                OrthoHitCubes[i] = Physics.Raycast(targetPos, curRelativeDirection, out orthogonalHits[i], checkDistance, layerMask);
-                curDirectionDistances[i] = OrthoHitCubes[i] ? orthogonalHits[i].distance : checkDistance;
-                
-                if (OrthoHitCubes[i])
-                {
-                    var tmpPos = new Vector3();
-                    if (i == 0)
-                        maxDetectionDistance = 4f;
-                    else
-                        maxDetectionDistance = 2.83f;
-
-                    tmpPos = new Vector3(
-                        orthogonalHits[i].transform.position.x, 
-                        pushPoint.pushableObject.transform.position.y, 
-                        orthogonalHits[i].transform.position.z
-                        );
-
-                    Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
-
-                    //Debug.Log($"distance: {Distance}");
-
-                    if (Distance <= maxDetectionDistance)
-                    {
-                        switch (i)
-                        {
-                            // behind player
-                            case 0:
-                                //Debug.Log("Colliding from the back!");
-                                if (inputDirection.z < 0)
-                                {
-                                    inputDirection.z = 0;
-                                    _isDetectingBack = true;
-                                }
-
-                                break;
-
-                            // behind player - left-side
-                            case 1:
-                                //Debug.Log("Colliding from the left!");
-                                if (inputDirection.x < 0)
-                                {
-                                    inputDirection.x = 0;
-                                    _isDetectingLeft = true;
-                                }
-
-                                break;
-
-                            // behind player - right-side
-                            case 2:
-                                //Debug.Log("Colliding from the right!");
-                                if (inputDirection.x > 0)
-                                {
-                                    inputDirection.x = 0;
-                                    _isDetectingRight = true;
-                                }
-
-                                break;
-
-                            default:
-                                break;
-                        }
-                        pushPoint.targetBody.position = pushPoint.targetBody.position;
-                        //continue;
-                    }
-                    else
-                    {
-                        // TODO: is there a better way of freezing the cube in place if its near another cube?
-                        //Debug.Log("wont move push body position");
-                        pushPoint.targetBody.position = pushPoint.targetBody.position;
-                    }
-                }
-
-                downwardPosition[i] = targetPos + curRelativeDirection * curDirectionDistances[i];
-
-                // Shoot a ray downward from the end point of the previous ray
-                verticalHitCubes[i] = Physics.Raycast(downwardPosition[i], Vector3.down, out verticalHits[i], downwardCheckDistance, layerMask);
-                downwardRayDistances[i] = verticalHitCubes[i] ? verticalHits[i].distance : downwardCheckDistance;
-
-                // Perform a spherecast at the downward position
-                RaycastHit[] sphereHits = Physics.SphereCastAll(downwardPosition[i], 0.1f, Vector3.down, downwardCheckDistance, layerMask);
-
-                if (verticalHitCubes[i])
-                {
-                    // Check if any cube is found underneath
-                    foreach (RaycastHit sphereHit in sphereHits)
-                    {
-                        if (sphereHit.collider.CompareTag("Block"))
-                            break; // Exit the loop after drawing the ray to the first cube found
-                    }
-                }
-                else if (!verticalHitCubes[i] && !OrthoHitCubes[i])
-                {
-                    maxDetectionDistance = 2f;
-
-                    var tmpPos = new Vector3();
-                    tmpPos = new Vector3(
-                       currentCubeFloor.transform.position.x,
-                       pushPoint.pushableObject.transform.position.y,
-                       currentCubeFloor.transform.position.z);
-
-                    Distance = Vector3.Distance(pushPoint.pushableObject.transform.position, tmpPos);
-                    //Debug.Log($"distance: {Distance}");
-
-                    if (Distance <= maxDetectionDistance)
-                    {
-                        switch (i)
-                        {
-                            // behind player
-                            case 0:
-                                //Debug.Log("no cube underneath you from behind!");
-                                if (inputDirection.z < 0)
-                                {
-                                    inputDirection.z = 0;
-                                    //_isDetectingBack = true;    
-                                }
-
-                                break;
-
-                            // behind player - left-side
-                            case 1:
-                                //Debug.Log("no cube underneath you from left-side!");
-                                if (inputDirection.x < 0)
-                                {
-                                    inputDirection.x = 0;
-                                    //_isDetectingLeft = true;
-                                }
-
-                                break;
-
-                            // behind player - right-side
-                            case 2:
-                                //Debug.Log("no cube underneath you from right-side!");
-                                if (inputDirection.x > 0)
-                                {
-                                    inputDirection.x = 0;
-                                    //_isDetectingRight = true;
-                                }
-
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-                }
-
-                //Debug.Log($"inputDirection.magnitude: {inputDirection.magnitude}");
-                if (inputDirection.magnitude > 0.1f)
-                    inputWeight = Mathf.Lerp(inputWeight, 1, Time.deltaTime * animAcceleration);
-                else
-                    inputWeight = Mathf.Lerp(inputWeight, 0, Time.deltaTime * animAcceleration);
-            }
-        }
-        isDetectingBack = _isDetectingBack;
-        isDetectingBackRight = _isDetectingRight;
-        isDetectingBackLeft = _isDetectingLeft;
     }
 
     public class CubeDetectionData
