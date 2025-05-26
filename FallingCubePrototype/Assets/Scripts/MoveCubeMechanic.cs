@@ -293,9 +293,9 @@ public class MoveCubeMechanic : vPushActionController
                 else if (!verticalHitCubes[i] && !OrthoHitCubes[i])
                 {
                     maxDetectionDistance = 2f;
-
-                    var tmpPos = new Vector3();
-                    tmpPos = new Vector3(
+                    // instead of tracking currentCubeFloor.transform.position, cache its position into a lastKnownPos to checka against.
+                    // i think this is causing the ccurrentCubeFloor not assigned error if this is checked while player is betweem
+                    var tmpPos = new Vector3(
                        currentCubeFloor.transform.position.x,
                        pushPoint.pushableObject.transform.position.y,
                        currentCubeFloor.transform.position.z);

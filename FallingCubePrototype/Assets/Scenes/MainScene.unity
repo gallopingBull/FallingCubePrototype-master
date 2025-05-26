@@ -1395,7 +1395,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 19.9855, y: 7.9669456, z: 19.930399}
+  m_Size: {x: 100, y: 7.9669456, z: 100}
   m_Center: {x: -1.1306019, y: -3.4834723, z: 1.0679464}
 --- !u!33 &337918579
 MeshFilter:
@@ -3640,6 +3640,10 @@ PrefabInstance:
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[5].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1092062235473313719, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
+      propertyPath: selectedToolbar
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313722, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: m_RootOrder
