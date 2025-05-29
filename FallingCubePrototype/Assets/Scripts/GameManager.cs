@@ -137,16 +137,16 @@ public class GameManager : MonoBehaviour
 
     private void OpenDoor()
     {
-        print("door opened");
+        Debug.Log("door opened");
         isDoorOpen = true;
         ObjectiveGate.SetActive(false);
     }
 
     private void GameWon()
     {
-        print("game won!");
+        Debug.Log("game won!");
         GameWonPanel.SetActive(true);
-        print(GameWonPanel.activeSelf);
+        Debug.Log(GameWonPanel.activeSelf);
         GameHudPanel.SetActive(false);
         gameWon = true;
         gameCompleted = true;
@@ -154,7 +154,7 @@ public class GameManager : MonoBehaviour
 
     public void FailedGame()
     {
-        print("gameFailed");
+        Debug.Log("game failed!");
         GameFailedPanel.SetActive(true);
         GameHudPanel.SetActive(false);
         gameCompleted = true;
