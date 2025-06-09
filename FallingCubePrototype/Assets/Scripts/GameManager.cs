@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("escape") || Input.GetButtonDown("Back"))
+        if (Input.GetButtonDown("Back"))
             GetComponent<LoadScene>().LoadSceneByIndex(0);
 
         if (Score >= MAXScore)
