@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public float _time;
     private int _MAXCountdownTime;
-    static private bool countingDown = false;
+    public bool countingDown = false;
     public TMP_Text Text_InitialTimer;
     public TMP_Text Text_Begin;
 
@@ -299,6 +299,18 @@ public class GameManager : MonoBehaviour
         Player.transform.position = new Vector3(x, 6, z);
         Player.SetActive(true);
         cameraTarget.transform.position = new Vector3(x, 0, z);
+    }
+    
+    public void DisplayCountdownScreen() 
+    {
+        Debug.Log("DisplayCountdownScreen");
+        InitalTimerPanel.SetActive(true);  
+    }
+
+    public void HideCountdownScreen()
+    {
+        Debug.Log("HideCountdownScreen");
+        InitalTimerPanel.SetActive(false);
     }
     #endregion
 }

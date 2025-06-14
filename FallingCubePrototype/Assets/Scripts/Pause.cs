@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class Pause : MonoBehaviour
 {
@@ -26,20 +27,40 @@ public class Pause : MonoBehaviour
             }
 
             if (!isPaused)
-            {
-                isPaused = true;    
-                hudMenu.SetActive(false);
-                pauseMenu.SetActive(true);
-                //EventSystem.current.SetSelectedGameObject(pauseSelectedBut);  
-                Time.timeScale = 0;
-            }
+                PauseGame();    
             else
-            {
-                isPaused = false;   
-                pauseMenu.SetActive(false);
-                hudMenu.SetActive(true);
-                Time.timeScale = 1;
-            }
+                ResumeGame();
         }
+    }
+
+    public void PauseGame()
+    {
+        Debug.Log("Pausing game");
+        isPaused = true;
+        pauseMenu.SetActive(true);
+        if (SceneManager.GetActiveScene().name == "MainScene")
+        {
+            hudMenu.SetActive(false);
+            if (GameManager.gm.countingDown)
+                GameManager.gm.HideCountdownScreen();   
+        }
+        EventSystem.current.SetSelectedGameObject(pauseSelectedBut);
+        Time.timeScale = 0;
+    }
+        
+    public void ResumeGame()
+    {
+        Debug.Log("Resuming game");
+        isPaused = false;
+        pauseMenu.SetActive(false);
+        if (SceneManager.GetActiveScene().name == "MainScene")
+        {
+            hudMenu.SetActive(true);
+            if (GameManager.gm.countingDown)
+                GameManager.gm.DisplayCountdownScreen();
+        }
+ 
+        EventSystem.current.SetSelectedGameObject(null);
+        Time.timeScale = 1;
     }
 }
