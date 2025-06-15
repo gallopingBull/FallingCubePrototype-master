@@ -110,7 +110,7 @@ public class AerialCubeSpawner : MonoBehaviour
 
         while (EnableSpawner)
         {
-            timer = GameManager.gm._time;
+            timer = GameManager.gm.initialCountdownTime;
 
             if (init)
             {
@@ -187,19 +187,19 @@ public class AerialCubeSpawner : MonoBehaviour
     private float GetNewSpawnRate()
     {
         float tmpRate;
-        if (GameManager.gm.CountdownTime > 67.5)
+        if (GameManager.gm.currentCountdownTime > 67.5)
         {
             tmpRate = Random.Range(8, 10);
         }
-        else if (GameManager.gm.CountdownTime > 45)
+        else if (GameManager.gm.currentCountdownTime > 45)
         {
             tmpRate = Random.Range(6.5f, 8);
         }
-        else if (GameManager.gm.CountdownTime > 45)
+        else if (GameManager.gm.currentCountdownTime > 45)
         {
             tmpRate = Random.Range(4, 6.5f);
         }
-        else if (GameManager.gm.CountdownTime > 22.5)
+        else if (GameManager.gm.currentCountdownTime > 22.5)
         {
             tmpRate = Random.Range(2.5f, 4f);
         }

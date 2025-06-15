@@ -27,21 +27,21 @@ public class GameManager : MonoBehaviour
     public int Score;
     public TMP_Text ScoreText;
 
+    // Variables for main countdown during a game session.
     [SerializeField]
-    private bool TimeGameMode;
+    private bool TimeGameMode; 
     [HideInInspector]
-    public int CountdownTime = 0;
+    public int currentCountdownTime = 0; // Time passed during the game session.
+    public int totalGameTime = 30; // Total time allowed for the game session.
+    public TMP_Text countdownText; // Displays the remaining time in the game.
 
-    public int MAXCountdownTime = 30;
-    public TMP_Text text;
-
-    //initial timer variables.
+    // Variables for initial countdown prior to game start.
     [HideInInspector]
-    public float _time;
-    private int _MAXCountdownTime;
+    public float initialCountdownTime;
+    private int maxInitialCountdownTime;
     public bool countingDown = false;
-    public TMP_Text Text_InitialTimer;
-    public TMP_Text Text_Begin;
+    public TMP_Text initialTimerText;
+    public TMP_Text beginGameText;
 
     public List<GameObject> CubeTargets;
 
@@ -177,25 +177,25 @@ public class GameManager : MonoBehaviour
     //only used at begining of round
     IEnumerator InitialCountdownTimer()
     {
-        _MAXCountdownTime = 3;
+        maxInitialCountdownTime = 3;
 
-        _time = _MAXCountdownTime;
-        Text_InitialTimer.text = _time.ToString();
+        initialCountdownTime = maxInitialCountdownTime;
+        initialTimerText.text = initialCountdownTime.ToString();
 
-        for (int i = _MAXCountdownTime; i >= 0; i--)
+        for (int i = maxInitialCountdownTime; i >= 0; i--)
         {
             yield return new WaitForSeconds(1f);
-            if (_time > 0)
+            if (initialCountdownTime > 0)
             {
-                _time--;
-                Text_InitialTimer.text = _time.ToString();
+                initialCountdownTime--;
+                initialTimerText.text = initialCountdownTime.ToString();
             }
 
-            if (_time == 0)
+            if (initialCountdownTime == 0)
             {
                 //StartGame();
-                Text_InitialTimer.transform.gameObject.SetActive(false);
-                Text_Begin.transform.gameObject.SetActive(true);
+                initialTimerText.transform.gameObject.SetActive(false);
+                beginGameText.transform.gameObject.SetActive(true);
                 yield return new WaitForSeconds(.75f);
                 InitalTimerPanel.gameObject.SetActive(false);
                 GameHudPanel.SetActive(true);
@@ -228,15 +228,15 @@ public class GameManager : MonoBehaviour
     IEnumerator Timer()
     {
         countingDown = true;
-        CountdownTime = MAXCountdownTime;
-        text.text = CountdownTime.ToString();
+        currentCountdownTime = totalGameTime;
+        countdownText.text = currentCountdownTime.ToString();
 
-        for (int i = MAXCountdownTime; i >= 0; i--)
+        for (int i = totalGameTime; i >= 0; i--)
         {
             yield return new WaitForSeconds(1f);
-            CountdownTime--;
-            text.text = CountdownTime.ToString();
-            if (CountdownTime == 0 && !gameCompleted)
+            currentCountdownTime--;
+            countdownText.text = currentCountdownTime.ToString();
+            if (currentCountdownTime == 0 && !gameCompleted)
             {
                 if (Score >= MAXScore)
                     GameWon();
