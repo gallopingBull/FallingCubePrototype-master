@@ -1,22 +1,28 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class Pause : MonoBehaviour
 {
-    public bool isPaused;
-    [SerializeField] GameObject pauseMenu;
-    [SerializeField] GameObject pauseSelectedBut;
-    [SerializeField] GameObject hudMenu;
+    public static bool isPaused;
+    [SerializeField] static GameObject pauseMenu;
+    [SerializeField] static GameObject pauseSelectedBut; // reference to first button that should be selected.
+
+    [SerializeField] static GameObject hudMenu;
+
+    public static Action onPause;
+    public static Action onResume;
 
     // Start is called before the first frame update
-    void Start()
+    static void Start()
     {
-        
+        //onPause += PauseGame;
+        //onResume += ResumeGame;
     }
 
     // Update is called once per frame
-    void Update()
+    static void Update()
     {
         if (Input.GetKeyDown("escape") || Input.GetButtonDown("Start"))
         {
@@ -33,7 +39,7 @@ public class Pause : MonoBehaviour
         }
     }
 
-    public void PauseGame()
+    static public void PauseGame()
     {
         Debug.Log("Pausing game");
         isPaused = true;
@@ -48,11 +54,12 @@ public class Pause : MonoBehaviour
         Time.timeScale = 0;
     }
         
-    public void ResumeGame()
+    static public void ResumeGame()
     {
         Debug.Log("Resuming game");
         isPaused = false;
         pauseMenu.SetActive(false);
+        onResume.Invoke();  
         if (SceneManager.GetActiveScene().name == "MainScene")
         {
             hudMenu.SetActive(true);
@@ -63,4 +70,9 @@ public class Pause : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         Time.timeScale = 1;
     }
+    //static public void OnDestroy()
+    //{
+    //    onPause -= PauseGame;
+    //    onResume -= ResumeGame;
+    //}
 }

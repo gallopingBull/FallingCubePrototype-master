@@ -50,6 +50,8 @@ public class GameManager : MonoBehaviour
     private GameObject ObjectiveGate;
     private CubeManager cubeManager;
     private AerialCubeSpawner? aerialCubeSpawner;
+    private Pause pause;
+
 
     [SerializeField]
     private GameObject InitalTimerPanel;
@@ -73,12 +75,21 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         cubeManager = FindObjectOfType<CubeManager>();
-        // Assume in main menu scene if cube manager not present
+        // Assume null in main menu scene if cube manager not present
         if (cubeManager == null)
         {
             Debug.Log("cameraTarget is null");
             return;
         }
+
+        pause = GetComponent<Pause>();
+        if (pause == null)
+        {
+            Debug.Log("pause is null");
+            return;
+        }
+
+        //Pause.onPause += DisplayHUD 
 
         aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
         ArenaGenerator.OnFloorComplete += StartGame;
@@ -300,7 +311,17 @@ public class GameManager : MonoBehaviour
         Player.SetActive(true);
         cameraTarget.transform.position = new Vector3(x, 0, z);
     }
-    
+
+    private void DisplayHUD()
+    {
+        Debug.Log("DisplayHUD");
+    }
+
+    private void HideHUD()
+    {
+        Debug.Log("HideHUD");
+    }
+
     public void DisplayCountdownScreen() 
     {
         Debug.Log("DisplayCountdownScreen");
