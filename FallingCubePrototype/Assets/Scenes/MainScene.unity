@@ -597,13 +597,15 @@ MonoBehaviour:
   MAXScore: 50
   Score: 0
   ScoreText: {fileID: 370015015}
+  initialCountdownTime: 0
+  initialCountingDown: 0
+  initialTimerText: {fileID: 4670893352264992204}
+  beginGameText: {fileID: 1634462451}
   TimeGameMode: 1
-  CountdownTime: 0
-  MAXCountdownTime: 125
-  text: {fileID: 3160835673993520569}
-  _time: 0
-  Text_InitialTimer: {fileID: 4670893352264992204}
-  Text_Begin: {fileID: 1634462451}
+  countingDown: 0
+  currentCountdownTime: 0
+  totalGameTime: 120
+  countdownText: {fileID: 3160835673993520569}
   CubeTargets: []
   ObjectiveGate: {fileID: 0}
   InitalTimerPanel: {fileID: 4670893352581733062}

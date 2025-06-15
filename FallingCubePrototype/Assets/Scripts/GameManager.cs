@@ -27,22 +27,29 @@ public class GameManager : MonoBehaviour
     public int Score;
     public TMP_Text ScoreText;
 
-    // Variables for main countdown during a game session.
-    [SerializeField]
-    private bool TimeGameMode; 
+
+    // Variables for initial countdown prior to game start.
+    [Header("Initial Countdown Variables")]
+    public bool initialCountingDown = false;
     [HideInInspector]
+    public float initialCountdownTime;
+    private int maxInitialCountdownTime;
+
+    public TMP_Text initialTimerText;
+    public TMP_Text beginGameText;
+
+    // Variables for main countdown during a game session.
+    [Header("Main Countdown Variables")]
+    [SerializeField]
+    private bool TimeGameMode; // Check if in time game mode. 
+    [HideInInspector]
+    public bool countingDown = false;
     public int currentCountdownTime = 0; // Time passed during the game session.
     public int totalGameTime = 30; // Total time allowed for the game session.
     public TMP_Text countdownText; // Displays the remaining time in the game.
 
-    // Variables for initial countdown prior to game start.
-    [HideInInspector]
-    public float initialCountdownTime;
-    private int maxInitialCountdownTime;
-    public bool countingDown = false;
-    public TMP_Text initialTimerText;
-    public TMP_Text beginGameText;
-
+    [Header("Cube Management Variables")]
+    // cube reference stuff
     public List<GameObject> CubeTargets;
 
     private GameObject cameraTarget; // this is the camera target for the invector 3rd person controller
@@ -171,6 +178,7 @@ public class GameManager : MonoBehaviour
 
     private void InitialCountdownTimerCaller()
     {
+        initialCountingDown = true;
         StartCoroutine("InitialCountdownTimer");
     }
 
@@ -205,7 +213,7 @@ public class GameManager : MonoBehaviour
                 break;
             }
         }
-
+        initialCountingDown = false;
         StopCoroutine("InitialCountdownTimer");
     }
 
