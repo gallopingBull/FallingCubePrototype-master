@@ -224,7 +224,6 @@ public class GameManager : MonoBehaviour
             }
         }
         initialCountingDown = false; // Keeping this in case initialCountdownTime never reaches zero
-        Debug.Log($"EOS initialCountingDown = {initialCountingDown}");
         StopCoroutine("InitialCountdownTimer");
     }
 

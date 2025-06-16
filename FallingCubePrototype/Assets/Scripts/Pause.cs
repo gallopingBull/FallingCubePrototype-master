@@ -55,7 +55,6 @@ public class Pause : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "MainScene")
         {
             hudMenu.SetActive(true);
-            Debug.Log($"Pause.ResumeGame() - initialCountingDown = {GameManager.gm.initialCountingDown}");
             if (GameManager.gm.initialCountingDown && GameManager.gm.gameInit)
                 GameManager.gm.DisplayCountdownScreen();
         }
