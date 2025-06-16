@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
 
 
     [SerializeField]
-    private GameObject GameHudPanel;
+    public GameObject GameHudPanel;
     [SerializeField]
     private GameObject GameWonPanel;
     [SerializeField]

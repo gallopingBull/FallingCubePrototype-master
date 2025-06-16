@@ -592,13 +592,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 0}
-  isTesting: 0
+  isDebug: 0
+  gameInit: 0
   gameCompleted: 0
   MAXScore: 50
   Score: 0
   ScoreText: {fileID: 370015015}
-  initialCountdownTime: 0
   initialCountingDown: 0
+  initialCountdownTime: 0
+  InitalTimerPanel: {fileID: 4670893352581733062}
   initialTimerText: {fileID: 4670893352264992204}
   beginGameText: {fileID: 1634462451}
   TimeGameMode: 1
@@ -606,9 +608,7 @@ MonoBehaviour:
   currentCountdownTime: 0
   totalGameTime: 120
   countdownText: {fileID: 3160835673993520569}
-  CubeTargets: []
   ObjectiveGate: {fileID: 0}
-  InitalTimerPanel: {fileID: 4670893352581733062}
   GameHudPanel: {fileID: 1164696867}
   GameWonPanel: {fileID: 594528054}
   GameFailedPanel: {fileID: 1503188164}
@@ -637,9 +637,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPaused: 0
-  pauseMenu: {fileID: 1351822128}
-  pauseSelectedBut: {fileID: 5892183400396068644}
-  hudMenu: {fileID: 1164696867}
+  pauseMenu: {fileID: 0}
+  pauseSelectedBut: {fileID: 0}
+  hudMenu: {fileID: 0}
 --- !u!1 &124470478
 GameObject:
   m_ObjectHideFlags: 0
@@ -4102,11 +4102,6 @@ Transform:
   m_Father: {fileID: 27998977}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1351822128 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7519443225260062575, guid: 9ae10194cd3184a40a481b4341c1d83d, type: 3}
-  m_PrefabInstance: {fileID: 5892183400396068643}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1403245615 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: f528e4334b3ce3c468fa3edc3f04156a, type: 3}
@@ -7852,8 +7847,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ae10194cd3184a40a481b4341c1d83d, type: 3}
---- !u!1 &5892183400396068644 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4628021931667745746, guid: 9ae10194cd3184a40a481b4341c1d83d, type: 3}
-  m_PrefabInstance: {fileID: 5892183400396068643}
-  m_PrefabAsset: {fileID: 0}
