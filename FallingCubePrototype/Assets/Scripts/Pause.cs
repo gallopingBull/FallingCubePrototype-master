@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 
 public class Pause : MonoBehaviour
 {
@@ -29,7 +28,6 @@ public class Pause : MonoBehaviour
     public bool isPaused;
     private GameObject pauseMenu;
     private GameObject pauseSelectedBut; // reference to first button that should be selected.
-    private GameObject hudMenu;
 
     // Events for pausing/resuming
     public event Action onPause;
@@ -59,7 +57,6 @@ public class Pause : MonoBehaviour
         if (pauseMenu == null) Debug.LogError("Panel_PauseMenu not found!");
         if (pauseSelectedBut == null) Debug.LogError("ButtonReturnToGame not found!");
 
-        hudMenu = GameManager.gm.GameHudPanel;
     }
 
     private void Update()
@@ -68,7 +65,7 @@ public class Pause : MonoBehaviour
         {
             Debug.Log("Pause.Update() - Input detected!");
 
-            if (!pauseMenu || !hudMenu)
+            if (!pauseMenu || !GameManager.gm.GameHudPanel)
             {
                 Debug.LogWarning("Pause or HUD Gameobjects are not assigned.");
                 return;
@@ -89,11 +86,11 @@ public class Pause : MonoBehaviour
         isPaused = true;
         pauseMenu.SetActive(true);
 
-        if (SceneManager.GetActiveScene().name == "MainScene")
-        {
-            hudMenu.SetActive(false);
-            GameManager.gm.HideCountdownScreen();
-        }
+        //if (SceneManager.GetActiveScene().name == "MainScene")
+        //{
+        //    hudMenu.SetActive(false);
+        //    GameManager.gm.HideCountdownScreen();
+        //}
 
         EventSystem.current.SetSelectedGameObject(pauseSelectedBut);
         onPause?.Invoke(); // Invoke onPause if it's subscribed
@@ -106,19 +103,11 @@ public class Pause : MonoBehaviour
         isPaused = false;
         pauseMenu.SetActive(false);
         onResume?.Invoke(); // Invoke onResume if it's subscribed
-
-        if (SceneManager.GetActiveScene().name == "MainScene")
-        {
-            hudMenu.SetActive(true);
-            if (GameManager.gm.initialCountingDown && GameManager.gm.gameInit)
-                GameManager.gm.DisplayCountdownScreen();
-        }
-
         EventSystem.current.SetSelectedGameObject(null);
         Time.timeScale = 1;
     }
 
-    //static public void OnDestroy()
+    //public void OnDestroy()
     //{
     //    onPause -= PauseGame;
     //    onResume -= ResumeGame;

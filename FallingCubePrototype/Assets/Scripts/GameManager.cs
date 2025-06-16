@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor.MemoryProfiler;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -99,7 +100,11 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        //Pause.onPause += DisplayHUD 
+        Pause.Instance.onPause += HideCountdownScreen;
+        Pause.Instance.onPause += HideHUD;
+
+        Pause.Instance.onResume += DisplayCountdownScreen;
+        Pause.Instance.onResume += DisplayHUD;
 
         aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
         ArenaGenerator.OnFloorComplete += StartGame;
@@ -120,11 +125,6 @@ public class GameManager : MonoBehaviour
         else
             InitialCountdownTimerCaller();
 
-    }
-
-    private void OnDestroy()
-    {
-        ArenaGenerator.OnFloorComplete -= StartGame;
     }
 
     // Update is called once per frame
@@ -334,23 +334,43 @@ public class GameManager : MonoBehaviour
     private void DisplayHUD()
     {
         Debug.Log("DisplayHUD");
+        if (SceneManager.GetActiveScene().name == "MainScene")
+            GameHudPanel.SetActive(true);
     }
 
     private void HideHUD()
     {
         Debug.Log("HideHUD");
+        if (SceneManager.GetActiveScene().name == "MainScene")
+            GameHudPanel.SetActive(false);
     }
 
     public void DisplayCountdownScreen() 
     {
         Debug.Log("DisplayCountdownScreen");
-        InitalTimerPanel.SetActive(true);  
+        if (SceneManager.GetActiveScene().name == "MainScene")
+        {
+            if (initialCountingDown && gameInit)
+                InitalTimerPanel.SetActive(true);
+        }
     }
 
     public void HideCountdownScreen()
     {
         Debug.Log("HideCountdownScreen");
-        InitalTimerPanel.SetActive(false);
+        if (SceneManager.GetActiveScene().name == "MainScene")
+            InitalTimerPanel.SetActive(false);
+    }
+
+    public void OnDestroy()
+    {
+        Pause.Instance.onPause -= HideCountdownScreen;
+        Pause.Instance.onPause -= HideHUD;
+
+        Pause.Instance.onResume -= DisplayCountdownScreen;
+        Pause.Instance.onResume -= DisplayHUD;
+
+        ArenaGenerator.OnFloorComplete -= StartGame;
     }
     #endregion
 }
