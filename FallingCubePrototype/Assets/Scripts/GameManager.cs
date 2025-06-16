@@ -198,11 +198,12 @@ public class GameManager : MonoBehaviour
 
         for (int i = maxInitialCountdownTime; i >= 0; i--)
         {
+            // Only increment when initial timer panel object is active.
             if (!InitalTimerPanel)
-            {
                 continue;
-            }
+
             yield return new WaitForSeconds(1f);
+
             if (initialCountdownTime > 0)
             {
                 initialCountdownTime--;
