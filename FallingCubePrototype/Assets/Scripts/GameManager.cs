@@ -12,14 +12,15 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector]
     public GameObject Player;
-    //public GameObject PlayerPrefab;
 
     public bool isTesting = false;
 
-    private bool isDoorOpen;
-    [HideInInspector]
+    [Header("Game Session Variables")]
     public bool gameCompleted;
     private bool gameWon;
+    private bool isDoorOpen;
+    [HideInInspector]
+
 
     [SerializeField]
     private int MAXScore = 3;
@@ -34,7 +35,8 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public float initialCountdownTime;
     private int maxInitialCountdownTime;
-
+    [SerializeField]
+    private GameObject InitalTimerPanel;
     public TMP_Text initialTimerText;
     public TMP_Text beginGameText;
 
@@ -48,9 +50,9 @@ public class GameManager : MonoBehaviour
     public int totalGameTime = 30; // Total time allowed for the game session.
     public TMP_Text countdownText; // Displays the remaining time in the game.
 
-    [Header("Cube Management Variables")]
+    //[Header("Cube Management Variables")]
     // cube reference stuff
-    public List<GameObject> CubeTargets;
+    private List<GameObject> CubeTargets;
 
     private GameObject cameraTarget; // this is the camera target for the invector 3rd person controller
     [SerializeField]
@@ -58,8 +60,7 @@ public class GameManager : MonoBehaviour
     private CubeManager cubeManager;
     private AerialCubeSpawner? aerialCubeSpawner;
 
-    [SerializeField]
-    private GameObject InitalTimerPanel;
+
     [SerializeField]
     private GameObject GameHudPanel;
     [SerializeField]
@@ -208,12 +209,11 @@ public class GameManager : MonoBehaviour
                 InitalTimerPanel.gameObject.SetActive(false);
                 GameHudPanel.SetActive(true);
                 yield return new WaitForSeconds(1.5f);
-
+                initialCountingDown = false;
                 StartGame();
                 break;
             }
         }
-        initialCountingDown = false;
         StopCoroutine("InitialCountdownTimer");
     }
 
