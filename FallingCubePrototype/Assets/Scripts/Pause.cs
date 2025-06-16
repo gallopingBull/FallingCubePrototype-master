@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 public class Pause : MonoBehaviour
 {
     private static Pause _instance;
-
     public static Pause Instance
     {
         get
@@ -63,8 +62,6 @@ public class Pause : MonoBehaviour
     {
         if (Input.GetKeyDown("escape") || Input.GetButtonDown("Start"))
         {
-            Debug.Log("Pause.Update() - Input detected!");
-
             if (!pauseMenu || !GameManager.gm.GameHudPanel)
             {
                 Debug.LogWarning("Pause or HUD Gameobjects are not assigned.");
@@ -85,13 +82,6 @@ public class Pause : MonoBehaviour
         Time.timeScale = 0;
         isPaused = true;
         pauseMenu.SetActive(true);
-
-        //if (SceneManager.GetActiveScene().name == "MainScene")
-        //{
-        //    hudMenu.SetActive(false);
-        //    GameManager.gm.HideCountdownScreen();
-        //}
-
         EventSystem.current.SetSelectedGameObject(pauseSelectedBut);
         onPause?.Invoke(); // Invoke onPause if it's subscribed
     }
