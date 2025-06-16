@@ -36,6 +36,7 @@ public class Pause : MonoBehaviour
     public void PauseGame()
     {
         Debug.Log("Pausing game");
+        Time.timeScale = 0;
         isPaused = true;
         pauseMenu.SetActive(true);
         if (SceneManager.GetActiveScene().name == "MainScene")
@@ -44,7 +45,6 @@ public class Pause : MonoBehaviour
             GameManager.gm.HideCountdownScreen();   
         }
         EventSystem.current.SetSelectedGameObject(pauseSelectedBut);
-        Time.timeScale = 0;
     }
         
     public void ResumeGame()
@@ -55,7 +55,8 @@ public class Pause : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "MainScene")
         {
             hudMenu.SetActive(true);
-            if (GameManager.gm.initialCountingDown)
+            Debug.Log($"Pause.ResumeGame() - initialCountingDown = {GameManager.gm.initialCountingDown}");
+            if (GameManager.gm.initialCountingDown && GameManager.gm.gameInit)
                 GameManager.gm.DisplayCountdownScreen();
         }
  

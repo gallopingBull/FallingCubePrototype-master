@@ -13,9 +13,10 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public GameObject Player;
 
-    public bool isTesting = false;
+    public bool isDebug = false;
 
     [Header("Game Session Variables")]
+    public bool gameInit;
     public bool gameCompleted;
     private bool gameWon;
     private bool isDoorOpen;
@@ -80,6 +81,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        gameInit = false;
         cubeManager = FindObjectOfType<CubeManager>();
         // Assume in main menu scene if cube manager not present
         if (cubeManager == null)
@@ -95,15 +97,18 @@ public class GameManager : MonoBehaviour
         cameraTarget = GameObject.Find("MainCameraTarget");
 
         Player.SetActive(false);
-        //SpawnPlayer();
+        gameInit = true;
 
-        if (!isTesting)
-            Invoke("InitialCountdownTimerCaller", 1f);
-        else if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
+        // Skip initial countdown in debug mode.
+        if (isDebug)
         {
-            InitalTimerPanel.SetActive(false);
+            if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
+                InitalTimerPanel.SetActive(false);
             StartGame();
         }
+        else
+            InitialCountdownTimerCaller();
+
     }
 
     private void OnDestroy()
@@ -170,7 +175,7 @@ public class GameManager : MonoBehaviour
 
     public void AddPoints(int qty, int multiplier)
     {
-        if (Score < MAXScore && !isTesting)
+        if (Score < MAXScore && !isDebug)
         {
             Score += (qty * multiplier);
             ScoreText.text = Score.ToString();
@@ -193,6 +198,10 @@ public class GameManager : MonoBehaviour
 
         for (int i = maxInitialCountdownTime; i >= 0; i--)
         {
+            if (!InitalTimerPanel)
+            {
+                continue;
+            }
             yield return new WaitForSeconds(1f);
             if (initialCountdownTime > 0)
             {
@@ -215,6 +224,7 @@ public class GameManager : MonoBehaviour
             }
         }
         initialCountingDown = false; // Keeping this in case initialCountdownTime never reaches zero
+        Debug.Log($"EOS initialCountingDown = {initialCountingDown}");
         StopCoroutine("InitialCountdownTimer");
     }
 
@@ -223,7 +233,7 @@ public class GameManager : MonoBehaviour
         if (!Player.activeInHierarchy)
             SpawnPlayer();
 
-        if (!isTesting)
+        if (!isDebug)
         {
             if (countingDown)
                 StopCoroutine("Timer");
