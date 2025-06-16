@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -202,18 +202,19 @@ public class GameManager : MonoBehaviour
 
             if (initialCountdownTime == 0)
             {
-                //StartGame();
                 initialTimerText.transform.gameObject.SetActive(false);
                 beginGameText.transform.gameObject.SetActive(true);
+
                 yield return new WaitForSeconds(.75f);
-                InitalTimerPanel.gameObject.SetActive(false);
+                InitalTimerPanel.SetActive(false);
                 GameHudPanel.SetActive(true);
-                yield return new WaitForSeconds(1.5f);
                 initialCountingDown = false;
+                yield return new WaitForSeconds(.1f);
                 StartGame();
                 break;
             }
         }
+        initialCountingDown = false; // Keeping this in case initialCountdownTime never reaches zero
         StopCoroutine("InitialCountdownTimer");
     }
 
