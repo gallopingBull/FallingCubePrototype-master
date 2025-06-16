@@ -563,19 +563,19 @@ public class CubeBehavior : MonoBehaviour
         if (!GameManager.gm)
             return 0;
         float tmpSpeed;
-        if (GameManager.gm.CountdownTime > 67.5)
+        if (GameManager.gm.currentCountdownTime > 67.5)
         {
             tmpSpeed = 4f;
         }
-        else if (GameManager.gm.CountdownTime > 45)
+        else if (GameManager.gm.currentCountdownTime > 45)
         {
             tmpSpeed = 3.5f;
         }
-        else if (GameManager.gm.CountdownTime > 45)
+        else if (GameManager.gm.currentCountdownTime > 45)
         {
             tmpSpeed = 3.0f;
         }
-        else if (GameManager.gm.CountdownTime > 22.5)
+        else if (GameManager.gm.currentCountdownTime > 22.5)
         {
             tmpSpeed = 2.5f;
         }

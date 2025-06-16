@@ -661,7 +661,9 @@ namespace Invector.vCharacterController.vActions
 
         protected virtual void OnAnimatorMove()
         {
-            if (TP_Input.enabled) return;
+            // Cusom fix for null error that can occur during initialization.
+            // TODO: Extend this class and override this method to include fix.
+            if (TP_Input == null || TP_Input.enabled) return;
 
             climbEnterGrounded = (TP_Input.cc.animator.GetCurrentAnimatorStateInfo(0).IsName(animatorStateHierarchy + ".EnterClimbGrounded"));
             climbEnterAir = (TP_Input.cc.animator.GetCurrentAnimatorStateInfo(0).IsName(animatorStateHierarchy + ".EnterClimbAir"));
