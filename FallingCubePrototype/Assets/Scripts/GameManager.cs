@@ -88,10 +88,10 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("GameManager.Start()");
         gameInit = false;
-        cubeManager = FindObjectOfType<CubeManager>();
 
-        // Assume null in main menu scene if cube manager not present
-        if (cubeManager == null)
+        // Assume null in main menu scene. Cube manager will not be present.
+        cubeManager = FindObjectOfType<CubeManager>();
+        if (cubeManager == null) 
         {
             Debug.Log("cameraTarget is null");
             return;
@@ -126,6 +126,11 @@ public class GameManager : MonoBehaviour
             }
             else
                 InitialCountdownTimerCaller();
+        }
+        else if (SceneManager.GetActiveScene().name == "PlaygroundScene")
+        {
+            InitUI();
+            InitalTimerPanel.SetActive(false);
         }
     }
 
