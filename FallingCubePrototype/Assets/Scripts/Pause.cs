@@ -41,7 +41,6 @@ public class Pause : MonoBehaviour
         else
         {
             _instance = this;
-            DontDestroyOnLoad(gameObject);
         }
     }
 

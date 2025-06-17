@@ -63,14 +63,10 @@ public class GameManager : MonoBehaviour
     private AerialCubeSpawner? aerialCubeSpawner;
     private Pause pause;
 
-
-
-    [SerializeField]
+    [HideInInspector]
     public GameObject GameHudPanel;
-    [SerializeField]
-    private GameObject GameWonPanel;
-    [SerializeField]
-    private GameObject GameFailedPanel;
+    GameObject GameWonPanel;
+    GameObject GameFailedPanel;
 
     static public Action OnGameBegin { get; set; }
     #endregion
@@ -79,13 +75,22 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        gm = this;
+        if (gm != null && gm != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            gm = this;
+        }
     }
 
     private void Start()
     {
+        Debug.Log("GameManager.Start()");
         gameInit = false;
         cubeManager = FindObjectOfType<CubeManager>();
+
         // Assume null in main menu scene if cube manager not present
         if (cubeManager == null)
         {
@@ -100,31 +105,47 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Pause.Instance.onPause += HideCountdownScreen;
-        Pause.Instance.onPause += HideHUD;
-
-        Pause.Instance.onResume += DisplayCountdownScreen;
-        Pause.Instance.onResume += DisplayHUD;
-
-        aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
-        ArenaGenerator.OnFloorComplete += StartGame;
-
-        Player = GameObject.FindGameObjectWithTag("Player");
-        cameraTarget = GameObject.Find("MainCameraTarget");
-
-        Player.SetActive(false);
-        gameInit = true;
-
-        // Skip initial countdown in debug mode.
-        if (isDebug)
+        if (SceneManager.GetActiveScene().name == "MainScene")
         {
-            if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
-                InitalTimerPanel.SetActive(false);
-            StartGame();
-        }
-        else
-            InitialCountdownTimerCaller();
 
+            Pause.Instance.onPause += HideCountdownScreen;
+            Pause.Instance.onPause += HideHUD;
+
+            Pause.Instance.onResume += DisplayCountdownScreen;
+            Pause.Instance.onResume += DisplayHUD;
+
+            aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
+            ArenaGenerator.OnFloorComplete += StartGame;
+
+            InitalTimerPanel = GameObject.Find("Panel_StartGameCountDown");
+
+            countdownText = GameObject.Find("TimerValueText").GetComponent<TMP_Text>();
+            ScoreText = GameObject.Find("ScoreValueText").GetComponent<TMP_Text>();
+
+
+            GameWonPanel = GameObject.Find("Panel_GameWon");
+            GameWonPanel.SetActive(false);
+            GameFailedPanel = GameObject.Find("Panel_GameFailed_OutOfTime");
+            GameFailedPanel.SetActive(false);
+            GameHudPanel = GameObject.Find("Panel_HUD");
+            GameHudPanel.SetActive(false);
+
+            Player = GameObject.FindGameObjectWithTag("Player");
+            cameraTarget = GameObject.Find("MainCameraTarget");
+
+            Player.SetActive(false);
+            gameInit = true;
+
+            // Skip initial countdown in debug mode.
+            if (isDebug)
+            {
+                if (InitalTimerPanel != null && InitalTimerPanel.activeInHierarchy)
+                    InitalTimerPanel.SetActive(false);
+                StartGame();
+            }
+            else
+                InitialCountdownTimerCaller();
+        }
     }
 
     // Update is called once per frame
