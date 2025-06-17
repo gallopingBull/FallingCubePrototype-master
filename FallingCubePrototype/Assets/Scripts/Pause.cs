@@ -46,15 +46,22 @@ public class Pause : MonoBehaviour
 
     private void Start()
     {
+        // Ensure UI objects exists
         pauseMenu = GameObject.Find("Panel_PauseMenu");
+        if (pauseMenu == null) 
+        { 
+            Debug.LogWarning("Panel_PauseMenu not found!");
+            return;
+        } 
+
         pauseSelectedBut = GameObject.Find("ButtonReturnToGame");
+        if (pauseSelectedBut == null)
+        { 
+            Debug.LogWarning("ButtonReturnToGame not found!");
+            return;
+        }
 
         pauseMenu.SetActive(false); 
-
-        // Debugging if objects are not found
-        if (pauseMenu == null) Debug.LogError("Panel_PauseMenu not found!");
-        if (pauseSelectedBut == null) Debug.LogError("ButtonReturnToGame not found!");
-
     }
 
     private void Update()
