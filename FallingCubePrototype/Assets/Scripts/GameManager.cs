@@ -107,28 +107,10 @@ public class GameManager : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name == "MainScene")
         {
-
-            Pause.Instance.onPause += HideCountdownScreen;
-            Pause.Instance.onPause += HideHUD;
-
-            Pause.Instance.onResume += DisplayCountdownScreen;
-            Pause.Instance.onResume += DisplayHUD;
-
             aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
             ArenaGenerator.OnFloorComplete += StartGame;
 
-            InitalTimerPanel = GameObject.Find("Panel_StartGameCountDown");
-
-            countdownText = GameObject.Find("TimerValueText").GetComponent<TMP_Text>();
-            ScoreText = GameObject.Find("ScoreValueText").GetComponent<TMP_Text>();
-
-
-            GameWonPanel = GameObject.Find("Panel_GameWon");
-            GameWonPanel.SetActive(false);
-            GameFailedPanel = GameObject.Find("Panel_GameFailed_OutOfTime");
-            GameFailedPanel.SetActive(false);
-            GameHudPanel = GameObject.Find("Panel_HUD");
-            GameHudPanel.SetActive(false);
+            InitUI();
 
             Player = GameObject.FindGameObjectWithTag("Player");
             cameraTarget = GameObject.Find("MainCameraTarget");
@@ -274,6 +256,30 @@ public class GameManager : MonoBehaviour
         }
         Debug.Log("Game has begun!");
         OnGameBegin?.Invoke();
+    }
+
+    private void InitUI()
+    {
+        Pause.Instance.onPause += HideCountdownScreen;
+        Pause.Instance.onPause += HideHUD;
+
+        Pause.Instance.onResume += DisplayCountdownScreen;
+        Pause.Instance.onResume += DisplayHUD;
+
+        InitalTimerPanel = GameObject.Find("Panel_StartGameCountDown");
+        initialTimerText = GameObject.Find("InitialCountdownTextValue").GetComponent<TMP_Text>();
+        beginGameText = GameObject.Find("BeginText").GetComponent<TMP_Text>();
+        beginGameText.gameObject.SetActive(false);
+        countdownText = GameObject.Find("TimerValueText").GetComponent<TMP_Text>();
+        ScoreText = GameObject.Find("ScoreValueText").GetComponent<TMP_Text>();
+
+
+        GameWonPanel = GameObject.Find("Panel_GameWon");
+        GameWonPanel.SetActive(false);
+        GameFailedPanel = GameObject.Find("Panel_GameFailed_OutOfTime");
+        GameFailedPanel.SetActive(false);
+        GameHudPanel = GameObject.Find("Panel_HUD");
+        GameHudPanel.SetActive(false);
     }
 
     IEnumerator Timer()
