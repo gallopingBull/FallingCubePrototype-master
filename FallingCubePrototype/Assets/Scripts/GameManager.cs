@@ -277,7 +277,7 @@ public class GameManager : MonoBehaviour
         ScoreText = GameObject.Find("ScoreValueText").GetComponent<TMP_Text>();
 
 
-        GameWonPanel = GameObject.Find("Panel_GameWon");
+        GameWonPanel = GameObject.Find("GameWonPanel");
         GameWonPanel.SetActive(false);
         GameFailedPanel = GameObject.Find("Panel_GameFailed_OutOfTime");
         GameFailedPanel.SetActive(false);
