@@ -7584,7 +7584,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5773107835207466813, guid: e22049b02b552f145bb1bdf91de94e73, type: 3}
       propertyPath: m_Name
-      value: GameFailedPanel_TimerEnded
+      value: Panel_GameFailed_OutOfTime
       objectReference: {fileID: 0}
     - target: {fileID: 5773107835207466813, guid: e22049b02b552f145bb1bdf91de94e73, type: 3}
       propertyPath: m_IsActive

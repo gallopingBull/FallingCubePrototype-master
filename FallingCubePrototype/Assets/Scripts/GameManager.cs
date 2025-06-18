@@ -279,7 +279,7 @@ public class GameManager : MonoBehaviour
 
         GameWonPanel = GameObject.Find("GameWonPanel");
         GameWonPanel.SetActive(false);
-        GameFailedPanel = GameObject.Find("GameFailedPanel_TimerEnded");
+        GameFailedPanel = GameObject.Find("Panel_GameFailed_OutOfTime");
         GameFailedPanel.SetActive(false);
         HUDPanel = GameObject.Find("HUDPanel");
         HUDPanel.SetActive(false);
