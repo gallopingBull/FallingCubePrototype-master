@@ -269,7 +269,7 @@ public class GameManager : MonoBehaviour
         Pause.Instance.onResume += DisplayCountdownScreen;
         Pause.Instance.onResume += DisplayHUD;
 
-        InitalTimerPanel = GameObject.Find("Panel_StartGameCountDown");
+        InitalTimerPanel = GameObject.Find("InitialCountDownPanel");
         initialTimerText = GameObject.Find("InitialCountdownTextValue").GetComponent<TMP_Text>();
         beginGameText = GameObject.Find("BeginText").GetComponent<TMP_Text>();
         beginGameText.gameObject.SetActive(false);

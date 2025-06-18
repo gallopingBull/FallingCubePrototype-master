@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3516458805099378917
 RectTransform:
   m_ObjectHideFlags: 0
@@ -146,7 +146,7 @@ GameObject:
   - component: {fileID: 8079071146328967390}
   - component: {fileID: 8079071146328967391}
   m_Layer: 5
-  m_Name: Panel_StartGameCountDown
+  m_Name: InitialCountDownPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

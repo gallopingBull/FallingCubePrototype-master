@@ -7081,10 +7081,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1548092022}
     m_Modifications:
-    - target: {fileID: 3516458805099378918, guid: 97778199491d8154da839542729a477d, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8079071146328967376, guid: 97778199491d8154da839542729a477d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -7171,7 +7167,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8079071146328967377, guid: 97778199491d8154da839542729a477d, type: 3}
       propertyPath: m_Name
-      value: Panel_StartGameCountDown
+      value: InitialCountDownPanel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97778199491d8154da839542729a477d, type: 3}
