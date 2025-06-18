@@ -54,10 +54,11 @@ public class Pause : MonoBehaviour
             return;
         } 
 
-        pauseSelectedBut = GameObject.Find("ButtonReturnToGame");
+        // Default selected button when pause menu first displayed
+        pauseSelectedBut = GameObject.Find("ReturnButton"); 
         if (pauseSelectedBut == null)
         { 
-            Debug.LogWarning("ButtonReturnToGame not found!");
+            Debug.LogWarning("ReturnButton not found!");
             return;
         }
 

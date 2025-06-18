@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 1748748646711112145}
   - component: {fileID: 1748748646711112143}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: ButtonsPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 4206901436609113324}
   - component: {fileID: 5892183401349037204}
   m_Layer: 5
-  m_Name: ButtonOptions
+  m_Name: OptionsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -285,7 +285,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.38679248, g: 0.38679248, b: 0.38679248, a: 0.6862745}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.3882353, g: 0.3882353, b: 0.3882353, a: 0.6862745}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -299,7 +299,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 7250679153626493109}
   m_OnClick:
     m_PersistentCalls:
@@ -602,9 +602,8 @@ GameObject:
   - component: {fileID: 72333951140861111}
   - component: {fileID: 8437599366452123084}
   - component: {fileID: 7792180983850703656}
-  - component: {fileID: 5892183400672051011}
   m_Layer: 5
-  m_Name: ButtonReturnToGame
+  m_Name: ReturnButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -760,35 +759,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &5892183400672051011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4628021931667745746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 9
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: Play
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!1 &5427504937766804706
 GameObject:
   m_ObjectHideFlags: 0
@@ -1339,7 +1309,7 @@ GameObject:
   - component: {fileID: 8006447994917152453}
   - component: {fileID: 5892183400313935825}
   m_Layer: 5
-  m_Name: ButtonLeaderboard
+  m_Name: LeaderboardButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1502,7 +1472,7 @@ GameObject:
   - component: {fileID: 5438557716321411666}
   - component: {fileID: 5892183399816686002}
   m_Layer: 5
-  m_Name: ButtonReturnToMainMenu
+  m_Name: ExitToMainMenuButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
