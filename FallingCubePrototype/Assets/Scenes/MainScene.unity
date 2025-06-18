@@ -597,17 +597,12 @@ MonoBehaviour:
   gameCompleted: 0
   MAXScore: 50
   Score: 0
-  ScoreText: {fileID: 0}
   initialCountingDown: 0
   initialCountdownTime: 0
-  InitalTimerPanel: {fileID: 0}
-  initialTimerText: {fileID: 0}
-  beginGameText: {fileID: 0}
   TimeGameMode: 1
   countingDown: 0
   currentCountdownTime: 0
   totalGameTime: 120
-  countdownText: {fileID: 0}
   ObjectiveGate: {fileID: 0}
   GameHudPanel: {fileID: 1164696867}
 --- !u!114 &122218757
@@ -6996,7 +6991,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3160835672834570395, guid: b67ffd223a6e54848855828eb3474c3b, type: 3}
       propertyPath: m_Name
-      value: Panel_HUD
+      value: HUDPanel
       objectReference: {fileID: 0}
     - target: {fileID: 3160835672834570396, guid: b67ffd223a6e54848855828eb3474c3b, type: 3}
       propertyPath: m_Pivot.x

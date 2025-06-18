@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
     private Pause pause;
 
     [HideInInspector]
-    public GameObject GameHudPanel;
+    public GameObject HUDPanel;
     private GameObject GameWonPanel;
     private GameObject GameFailedPanel;
 
@@ -177,7 +177,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("game won!");
         GameWonPanel.SetActive(true);
         Debug.Log(GameWonPanel.activeSelf);
-        GameHudPanel.SetActive(false);
+        HUDPanel.SetActive(false);
         gameWon = true;
         gameCompleted = true;
     }
@@ -186,7 +186,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("game failed!");
         GameFailedPanel.SetActive(true);
-        GameHudPanel.SetActive(false);
+        HUDPanel.SetActive(false);
         gameCompleted = true;
     }
 
@@ -234,7 +234,7 @@ public class GameManager : MonoBehaviour
 
                 yield return new WaitForSeconds(.75f);
                 InitalTimerPanel.SetActive(false);
-                GameHudPanel.SetActive(true);
+                HUDPanel.SetActive(true);
                 initialCountingDown = false;
                 yield return new WaitForSeconds(.1f);
                 StartGame();
@@ -281,8 +281,8 @@ public class GameManager : MonoBehaviour
         GameWonPanel.SetActive(false);
         GameFailedPanel = GameObject.Find("Panel_GameFailed_OutOfTime");
         GameFailedPanel.SetActive(false);
-        GameHudPanel = GameObject.Find("Panel_HUD");
-        GameHudPanel.SetActive(false);
+        HUDPanel = GameObject.Find("HUDPanel");
+        HUDPanel.SetActive(false);
     }
 
     IEnumerator Timer()
@@ -365,14 +365,14 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("DisplayHUD");
         if (SceneManager.GetActiveScene().name == "MainScene")
-            GameHudPanel.SetActive(true);
+            HUDPanel.SetActive(true);
     }
 
     private void HideHUD()
     {
         Debug.Log("HideHUD");
         if (SceneManager.GetActiveScene().name == "MainScene")
-            GameHudPanel.SetActive(false);
+            HUDPanel.SetActive(false);
     }
 
     public void DisplayCountdownScreen() 
