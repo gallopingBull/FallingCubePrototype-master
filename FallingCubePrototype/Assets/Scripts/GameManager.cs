@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     private int MAXScore = 3;
     [HideInInspector]
     public int Score;
-    public TMP_Text ScoreText;
+    private TMP_Text ScoreText;
 
 
     // Variables for initial countdown prior to game start.
@@ -36,10 +36,9 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public float initialCountdownTime;
     private int maxInitialCountdownTime;
-    [SerializeField]
     private GameObject InitalTimerPanel;
-    public TMP_Text initialTimerText;
-    public TMP_Text beginGameText;
+    private TMP_Text initialTimerText;
+    private TMP_Text beginGameText;
 
     // Variables for main countdown during a game session.
     [Header("Main Countdown Variables")]
@@ -49,7 +48,7 @@ public class GameManager : MonoBehaviour
     public bool countingDown = false;
     public int currentCountdownTime = 0; // Time passed during the game session.
     public int totalGameTime = 30; // Total time allowed for the game session.
-    public TMP_Text countdownText; // Displays the remaining time in the game.
+    private TMP_Text countdownText; // Displays the remaining time in the game.
 
     //[Header("Cube Management Variables")]
     // cube reference stuff
@@ -64,8 +63,8 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector]
     public GameObject GameHudPanel;
-    GameObject GameWonPanel;
-    GameObject GameFailedPanel;
+    private GameObject GameWonPanel;
+    private GameObject GameFailedPanel;
 
     static public Action OnGameBegin { get; set; }
     #endregion
