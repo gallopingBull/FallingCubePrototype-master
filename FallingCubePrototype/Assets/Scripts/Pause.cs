@@ -24,7 +24,6 @@ public class Pause : MonoBehaviour
         }
     }
 
-    // State variables
     public bool isPaused;
     private GameObject pauseMenu;
     private GameObject pauseSelectedBut; // reference to first button that should be selected.
@@ -62,6 +61,7 @@ public class Pause : MonoBehaviour
             Debug.LogWarning("ReturnButton not found!");
             return;
         }
+
         pauseSelectedBut.GetComponent<Button>().onClick.AddListener(ResumeGame); 
         pauseMenu.SetActive(false); 
     }
@@ -105,12 +105,12 @@ public class Pause : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    public void OnDestroy()
-    {
-        pauseSelectedBut.GetComponent<Button>().onClick.RemoveAllListeners();
-        //onPause -= PauseGame;
-        //onResume -= ResumeGame;
-    }
+    //public void OnDestroy()
+    //{
+    //    //pauseSelectedBut.GetComponent<Button>().onClick.RemoveAllListeners();
+    //    onPause -= PauseGame;
+    //    onResume -= ResumeGame;
+    //}
 }
 
 
