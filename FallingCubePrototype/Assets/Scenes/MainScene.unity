@@ -6888,7 +6888,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5773107835207466813, guid: e22049b02b552f145bb1bdf91de94e73, type: 3}
       propertyPath: m_Name
-      value: Panel_GameFailed_Died
+      value: GameFailedPanel_Died
       objectReference: {fileID: 0}
     - target: {fileID: 5773107835207466813, guid: e22049b02b552f145bb1bdf91de94e73, type: 3}
       propertyPath: m_IsActive
@@ -7733,11 +7733,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7519443225260062575, guid: 9ae10194cd3184a40a481b4341c1d83d, type: 3}
       propertyPath: m_Name
-      value: Panel_PauseMenu
-      objectReference: {fileID: 0}
-    - target: {fileID: 7519443225260062575, guid: 9ae10194cd3184a40a481b4341c1d83d, type: 3}
-      propertyPath: m_IsActive
-      value: 1
+      value: PauseMenuPanel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ae10194cd3184a40a481b4341c1d83d, type: 3}
