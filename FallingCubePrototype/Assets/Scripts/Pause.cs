@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Pause : MonoBehaviour
 {
@@ -28,9 +29,9 @@ public class Pause : MonoBehaviour
     private GameObject pauseMenu;
     private GameObject pauseSelectedBut; // reference to first button that should be selected.
 
-    // Events for pausing/resuming
-    public event Action onPause;
-    public event Action onResume;
+    // Actions for pausing/resuming
+    public Action onPause;
+    public Action onResume;
 
     private void Awake()
     {
@@ -61,7 +62,7 @@ public class Pause : MonoBehaviour
             Debug.LogWarning("ReturnButton not found!");
             return;
         }
-
+        pauseSelectedBut.GetComponent<Button>().onClick.AddListener(ResumeGame); 
         pauseMenu.SetActive(false); 
     }
 
@@ -104,11 +105,12 @@ public class Pause : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    //public void OnDestroy()
-    //{
-    //    onPause -= PauseGame;
-    //    onResume -= ResumeGame;
-    //}
+    public void OnDestroy()
+    {
+        pauseSelectedBut.GetComponent<Button>().onClick.RemoveAllListeners();
+        //onPause -= PauseGame;
+        //onResume -= ResumeGame;
+    }
 }
 
 
