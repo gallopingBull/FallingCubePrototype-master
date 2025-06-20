@@ -136,9 +136,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Back"))
-            GetComponent<LoadScene>().LoadSceneByIndex(0);
-
         if (Score >= MAXScore)
         {
             if (TimeGameMode && !gameCompleted && !gameWon)
@@ -391,6 +388,8 @@ public class GameManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "MainScene")
             InitalTimerPanel.SetActive(false);
     }
+
+    
 
     public void OnDestroy()
     {
