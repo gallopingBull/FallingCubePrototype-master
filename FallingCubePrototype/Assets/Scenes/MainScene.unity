@@ -603,6 +603,7 @@ MonoBehaviour:
   countingDown: 0
   currentCountdownTime: 0
   totalGameTime: 180
+  CubeTargets: []
   ObjectiveGate: {fileID: 0}
   HUDPanel: {fileID: 0}
 --- !u!114 &122218757
@@ -3718,11 +3719,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.size
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[4].m_Mode
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[5].m_Mode
@@ -3731,7 +3732,7 @@ PrefabInstance:
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[4].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 122218757}
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[5].m_Target
       value: 
@@ -3746,7 +3747,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[4].m_MethodName
-      value: SetActive
+      value: LoadSceneByIndex
       objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[5].m_MethodName
@@ -3754,11 +3755,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[4].m_TargetAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
+      value: LoadScene, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[5].m_TargetAssemblyTypeName
       value: Restart, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
+      propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[4].m_Arguments.m_IntArgument
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.data[4].m_Arguments.m_BoolArgument
