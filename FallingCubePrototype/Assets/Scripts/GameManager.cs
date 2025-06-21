@@ -51,8 +51,9 @@ public class GameManager : MonoBehaviour
     private TMP_Text countdownText; // Displays the remaining time in the game.
 
     //[Header("Cube Management Variables")]
-    // cube reference stuff
-    private List<GameObject> CubeTargets;
+    // cube reference stuff\
+    [HideInInspector]
+    public List<GameObject> CubeTargets;
 
     private GameObject cameraTarget; // this is the camera target for the invector 3rd person controller
     [SerializeField]

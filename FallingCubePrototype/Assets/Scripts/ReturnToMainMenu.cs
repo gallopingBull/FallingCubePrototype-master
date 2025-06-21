@@ -31,10 +31,10 @@ public class ReturnToMainMenu : MonoBehaviour
             Pause.Instance.ResumeGame();
         }
 
-        GameManager.gm.GetComponent<LoadScene>().LoadSceneByIndex(0);
+        GameManager.gm.GetComponent<LoadScene>().LoadSceneByIndex(0); // not liking how this is invoked.
     }
     private void OnDestroy()
     {
-        button.onClick.RemoveAllListeners();
+        button.onClick?.RemoveAllListeners();
     }
 }
