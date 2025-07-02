@@ -103,10 +103,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("pause is null");
             return;
         }
-
+        
+        aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
         if (SceneManager.GetActiveScene().name == "MainScene")
         {
-            aerialCubeSpawner = cubeManager.GetComponent<AerialCubeSpawner>();
             ArenaGenerator.OnFloorComplete += StartGame;
 
             InitUI();
