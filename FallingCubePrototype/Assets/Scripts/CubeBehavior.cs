@@ -12,9 +12,9 @@ public class CubeBehavior : MonoBehaviour
         falling, grounded, dragging, init
     }
 
-    //Cube Member Variables
+    // Cube Member Variables
     #region variables
-    public int id;
+    public int id; // I think it might be better to use a GUID instead.
     public States state;
     private Rigidbody rb;
     public Vector3 velocity;
@@ -22,7 +22,7 @@ public class CubeBehavior : MonoBehaviour
 
     public float colorPingPongTime = .35f;
 
-    //paritcle and trail FXs
+    // paritcle and trail FXs
     public GameObject LandingIndicator;
     public GameObject[] ExhaustTrail;
     public GameObject[] DraggingDust;
@@ -248,6 +248,9 @@ public class CubeBehavior : MonoBehaviour
                 state = _state;
                 cubeCollider.enabled = true;
                 DisableRB();
+
+                //GameManager.gm.CubeManager.CheckPositionValues();
+                //GameManager.gm.CubeManager.CheckIfColorIsNearby(id, color, );
 
                 break;
 

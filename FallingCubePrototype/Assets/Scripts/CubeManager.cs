@@ -138,6 +138,15 @@ public class CubeManager : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
+    public void CheckPositionValues(int id, Vector3 position)
+    {
+
+    }
+
+    public void CheckNearestPostionValues(List<GameObject> cubes)
+    {
+
+    }
 
     public bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color, float minDistance)
     {

@@ -68,6 +68,7 @@ public class GameManager : MonoBehaviour
     private GameObject GameFailedPanel;
 
     static public Action OnGameBegin { get; set; }
+    public CubeManager CubeManager { get => cubeManager; set => cubeManager = value; }
     #endregion
 
     #region functions

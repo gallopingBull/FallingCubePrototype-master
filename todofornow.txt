@@ -1,0 +1,25 @@
+keep delay, but also check y position of cube before grabbing. the y position of the cube and player should be the same (im assuming some whole value).
+the point is to check neither player or target cube is falling.
+
+
+in additin to what was said above. i think there needs to be further decoupling of physics responsibilites for the player and/or cube. meaning that gameobject and behaviors that rely on the layer name for either of 
+those gameobjects should be moved to their own game object. conditions that rely on the top of gameobject should have their own physics layer. 
+
+------
+- after a cube is moved or falls
+	- the cube manager should check if the cube has fallen at a transform.postition with whole numbers 
+		- if not make them whole numbers
+
+	- the cube manager should also double check adjacent cubes to verify their positions are wholen numbers	
+		- if not make them whole numbers
+	
+	- then check same adjacent cubes for near by colors 
+		- if similar, add those cuves to list to explode cube 
+
+- test pause menu and take another look at the canvas gameobject and how its setup across scenes
+	- any room for improvement or consildation, etc.
+	
+----------
+
+
+plan and break down how to manage dynamic data(unity projects, code, games, etc), static data (images, videos, etc), and os/programs/etc. across built in ssd storage and secondary storage devices (external/internall ssds) for current pc and laptop as I was thinking about today on 7/2.  	
