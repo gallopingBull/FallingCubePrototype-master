@@ -140,7 +140,25 @@ public class CubeManager : MonoBehaviour
 
     public void CheckPositionValues(int id, Vector3 position)
     {
+        if (!cubes[id])
+        {
+            Debug.LogWarning($"Cube ({id}) is not registered or is cube is null!");
+            return;
+        }
+        
+        CubeBehavior targetCube = cubes[id].GetComponent<CubeBehavior>();
 
+        //List<Transform> targetCubes = targetCube.
+
+        for (int i = 0; i < 2; i++)
+        {
+            if ((targetCube.transform.position[i] % 1) > float.Epsilon)
+            {
+                Debug.Log($"targetCube.pos.({id}) transform position values already whole!");
+                continue;
+            }
+            Mathf.Round(targetCube.transform.position[i]);
+        }
     }
 
     public void CheckNearestPostionValues(List<GameObject> cubes)
