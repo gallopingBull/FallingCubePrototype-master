@@ -16,8 +16,10 @@ public class GetAdjacentCubes : MonoBehaviour
         parent = transform.parent.parent.gameObject;
     }
 
+    // Seems to be checking adjacent cubes for similar colors to destroy
     private void OnTriggerStay(Collider other)
     {
+        // TODO: This is smelly, this code doesn't need to run if assigned neutral color
         if (cubeBehavior.color == ColorOption.Neutral)
             return;
 
@@ -34,27 +36,23 @@ public class GetAdjacentCubes : MonoBehaviour
         }
     }
 
+    // check if this cubes position are zero'd out so it can be detected
     private bool CheckPosition()
     {
-
         if (transform.parent.parent.gameObject.transform.position.x % 2 == 0 &&
-       tmp.transform.position.x % 2 == 0)
+            tmp.transform.position.x % 2 == 0)
         {
             if (transform.parent.parent.gameObject.transform.position.z % 2 == 0 &&
-            tmp.transform.position.z % 2 == 0)
+                tmp.transform.position.z % 2 == 0)
             {
                 if (!canDetect)
-                {
                     canDetect = true;
-                }
             }
         }
         else
         {
             if (canDetect)
-            {
                 canDetect = false;
-            }
         }
 
         return canDetect;
@@ -62,24 +60,12 @@ public class GetAdjacentCubes : MonoBehaviour
 
     private void DestoryAdjacentCubes()
     {
-        #region testing shit
-        /*
-        print("*************");
-        print(transform.parent.parent.gameObject.name +" pos ="+ CheckPosition());
-        print("x = " + transform.parent.parent.gameObject.transform.position.x);
-        print("z = " + transform.parent.parent.gameObject.transform.position.z);
-        print("*************");
-        */
-        #endregion
-
-        //if other block hasnt been destoryed yet
-        if (tmp == null) 
-        {
+        // if other block has been destoryed, exit
+        if (tmp == null)
             return;
-        }
 
         cubeBehavior.isDestroying = true;           
-        if (tmp.tag == "Block" /*&& cubeBehavior.isDestroying*/)
+        if (tmp.tag == "Block")
         {
             if (tmp.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
             {
@@ -91,7 +77,6 @@ public class GetAdjacentCubes : MonoBehaviour
                     return;
                 GameManager.gm.AddCubeTarget(tmp);
                 GameManager.gm.AddCubeTarget(transform.parent.parent.gameObject);
-
             }
         }
     }
