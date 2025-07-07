@@ -1,3 +1,4 @@
+using Shapes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -163,6 +164,30 @@ public class CubeManager : MonoBehaviour
 
     public void CheckNearestPostionValues(List<GameObject> cubes)
     {
+
+    }
+
+    public void DestoryAdjacentCubes(CubeBehavior targetCube, GameObject adjCube, List<CubeBehavior> targetCubes)
+    {
+        // if other block has been destoryed, exit
+        if (adjCube == null)
+            return;
+
+        targetCube.isDestroying = true;
+        if (adjCube.tag == "Block")
+        {
+            if (adjCube.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
+            {
+                //Debug.Log("\tDestroying " + tmp.name + " from " + transform.parent.parent.gameObject.name);
+
+                // check if this cube and the other cuber (tmp) are in game manager's target list
+                // if not add them in
+                if (!GameManager.gm)
+                    return;
+                GameManager.gm.AddCubeTarget(adjCube);
+                GameManager.gm.AddCubeTarget(transform.parent.parent.gameObject);
+            }
+        }
 
     }
 
