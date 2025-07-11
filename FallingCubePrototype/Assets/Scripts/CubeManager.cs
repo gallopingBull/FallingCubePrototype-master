@@ -139,7 +139,8 @@ public class CubeManager : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
-    public void CheckPositionValues(int id, Vector3 position)
+    // check a target cube position values are whole.
+    public void AjustCubePosition(int id, Vector3 position)
     {
         if (!cubes[id])
         {
@@ -149,44 +150,33 @@ public class CubeManager : MonoBehaviour
         
         CubeBehavior targetCube = cubes[id].GetComponent<CubeBehavior>();
 
-        //List<Transform> targetCubes = targetCube.
-
         for (int i = 0; i < 2; i++)
         {
+            // Check if cube's position values are whole
             if ((targetCube.transform.position[i] % 1) > float.Epsilon)
             {
                 Debug.Log($"targetCube.pos.({id}) transform position values already whole!");
                 continue;
             }
-            Mathf.Round(targetCube.transform.position[i]);
+            
+            Mathf.Round(targetCube.transform.position[i]); 
         }
     }
 
-    public void CheckNearestPostionValues(List<GameObject> cubes)
+    public void AdjustAllCubePositions()
     {
-
-    }
-
-    // this was moved over from GetAdjacentCubes.cs
-    public void DestoryAdjacentCubes(CubeBehavior targetCube, GameObject adjCube, List<CubeBehavior> targetCubes)
-    {
-        // if other block has been destoryed, exit
-        if (adjCube == null)
-            return;
-
-        targetCube.isDestroying = true;
-        if (adjCube.tag == "Block")
+        foreach (var cube in cubes)
         {
-            if (adjCube.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
+            for (int i = 0; i < 2; i++)
             {
-                //Debug.Log("\tDestroying " + tmp.name + " from " + transform.parent.parent.gameObject.name);
+                // Check if cube's position values are whole
+                if ((cube.transform.position[i] % 1) > float.Epsilon)
+                {
+                    Debug.Log($"cube.pos.({cube.GetComponent<CubeBehavior>().id}) transform position values already whole!");
+                    continue;
+                }
 
-                // check if this cube and the other cuber (tmp) are in game manager's target list
-                // if not add them in
-                if (!GameManager.gm)
-                    return;
-                GameManager.gm.AddCubeTarget(adjCube);
-                GameManager.gm.AddCubeTarget(transform.parent.parent.gameObject);
+                Mathf.Round(cube.transform.position[i]);
             }
         }
     }
@@ -214,6 +204,30 @@ public class CubeManager : MonoBehaviour
         }
         // If no cubes of the same color were found within the minimum distance, return false
         return false;
+    }
+
+    // this was moved over from GetAdjacentCubes.cs
+    public void DestoryAdjacentCubes(CubeBehavior targetCube, GameObject adjCube, List<CubeBehavior> targetCubes)
+    {
+        // if other block has been destoryed, exit
+        if (adjCube == null)
+            return;
+
+        targetCube.isDestroying = true;
+        if (adjCube.tag == "Block")
+        {
+            if (adjCube.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
+            {
+                //Debug.Log("\tDestroying " + tmp.name + " from " + transform.parent.parent.gameObject.name);
+
+                // check if this cube and the other cuber (tmp) are in game manager's target list
+                // if not add them in
+                if (!GameManager.gm)
+                    return;
+                GameManager.gm.AddCubeTarget(adjCube);
+                GameManager.gm.AddCubeTarget(transform.parent.parent.gameObject);
+            }
+        }
     }
 
     void DisplayAllSpawnDatas()
