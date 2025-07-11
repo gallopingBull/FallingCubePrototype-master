@@ -167,6 +167,7 @@ public class CubeManager : MonoBehaviour
 
     }
 
+    // this was moved over from GetAdjacentCubes.cs
     public void DestoryAdjacentCubes(CubeBehavior targetCube, GameObject adjCube, List<CubeBehavior> targetCubes)
     {
         // if other block has been destoryed, exit
@@ -188,7 +189,6 @@ public class CubeManager : MonoBehaviour
                 GameManager.gm.AddCubeTarget(transform.parent.parent.gameObject);
             }
         }
-
     }
 
     public bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color, float minDistance)

@@ -7,7 +7,7 @@ those gameobjects should be moved to their own game object. conditions that rely
 
 ------
 - after a cube is moved or falls
-	- the cube manager should check if the cube has fallen at a transform.postition with whole numbers 
+	- the target cube should call the cube manager to check if the cube has fallen at a transform.postition with whole numbers 
 		- if not make them whole numbers
 
 	- the cube manager should also double check adjacent cubes to verify their positions are wholen numbers	
