@@ -28,6 +28,8 @@ public class CubeManager : MonoBehaviour
     // TODO: the mimunum distance should be passed throuigh the method call. 
     [SerializeField] float minimumDistance = 4f;
 
+    public bool arenaGenerated = false; 
+
     [HideInInspector]
     public List<ColorOption> colorsUsed = new List<ColorOption>(); // Track colors used in the current arena generation
 
@@ -68,6 +70,7 @@ public class CubeManager : MonoBehaviour
     public void GenerateArena(int gridSizex = 6, int gridSizeZ = 6)
     {
         DestoryAllCubes();
+        arenaGenerated = false; 
         for (int x = 0; x < gridSizex; x++)
         {
             for (int z = 0; z < gridSizeZ; z++)
@@ -144,6 +147,7 @@ public class CubeManager : MonoBehaviour
                 }
             }
         }
+        arenaGenerated = true;
         OnFloorComplete?.Invoke();
     }
 
@@ -227,25 +231,29 @@ public class CubeManager : MonoBehaviour
     // this method should only be used after a cube has moved or fell.
     private void CheckAdjacentCubesForColor(CubeBehavior cube)
     {
+        Debug.Log($"Stepping into CheckAdjacentCubesForColor({cube.id})");
+
         if (cube.color == ColorOption.Neutral)
             return;
         
         var adjCubes = directions.Select(dir => cube.transform.position + dir);
 
+        // TODO: FIX THIS: invalid exception error
         List<GameObject> matchingColors = (List<GameObject>)cubes.
             Where(target => 
             adjCubes.Contains(target.transform.position) && 
             target.GetComponent<CubeBehavior>().color == cube.color && 
             !cube.isDestroying);
-        
-        
-            
-        
+
         foreach (var c in matchingColors)
         {
+            Debug.Log($"{c.GetComponent<CubeBehavior>().id} in matchingColors ");
 
+            if (!GameManager.gm)
+                return;
+            GameManager.gm.AddCubeTarget(c);
         }
-        
+
         //if (other.GetComponentInParent<CubeBehavior>().color == cubeBehavior.color &&
         //    !cubeBehavior.isDestroying)
         //{
@@ -256,8 +264,10 @@ public class CubeManager : MonoBehaviour
         //        DestoryAdjacentCubes();
         //    }
         //}
+        Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cube.id})");
+
     }
-    
+
     // this mostly used to prevent spawning similar colors next to each other in arenas.
     public bool CheckIfColorIsNearByDistance(int id, Vector3 position, ColorOption color, float minDistance)
     {

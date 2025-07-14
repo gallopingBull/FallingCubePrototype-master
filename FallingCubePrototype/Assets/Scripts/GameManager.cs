@@ -323,7 +323,7 @@ public class GameManager : MonoBehaviour
         Invoke("DestoryCubeTargets", .15f);
         //DestoryCubeTargets();
     }
-    public void AddCubeTargets(List<GameObject> targets)
+    public void AddCubeTargets(GameObject target)
     {
         // prevent cube meshes to be added as a cube target
         if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
