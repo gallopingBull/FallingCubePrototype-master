@@ -249,8 +249,7 @@ public class CubeBehavior : MonoBehaviour
                 cubeCollider.enabled = true;
                 DisableRB();
 
-                //GameManager.gm.CubeManager.CheckPositionValues();
-                //GameManager.gm.CubeManager.CheckIfColorIsNearby(id, color, );
+                //GameManager.gm.CubeManager.FinalizeCubePositioning(gameObject);
 
                 break;
 

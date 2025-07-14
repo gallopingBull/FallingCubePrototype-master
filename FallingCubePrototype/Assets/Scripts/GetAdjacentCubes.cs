@@ -36,7 +36,8 @@ public class GetAdjacentCubes : MonoBehaviour
         }
     }
 
-    // check if this cubes position are zero'd out so it can be detected
+    // check if this cubes position are zero'd out
+    // so it can be flagged as detectable
     private bool CheckPosition()
     {
         if (transform.parent.parent.gameObject.transform.position.x % 2 == 0 &&

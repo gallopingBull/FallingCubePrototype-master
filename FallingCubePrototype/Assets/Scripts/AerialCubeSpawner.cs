@@ -161,7 +161,7 @@ public class AerialCubeSpawner : MonoBehaviour
 
         if (color != ColorOption.Neutral)
         {
-            while ((cubeManager.CheckIfColorIsNearby(id, cubePosition, color, minimumDistance) || cubeManager.colorsUsed.Contains(color)) && attempts < maxAttempts)
+            while ((cubeManager.CheckIfColorIsNearByDistance(id, cubePosition, color, minimumDistance) || cubeManager.colorsUsed.Contains(color)) && attempts < maxAttempts)
             {
                 //Debug.Log($"Color {color} is nearby or already used, trying again...");
                 color = (ColorOption)UnityEngine.Random.Range(0, 4);

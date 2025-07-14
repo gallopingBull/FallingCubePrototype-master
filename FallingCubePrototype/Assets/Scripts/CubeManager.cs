@@ -2,6 +2,7 @@ using Shapes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CubeManager : MonoBehaviour
@@ -31,6 +32,13 @@ public class CubeManager : MonoBehaviour
     public List<ColorOption> colorsUsed = new List<ColorOption>(); // Track colors used in the current arena generation
 
     static public Action OnFloorComplete { get; set; }
+
+    static private List<Vector3> directions = new List<Vector3>
+    {
+        Vector3.forward, Vector3.back,
+        Vector3.right,  Vector3.left,
+        Vector3.up, Vector3.down
+    }; 
 
     private void Awake()
     {
@@ -78,7 +86,7 @@ public class CubeManager : MonoBehaviour
 
                 if (color != ColorOption.Neutral)
                 {
-                    while ((CheckIfColorIsNearby(id, cubePosition, color, minimumDistance) || colorsUsed.Contains(color)) && attempts < maxAttempts)
+                    while ((CheckIfColorIsNearByDistance(id, cubePosition, color, minimumDistance) || colorsUsed.Contains(color)) && attempts < maxAttempts)
                     {
                         color = (ColorOption)UnityEngine.Random.Range(0, 4);
                         attempts++;
@@ -139,15 +147,50 @@ public class CubeManager : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
-    // check a target cube position values are whole.
-    public void AjustCubePosition(int id, Vector3 position)
+    public void SpawnCube(SpawnData data)
+    {
+        spawnDatas.Add(data);
+        var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
+        cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
+        cubes.Add(cube);
+    }
+
+    // This adds a delay between spawning cubes, which is nice for debugging and looks cool.
+    private IEnumerator SpawnCubesWithDelay()
+    {
+        foreach (SpawnData data in spawnDatas)
+        {
+            yield return new WaitForSeconds(spawnDelay);
+            var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
+            cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
+            cubes.Add(cube);
+        }
+
+        // organize cubes list by id
+        cubes.Sort((x, y) => x.GetComponent<CubeBehavior>().id.CompareTo(y.GetComponent<CubeBehavior>().id));
+        Debug.Log($"{GetTotalCubeCount()} cubes spawned");
+    }
+
+    public void FinalizeCubePositioning(GameObject cube) 
+    {
+        if (cube == null)
+        {
+            Debug.LogWarning("cube is null!");
+            return;
+        }
+        int id = cube.GetComponent<CubeBehavior>().id;
+        AdjustCubePosition(id, cube.transform.position);
+        CheckAdjacentCubesForColor(cube.GetComponent<CubeBehavior>());
+    }
+   
+    private void AdjustCubePosition(int id, Vector3 position)
     {
         if (!cubes[id])
         {
             Debug.LogWarning($"Cube ({id}) is not registered or is cube is null!");
             return;
         }
-        
+
         CubeBehavior targetCube = cubes[id].GetComponent<CubeBehavior>();
 
         for (int i = 0; i < 2; i++)
@@ -158,12 +201,12 @@ public class CubeManager : MonoBehaviour
                 Debug.Log($"targetCube.pos.({id}) transform position values already whole!");
                 continue;
             }
-            
-            Mathf.Round(targetCube.transform.position[i]); 
+
+            Mathf.Round(targetCube.transform.position[i]);
         }
     }
 
-    public void AdjustAllCubePositions()
+    private void AdjustAllCubePositions()
     {
         foreach (var cube in cubes)
         {
@@ -181,29 +224,73 @@ public class CubeManager : MonoBehaviour
         }
     }
 
-    public bool CheckIfColorIsNearby(int id, Vector3 position, ColorOption color, float minDistance)
+    // this method should only be used after a cube has moved or fell.
+    private void CheckAdjacentCubesForColor(CubeBehavior cube)
+    {
+        if (cube.color == ColorOption.Neutral)
+            return;
+        
+        var adjCubes = directions.Select(dir => cube.transform.position + dir);
+
+        List<GameObject> matchingColors = (List<GameObject>)cubes.
+            Where(target => 
+            adjCubes.Contains(target.transform.position) && 
+            target.GetComponent<CubeBehavior>().color == cube.color && 
+            !cube.isDestroying);
+        
+        
+            
+        
+        foreach (var c in matchingColors)
+        {
+
+        }
+        
+        //if (other.GetComponentInParent<CubeBehavior>().color == cubeBehavior.color &&
+        //    !cubeBehavior.isDestroying)
+        //{
+        //    //Debug.Log($"this object ({transform.parent.parent.name}) || other.transform.name: {other.transform.parent.name}");
+        //    tmp = other.transform.parent.gameObject;
+        //    if (cubeBehavior.state == CubeBehavior.States.grounded && CheckPosition())
+        //    {
+        //        DestoryAdjacentCubes();
+        //    }
+        //}
+    }
+    
+    // this mostly used to prevent spawning similar colors next to each other in arenas.
+    public bool CheckIfColorIsNearByDistance(int id, Vector3 position, ColorOption color, float minDistance)
     {
         if (SpawnDatas.Count == 0)
             return false;
         //Debug.Log($"checking if cube({id}) has a similar color({color}) near its position: /n/t{position} ");
 
-        // Check each cube
         foreach (var cube in cubes)
         {
             if (cube == null)
                 continue;
 
-            // Calculate the distance between the current cube and the target position
             float distance = Vector3.Distance(position, cube.transform.position);
 
-            // If a cube of the same color exists within the minimum distance, return true
             if (distance < minDistance && cube.GetComponent<CubeBehavior>().color == color)
-            {
                 return true;
-            }
+
         }
-        // If no cubes of the same color were found within the minimum distance, return false
+
         return false;
+    }
+
+    void DisplayAllSpawnDatas()
+    {
+        foreach (SpawnData data in spawnDatas)
+        {
+            Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
+        }
+    }
+
+    private int GetTotalCubeCount()
+    {
+        return cubes.Count;
     }
 
     // this was moved over from GetAdjacentCubes.cs
@@ -230,48 +317,6 @@ public class CubeManager : MonoBehaviour
         }
     }
 
-    void DisplayAllSpawnDatas()
-    {
-        foreach (SpawnData data in spawnDatas)
-        {
-            Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
-        }
-    }
-
-    private void OnDestroy()
-    {
-        //OnFloorComplete -= DisplayAllSpawnDatas;
-    }
-
-    public void SpawnCube(SpawnData data)
-    {
-        spawnDatas.Add(data);
-        var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
-        cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
-        cubes.Add(cube);
-    }
-
-    // This adds a delay between spawning cubes, which is nice for debugging and looks cool.
-    private IEnumerator SpawnCubesWithDelay()
-    {
-        foreach (SpawnData data in spawnDatas)
-        {
-            yield return new WaitForSeconds(spawnDelay);
-            var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
-            cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
-            cubes.Add(cube);
-        }
-
-        // organize cubes list by id
-        cubes.Sort((x, y) => x.GetComponent<CubeBehavior>().id.CompareTo(y.GetComponent<CubeBehavior>().id));
-        Debug.Log($"{GetTotalCubeCount()} cubes spawned");
-    }
-
-    private int GetTotalCubeCount()
-    {
-        return cubes.Count;
-    }
-
     public void DestoryAllCubes()
     {
         if (cubes.Count == 0)
@@ -287,6 +332,11 @@ public class CubeManager : MonoBehaviour
         spawnDatas.Clear();
         //cubes = new List<GameObject>();
         Debug.Log("post destory - cubes.Count: " + cubes.Count);
+    }
+
+    private void OnDestroy()
+    {
+        //OnFloorComplete -= DisplayAllSpawnDatas;
     }
 }
 

@@ -49,7 +49,7 @@ public class MoveCubeMechanic : vPushActionController
     float[] downwardRayDistances = new float[3];
     Vector3[] downwardPosition = new Vector3[3];
 
-    Vector3[] directions;
+    Vector3[] localDirections;
 
     private bool isDetectingBack = false;
     private bool isDetectingBackLeft = false;
@@ -194,12 +194,12 @@ public class MoveCubeMechanic : vPushActionController
         if (isPushingPulling)
         {
             // Check each adjacent direction relative to the player's forward direction
-            directions = new Vector3[] { -transform.forward, -transform.right, transform.right };
-            for (int i = 0; i < directions.Length; i++)
+            localDirections = new Vector3[] { -transform.forward, -transform.right, transform.right };
+            for (int i = 0; i < localDirections.Length; i++)
             {
 
                 // Shoot a ray in the current direction
-                curRelativeDirection = directions[i];
+                curRelativeDirection = localDirections[i];
                 OrthoHitCubes[i] = Physics.Raycast(targetPos, curRelativeDirection, out orthogonalHits[i], checkDistance, layerMask);
                 curDirectionDistances[i] = OrthoHitCubes[i] ? orthogonalHits[i].distance : checkDistance;
 
@@ -564,12 +564,12 @@ public class MoveCubeMechanic : vPushActionController
         Gizmos.color = sphereHitsBlock?.Length > 1 ? Color.red : Color.green;
         Gizmos.DrawSphere(transform.position, sphereSize); // Add a small offset
 
-        if (isPushingPulling && directions != null)
+        if (isPushingPulling && localDirections != null)
         {
-            for (int i = 0; i < directions.Length; i++)
+            for (int i = 0; i < localDirections.Length; i++)
             {
                 Gizmos.color = OrthoHitCubes[i] ? Color.yellow : Color.white;
-                Gizmos.DrawLine(targetPos, targetPos + directions[i] * curDirectionDistances[i]);
+                Gizmos.DrawLine(targetPos, targetPos + localDirections[i] * curDirectionDistances[i]);
 
                 if (OrthoHitCubes[i])
                 {
