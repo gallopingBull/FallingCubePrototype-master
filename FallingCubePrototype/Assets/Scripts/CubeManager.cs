@@ -184,7 +184,7 @@ public class CubeManager : MonoBehaviour
         }
         int id = cube.GetComponent<CubeBehavior>().id;
         AdjustCubePosition(id, cube.transform.position);
-        CheckAdjacentCubesForColor(cube.GetComponent<CubeBehavior>());
+        CheckAdjacentCubesForColor(cube);
     }
    
     private void AdjustCubePosition(int id, Vector3 position)
@@ -229,22 +229,30 @@ public class CubeManager : MonoBehaviour
     }
 
     // this method should only be used after a cube has moved or fell.
-    private void CheckAdjacentCubesForColor(CubeBehavior cube)
+    private void CheckAdjacentCubesForColor(GameObject cube)
     {
-        Debug.Log($"Stepping into CheckAdjacentCubesForColor({cube.id})");
+        var cb = cube.GetComponent<CubeBehavior>();
+        Debug.Log($"Stepping into CheckAdjacentCubesForColor({cb.id})");
 
-        if (cube.color == ColorOption.Neutral)
+        if (cb.color == ColorOption.Neutral)
             return;
         
-        var adjCubes = directions.Select(dir => cube.transform.position + dir);
+        var adjCubes = directions.Select(dir => cb.transform.position + dir);
+        
+        Debug.Log($"adjCubes.Count: {adjCubes.ToArray().Length}");
+        List<Vector3> adj = adjCubes.ToList();
+        for (int i = 0; i <= adj.ToArray().Length - 1; i++)
+            Debug.Log($"adj[{i}]: {adj[i]}");
+
 
         // TODO: FIX THIS: invalid exception error
-        List<GameObject> matchingColors = (List<GameObject>)cubes.
-            Where(target => 
-            adjCubes.Contains(target.transform.position) && 
-            target.GetComponent<CubeBehavior>().color == cube.color && 
-            !cube.isDestroying);
+        var matchingColors = cubes.
+            Where(target =>
+            adjCubes.Contains(target.transform.position) &&
+            target.GetComponent<CubeBehavior>().color == cb.color && 
+            !cb.isDestroying);  
 
+        Debug.Log($"matchingColors {matchingColors.ToList().Count}");
         foreach (var c in matchingColors)
         {
             Debug.Log($"{c.GetComponent<CubeBehavior>().id} in matchingColors ");
@@ -264,7 +272,7 @@ public class CubeManager : MonoBehaviour
         //        DestoryAdjacentCubes();
         //    }
         //}
-        Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cube.id})");
+        Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
 
     }
 
@@ -302,6 +310,7 @@ public class CubeManager : MonoBehaviour
     {
         return cubes.Count;
     }
+
 
     // this was moved over from GetAdjacentCubes.cs
     public void DestoryAdjacentCubes(CubeBehavior targetCube, GameObject adjCube, List<CubeBehavior> targetCubes)
