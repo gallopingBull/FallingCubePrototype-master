@@ -357,6 +357,7 @@ public class GameManager : MonoBehaviour
             }
         }
         CubeTargets.Clear();
+        cubeManager.cubes.RemoveAll(cube => cube == null);  
     }
 
     private void SpawnPlayer()

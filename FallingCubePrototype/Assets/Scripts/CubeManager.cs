@@ -237,22 +237,48 @@ public class CubeManager : MonoBehaviour
         if (cb.color == ColorOption.Neutral)
             return;
         
-        var adjCubes = directions.Select(dir => cb.transform.position + dir);
+        var adjCubes = directions.Select(dir => cb.transform.position + (dir*2));
         
         Debug.Log($"adjCubes.Count: {adjCubes.ToArray().Length}");
         List<Vector3> adj = adjCubes.ToList();
-        for (int i = 0; i <= adj.ToArray().Length - 1; i++)
-            Debug.Log($"adj[{i}]: {adj[i]}");
+        
+        List<GameObject> matchingColors = new List<GameObject>();
+        foreach (var target in cubes)
+        {
+            if (target == null)
+                continue;
+            //Debug.Log($"target is {target.name}");
+            for (int i = 0; i <= adj.Count - 1; i++)
+            {
+                Debug.Log($"\tadj[{i}]: {adj[i]}");
+                if (target.transform.position == adj[i])
+                {
+                    Debug.Log($"\ttarget equals cube position");
+                    if (target.GetComponent<CubeBehavior>().color == cb.color && !cb.isDestroying)
+                    {
+                        if (!matchingColors.Contains(cube))
+                        {
+                            matchingColors.Add(cube);
+                        }
+                        matchingColors.Add(target); 
+                        Debug.Log($"\t{cube.name} matches color with {target.name}");
+                        break; // not sure if breaking is correct here...
+                    }
+                }
+                else
+                {
+                    Debug.Log($"\ttarget does NOT equal cube position");
+                }
+            }
+        }
 
+        //var matchingColors = cubes.
+        //    Where(target =>
+        //    adjCubes.Contains(target.transform.position) &&
+        //    target.GetComponent<CubeBehavior>().color == cb.color && 
+        //    !cb.isDestroying);  
 
-        // TODO: FIX THIS: invalid exception error
-        var matchingColors = cubes.
-            Where(target =>
-            adjCubes.Contains(target.transform.position) &&
-            target.GetComponent<CubeBehavior>().color == cb.color && 
-            !cb.isDestroying);  
-
-        Debug.Log($"matchingColors {matchingColors.ToList().Count}");
+        //Debug.Log($"matchingColors {matchingColors.ToList().Count}");
         foreach (var c in matchingColors)
         {
             Debug.Log($"{c.GetComponent<CubeBehavior>().id} in matchingColors ");
@@ -262,18 +288,7 @@ public class CubeManager : MonoBehaviour
             GameManager.gm.AddCubeTarget(c);
         }
 
-        //if (other.GetComponentInParent<CubeBehavior>().color == cubeBehavior.color &&
-        //    !cubeBehavior.isDestroying)
-        //{
-        //    //Debug.Log($"this object ({transform.parent.parent.name}) || other.transform.name: {other.transform.parent.name}");
-        //    tmp = other.transform.parent.gameObject;
-        //    if (cubeBehavior.state == CubeBehavior.States.grounded && CheckPosition())
-        //    {
-        //        DestoryAdjacentCubes();
-        //    }
-        //}
         Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
-
     }
 
     // this mostly used to prevent spawning similar colors next to each other in arenas.
