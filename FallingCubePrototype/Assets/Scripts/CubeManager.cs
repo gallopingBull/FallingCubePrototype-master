@@ -175,9 +175,9 @@ public class CubeManager : MonoBehaviour
         Debug.Log($"{GetTotalCubeCount()} cubes spawned");
     }
 
-    public void FinalizeCubePositioning(GameObject cube) 
+    public void FinalizeCubePosition(GameObject cube) 
     {
-        if (cube == null)
+        if (!cube)
         {
             Debug.LogWarning("cube is null!");
             return;
@@ -311,8 +311,8 @@ public class CubeManager : MonoBehaviour
     // this was moved over from GetAdjacentCubes.cs
     public void DestoryAdjacentCubes(CubeBehavior targetCube, GameObject adjCube, List<CubeBehavior> targetCubes)
     {
-        // if other block has been destoryed, exit
-        if (adjCube == null)
+        // if other block has been destoryed so null, exit
+        if (!adjCube)
             return;
 
         targetCube.isDestroying = true;

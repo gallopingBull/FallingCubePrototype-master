@@ -250,7 +250,7 @@ public class CubeBehavior : MonoBehaviour
                 DisableRB();
 
                 if (GameManager.gm && GameManager.gm.CubeManager.arenaGenerated)
-                    GameManager.gm.CubeManager.FinalizeCubePositioning(gameObject);
+                    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
 
                 break;
 
@@ -287,7 +287,7 @@ public class CubeBehavior : MonoBehaviour
                     EnterState(States.falling);
                 else
                     EnterState(States.grounded);
-                EnterState(States.grounded);
+                //EnterState(States.grounded);
 
                 break;
 
