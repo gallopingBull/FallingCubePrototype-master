@@ -63,7 +63,7 @@ public class CubeManager : MonoBehaviour
             cubesParent.transform.position = Vector3.zero;
         }
         //OnFloorComplete += DisplayAllSpawnDatas;
-        GenerateArena(gridSizeX, gridSizeZ);
+        //GenerateArena(gridSizeX, gridSizeZ);
         Debug.Log("CubeManager initialized");
     }
 
