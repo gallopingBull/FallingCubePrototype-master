@@ -237,56 +237,41 @@ public class CubeManager : MonoBehaviour
         if (cb.color == ColorOption.Neutral)
             return;
         
-        var adjCubes = directions.Select(dir => cb.transform.position + (dir*2));
+        var adjCubePositions = directions.Select(dir => cb.transform.position + (dir*2));
         
-        Debug.Log($"adjCubes.Count: {adjCubes.ToArray().Length}");
-        List<Vector3> adj = adjCubes.ToList();
+        Debug.Log($"adjCubes.Count: {adjCubePositions.ToArray().Length}");
+        List<Vector3> adj = adjCubePositions.ToList();
         
-        List<GameObject> matchingColors = new List<GameObject>();
-        foreach (var target in cubes)
+
+        var matchingColors = cubes.Where(target =>
+            target && 
+            adjCubePositions.Contains(target.transform.position) &&
+            target.GetComponent<CubeBehavior>().color == cb.color && 
+            !cb.isDestroying).ToList();
+
+        Debug.Log($"matchingColors {matchingColors.ToList().Count}");
+
+        if (matchingColors.Count > 0)
         {
-            if (target == null)
-                continue;
-            //Debug.Log($"target is {target.name}");
-            for (int i = 0; i <= adj.Count - 1; i++)
+            Debug.Log($"is {cube.name} in matchingColor: {matchingColors.Contains(cube)}");
+
+            if (!matchingColors.ToList().Contains(cube))
             {
-                Debug.Log($"\tadj[{i}]: {adj[i]}");
-                if (target.transform.position == adj[i])
-                {
-                    Debug.Log($"\ttarget equals cube position");
-                    if (target.GetComponent<CubeBehavior>().color == cb.color && !cb.isDestroying)
-                    {
-                        if (!matchingColors.Contains(cube))
-                        {
-                            matchingColors.Add(cube);
-                        }
-                        matchingColors.Add(target); 
-                        Debug.Log($"\t{cube.name} matches color with {target.name}");
-                        break; // not sure if breaking is correct here...
-                    }
-                }
-                else
-                {
-                    Debug.Log($"\ttarget does NOT equal cube position");
-                }
+                Debug.Log($"now adding {cube.name} to matchingColor");
+                matchingColors.Add(cube);
+                Debug.Log($"new matchingColors {matchingColors.Count}");
+            }
+
+            foreach (var c in matchingColors)
+            {
+                Debug.Log($"{c.GetComponent<CubeBehavior>().id} in matchingColors ");
+
+                if (!GameManager.gm)
+                    return;
+                GameManager.gm.AddCubeTarget(c);
             }
         }
-
-        //var matchingColors = cubes.
-        //    Where(target =>
-        //    adjCubes.Contains(target.transform.position) &&
-        //    target.GetComponent<CubeBehavior>().color == cb.color && 
-        //    !cb.isDestroying);  
-
-        //Debug.Log($"matchingColors {matchingColors.ToList().Count}");
-        foreach (var c in matchingColors)
-        {
-            Debug.Log($"{c.GetComponent<CubeBehavior>().id} in matchingColors ");
-
-            if (!GameManager.gm)
-                return;
-            GameManager.gm.AddCubeTarget(c);
-        }
+       
 
         Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
     }
