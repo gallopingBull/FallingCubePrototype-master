@@ -232,16 +232,13 @@ public class CubeManager : MonoBehaviour
     private void CheckAdjacentCubesForColor(GameObject cube)
     {
         var cb = cube.GetComponent<CubeBehavior>();
-        Debug.Log($"Stepping into CheckAdjacentCubesForColor({cb.id})");
+        //Debug.Log($"Stepping into CheckAdjacentCubesForColor({cb.id})");
 
         if (cb.color == ColorOption.Neutral)
             return;
-        
-        var adjCubePositions = directions.Select(dir => cb.transform.position + (dir*2));
-        
-        Debug.Log($"adjCubes.Count: {adjCubePositions.ToArray().Length}");
-        List<Vector3> adj = adjCubePositions.ToList();
-        
+
+        // 2 is cube scale on cube transform.scale
+        var adjCubePositions = directions.Select(dir => cb.transform.position + (dir*2)).ToList();
 
         var matchingColors = cubes.Where(target =>
             target && 
@@ -249,13 +246,13 @@ public class CubeManager : MonoBehaviour
             target.GetComponent<CubeBehavior>().color == cb.color && 
             !cb.isDestroying).ToList();
 
-        Debug.Log($"matchingColors {matchingColors.ToList().Count}");
+        //Debug.Log($"matchingColors {matchingColors.Count}");
 
         if (matchingColors.Count > 0)
         {
             Debug.Log($"is {cube.name} in matchingColor: {matchingColors.Contains(cube)}");
 
-            if (!matchingColors.ToList().Contains(cube))
+            if (!matchingColors.Contains(cube))
             {
                 Debug.Log($"now adding {cube.name} to matchingColor");
                 matchingColors.Add(cube);
@@ -272,8 +269,7 @@ public class CubeManager : MonoBehaviour
             }
         }
        
-
-        Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
+        //Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
     }
 
     // this mostly used to prevent spawning similar colors next to each other in arenas.
