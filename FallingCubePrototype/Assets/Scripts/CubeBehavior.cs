@@ -249,7 +249,7 @@ public class CubeBehavior : MonoBehaviour
                 cubeCollider.enabled = true;
                 DisableRB();
 
-                if (GameManager.gm && GameManager.gm.CubeManager.arenaGenerated)
+                if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
                     GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
 
                 break;

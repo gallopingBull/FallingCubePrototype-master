@@ -1,8 +1,10 @@
+using ProBuilder2.Common;
 using Shapes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Drawing;
+using System.Linq; 
 using UnityEngine;
 
 public class CubeManager : MonoBehaviour
@@ -11,6 +13,7 @@ public class CubeManager : MonoBehaviour
     public int gridSizeX = 10;
     public int gridSizeZ = 10;
     public float spawnDelay = 0.01f;
+    public bool init;
     public List<GameObject> cubes = new List<GameObject>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
     public List<SpawnData> SpawnDatas { get => spawnDatas; set => spawnDatas = value; }
@@ -42,7 +45,7 @@ public class CubeManager : MonoBehaviour
         Vector3.up, Vector3.down
     }; 
 
-    private void Awake()
+    private void Start()
     {
         Init();
     }
@@ -57,14 +60,44 @@ public class CubeManager : MonoBehaviour
 
     private void Init()
     {
-        if (cubesParent == null)
+        init = false;
+        if (!cubesParent)
         {
             cubesParent = new GameObject("Cubes").transform;
             cubesParent.transform.position = Vector3.zero;
         }
         //OnFloorComplete += DisplayAllSpawnDatas;
-        //GenerateArena(gridSizeX, gridSizeZ);
+
+        if (GameManager.gm) 
+        {
+            if(!GameManager.gm.isDebug)
+                GenerateArena(gridSizeX, gridSizeZ);
+            else
+            CheckForCubesAnyway();
+        }
+        init = true;
+
         Debug.Log("CubeManager initialized");
+    }
+
+    private void CheckForCubesAnyway()
+    {
+        Debug.Log("Stepping into CheckForCubesAnyway()");
+        var currentCubes = GameObject.FindGameObjectsWithTag("Block").GetComponents<CubeBehavior>();
+        Debug.Log($"currentCubes.Count = {currentCubes.Count()}");
+
+
+        if (currentCubes != null && currentCubes.Length > 0)
+        {
+            for(int i = 0; i < currentCubes.Length; i++)
+            {
+                SpawnData spawnData = new SpawnData { id = i, position = currentCubes[i].transform.position, color = currentCubes[i].color };
+                spawnDatas.Add(spawnData);  
+                cubes.Add(currentCubes[i].gameObject);
+            }
+        }
+        Debug.Log("Stepping out of CheckForCubesAnyway()");
+
     }
 
     public void GenerateArena(int gridSizex = 6, int gridSizeZ = 6)
@@ -183,13 +216,14 @@ public class CubeManager : MonoBehaviour
             return;
         }
         int id = cube.GetComponent<CubeBehavior>().id;
+        Debug.Log($"AdjustCubePosition(id:{id}, pos:{cube.transform.position})");
         AdjustCubePosition(id, cube.transform.position);
         CheckAdjacentCubesForColor(cube);
     }
    
     private void AdjustCubePosition(int id, Vector3 position)
     {
-        if (!cubes[id])
+        if (cubes.Count > 0 && !cubes[id])
         {
             Debug.LogWarning($"Cube ({id}) is not registered or is cube is null!");
             return;
@@ -232,7 +266,7 @@ public class CubeManager : MonoBehaviour
     private void CheckAdjacentCubesForColor(GameObject cube)
     {
         var cb = cube.GetComponent<CubeBehavior>();
-        //Debug.Log($"Stepping into CheckAdjacentCubesForColor({cb.id})");
+        Debug.Log($"Stepping into CheckAdjacentCubesForColor({cb.id})");
 
         if (cb.color == ColorOption.Neutral)
             return;
@@ -269,7 +303,7 @@ public class CubeManager : MonoBehaviour
             }
         }
        
-        //Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
+        Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
     }
 
     // this mostly used to prevent spawning similar colors next to each other in arenas.
