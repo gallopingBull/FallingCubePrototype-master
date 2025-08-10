@@ -8,7 +8,7 @@ public class MoveCubeMechanic : vPushActionController
     private float cubeScale = 2f; // Default cube scale
 
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
-    public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
+    public float snapThreshold = .75f; // Distance threshold for snapping to whole numbers
     public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
 
     public float checkDistance = 6f; // Distance to check adjacent positions
