@@ -61,6 +61,7 @@ public class CubeManager : MonoBehaviour
     private void Init()
     {
         init = false;
+        cubesParent = GameObject.Find("Cubes").transform;
         if (!cubesParent)
         {
             cubesParent = new GameObject("Cubes").transform;
@@ -73,7 +74,7 @@ public class CubeManager : MonoBehaviour
             if(!GameManager.gm.isDebug)
                 GenerateArena(gridSizeX, gridSizeZ);
             else
-            CheckForCubesAnyway();
+                CheckForCubesAnyway();
         }
         init = true;
 
@@ -91,8 +92,10 @@ public class CubeManager : MonoBehaviour
         {
             for(int i = 0; i < currentCubes.Length; i++)
             {
+                currentCubes[i].transform.parent = cubesParent;
+
                 SpawnData spawnData = new SpawnData { id = i, position = currentCubes[i].transform.position, color = currentCubes[i].color };
-                spawnDatas.Add(spawnData);  
+                spawnDatas.Add(spawnData);
                 cubes.Add(currentCubes[i].gameObject);
             }
         }
