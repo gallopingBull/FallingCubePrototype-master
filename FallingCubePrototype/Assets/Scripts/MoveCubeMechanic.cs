@@ -63,6 +63,7 @@ public class MoveCubeMechanic : vPushActionController
     {
         base.Start();
 
+        //maxGridSize = new Vector2Int (GameManager.gm.CubeManager.gridSizeX, GameManager.gm.CubeManager.gridSizeZ);
         // n - 1 to account for 0-based index
         maxGridSize.x--;
         maxGridSize.y--;
