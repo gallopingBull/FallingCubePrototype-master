@@ -252,6 +252,8 @@ public class CubeBehavior : MonoBehaviour
                 if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
                     GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
 
+                    //RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
+
                 break;
 
             case States.dragging:
