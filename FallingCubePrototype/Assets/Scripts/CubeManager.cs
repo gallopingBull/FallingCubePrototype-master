@@ -13,6 +13,10 @@ public class CubeManager : MonoBehaviour
     public int gridSizeX = 10;
     public int gridSizeZ = 10;
     public float spawnDelay = 0.01f;
+
+    public float tolerance = 0.0001f;
+
+
     public bool init;
     public List<GameObject> cubes = new List<GameObject>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
@@ -237,7 +241,8 @@ public class CubeManager : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             // Check if cube's position values are whole
-            if ((targetCube.transform.position[i] % 1) > float.Epsilon)
+           
+            if (IsWholeVector(targetCube.transform.position[i]))
             {
                 Debug.Log($"targetCube.pos.({id}) transform position values already whole!");
                 continue;
@@ -246,6 +251,16 @@ public class CubeManager : MonoBehaviour
             Mathf.Round(targetCube.transform.position[i]);
         }
     }
+
+    bool IsWholeVector(float v)
+    {
+        Debug.Log($"v = {v}");
+        Debug.Log($"Mathf.Abs(v - Mathf.Round(v)) < tolerance = {Mathf.Abs(v - Mathf.Round(v)) < tolerance}");
+
+        Debug.Log($"float.Epsilon: {float.Epsilon}");
+        return Mathf.Abs(v - Mathf.Round(v)) < tolerance;
+    }
+
 
     private void AdjustAllCubePositions()
     {
@@ -277,13 +292,14 @@ public class CubeManager : MonoBehaviour
         // 2 is cube scale on cube transform.scale
         var adjCubePositions = directions.Select(dir => cb.transform.position + (dir*2)).ToList();
 
+
         var matchingColors = cubes.Where(target =>
             target && 
             adjCubePositions.Contains(target.transform.position) &&
             target.GetComponent<CubeBehavior>().color == cb.color && 
             !cb.isDestroying).ToList();
 
-        //Debug.Log($"matchingColors {matchingColors.Count}");
+            Debug.Log($"matchingColors {matchingColors.Count}");
 
         if (matchingColors.Count > 0)
         {
