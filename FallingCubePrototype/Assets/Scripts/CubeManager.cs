@@ -227,7 +227,7 @@ public class CubeManager : MonoBehaviour
         AdjustCubePosition(id, cube.transform.position);
         CheckAdjacentCubesForColor(cube);
     }
-   
+    float cubeScale = 2;
     private void AdjustCubePosition(int id, Vector3 position)
     {
         if (cubes.Count > 0 && !cubes[id])
@@ -238,18 +238,47 @@ public class CubeManager : MonoBehaviour
 
         CubeBehavior targetCube = cubes[id].GetComponent<CubeBehavior>();
 
-        for (int i = 0; i < 2; i++)
-        {
-            // Check if cube's position values are whole
-           
-            if (IsWholeVector(targetCube.transform.position[i]))
-            {
-                Debug.Log($"targetCube.pos.({id}) transform position values already whole!");
-                continue;
-            }
+        //for (int i = 0; i < 2; i++)
+        //{
+        //    // Check if cube's position values are whole
+        //
+        //    if (IsWholeVector(targetCube.transform.position[i]))
+        //    {
+        //        Debug.Log($"targetCube.pos.({id}) transform position values already whole!");
+        //        continue;
+        //    }
+        //
+        //    Mathf.Round(targetCube.transform.position[i]);
+        //}
 
-            Mathf.Round(targetCube.transform.position[i]);
+
+        Vector3 targetPosition = new Vector3(Mathf.Round(targetCube.transform.position.x),
+               Mathf.Round(targetCube.transform.position.y),
+               Mathf.Round(targetCube.transform.position.z));
+
+        // Snap X and Z positions to multiples of cube scale
+        float snappedX = (targetPosition.x / cubeScale) * cubeScale;
+        float snappedZ = (targetPosition.z / cubeScale) * cubeScale;
+
+        //RigidbodyConstraints tmpConst;
+        //tmpConst = rb.constraints;
+        //rb.constraints = RigidbodyConstraints.FreezePosition;
+
+
+        // Snap to whole numbers if close enough
+        if (Mathf.Abs(targetPosition.x - snappedX) < tolerance)
+        {
+            //Debug.Log("snapping x!"); 
+            targetPosition.x = snappedX;
         }
+        if (Mathf.Abs(targetPosition.z - snappedZ) < tolerance)
+        {
+            //Debug.Log("snapping z!");
+            targetPosition.z = snappedZ;
+        }
+
+        transform.position = targetPosition;
+        //rb.constraints = tmpConst;
     }
 
     bool IsWholeVector(float v)

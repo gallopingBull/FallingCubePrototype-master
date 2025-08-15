@@ -430,7 +430,7 @@ public class CubeBehavior : MonoBehaviour
         // Snap to whole numbers if close enough
         if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
         {
-            //Debug.Log("snapping x!");
+            //Debug.Log("snapping x!"); 
             targetPosition.x = snappedX;
         }
         if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
