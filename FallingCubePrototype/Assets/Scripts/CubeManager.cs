@@ -16,7 +16,6 @@ public class CubeManager : MonoBehaviour
 
     public float tolerance = 0.0001f;
 
-
     public bool init;
     public List<GameObject> cubes = new List<GameObject>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
@@ -222,39 +221,26 @@ public class CubeManager : MonoBehaviour
             Debug.LogWarning("cube is null!");
             return;
         }
-        int id = cube.GetComponent<CubeBehavior>().id;
-        Debug.Log($"AdjustCubePosition(id:{id}, pos:{cube.transform.position})");
-        AdjustCubePosition(id, cube.transform.position);
+        AdjustCubePosition(cube);
         CheckAdjacentCubesForColor(cube);
     }
+
     float cubeScale = 2;
-    private void AdjustCubePosition(int id, Vector3 position)
+    private void AdjustCubePosition(GameObject cube)
     {
-        if (cubes.Count > 0 && !cubes[id])
+        Debug.Log($"Stepping into CubeManager.AdjustCubePosition({cube})");
+
+        if (cubes.Count > 0 && !cube)
         {
-            Debug.LogWarning($"Cube ({id}) is not registered or is cube is null!");
+            Debug.LogWarning($"Cube ({cube.GetComponent<CubeBehavior>().id}) is not registered or is cube is null!");
             return;
         }
 
-        CubeBehavior targetCube = cubes[id].GetComponent<CubeBehavior>();
-
-        //for (int i = 0; i < 2; i++)
-        //{
-        //    // Check if cube's position values are whole
-        //
-        //    if (IsWholeVector(targetCube.transform.position[i]))
-        //    {
-        //        Debug.Log($"targetCube.pos.({id}) transform position values already whole!");
-        //        continue;
-        //    }
-        //
-        //    Mathf.Round(targetCube.transform.position[i]);
-        //}
-
-
-        Vector3 targetPosition = new Vector3(Mathf.Round(targetCube.transform.position.x),
-               Mathf.Round(targetCube.transform.position.y),
-               Mathf.Round(targetCube.transform.position.z));
+        Vector3 targetPosition = new Vector3(
+            Mathf.Round(cube.transform.position.x),
+            Mathf.Round(cube.transform.position.y),
+            Mathf.Round(cube.transform.position.z)
+            );
 
         // Snap X and Z positions to multiples of cube scale
         float snappedX = (targetPosition.x / cubeScale) * cubeScale;
@@ -277,7 +263,7 @@ public class CubeManager : MonoBehaviour
             targetPosition.z = snappedZ;
         }
 
-        transform.position = targetPosition;
+        cube.transform.position = targetPosition;
         //rb.constraints = tmpConst;
     }
 

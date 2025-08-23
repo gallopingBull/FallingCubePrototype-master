@@ -77,8 +77,6 @@ public class CubeBehavior : MonoBehaviour
     #endregion
 
     #region functions 
-
-
     // Start is called before the first frame update
     void Awake()
     {
@@ -251,9 +249,7 @@ public class CubeBehavior : MonoBehaviour
 
                 if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
                 {
-
                     GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
-
                     //RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
                 }
 
@@ -293,7 +289,6 @@ public class CubeBehavior : MonoBehaviour
                     EnterState(States.falling);
                 else
                     EnterState(States.grounded);
-                //EnterState(States.grounded);
 
                 break;
 
@@ -333,8 +328,9 @@ public class CubeBehavior : MonoBehaviour
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
               
-                if (player.CheckDistance())
-                    RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
+                //if (player.CheckDistance())
+                //    RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
+
                 break;
             default:
                 break;
@@ -414,6 +410,7 @@ public class CubeBehavior : MonoBehaviour
     public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
     public void RoundCubeLocation()
     {
+        Debug.Log($"Stepping into CubeBehavior.RoundCubeLocation()");
         Vector3 targetPosition = new Vector3(Mathf.Round(transform.position.x),
          Mathf.Round(transform.position.y),
          Mathf.Round(transform.position.z));

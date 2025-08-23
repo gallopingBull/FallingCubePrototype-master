@@ -458,15 +458,12 @@ public class MoveCubeMechanic : vPushActionController
         StartCoroutine(StopPushAndPull(true));
     }
 
-    //protected override IEnumerator StopPushAndPull(bool playAnimation = true)
-    //{
-    //
-    //}
+    //protected override IEnumerator StopPushAndPull(bool playAnimation = true) { }
 
-    // TODO: change this method so instead of a snap its more of
-    // a discrete "push" to the nearest whole number
+    // TODO: not sure if this even used, might delete.
     private void DiscretePushToNearestWholeNumber(Vector3 targetPosition)
     {
+        Debug.Log("Stepping into MoveCubeMechanic.DiscretePushToNearestWholeNumber()");
         // Snap X and Z positions to multiples of cube scale
         float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
         float snappedZ = Mathf.Round(targetPosition.z / cubeScale) * cubeScale;
@@ -489,11 +486,8 @@ public class MoveCubeMechanic : vPushActionController
     private bool IsPositionAligned(Vector3 position)
     {
         // Check if both X and Z positions are whole numbers considering the cube's scale
-        //Debug.Log($"IsPositionAligned: {position.x}, {position.z}");
-        //Debug.Log($"\n\tTarget Positions: {Mathf.Round(position.x)}, {Mathf.Round(position.z)}");
         bool result = Mathf.Approximately(position.x, Mathf.Round(position.x)) ||
                       Mathf.Approximately(position.z, Mathf.Round(position.z));
-        //Debug.Log($"\n\tresult: {result}");
         return result;
     }
 
@@ -530,8 +524,8 @@ public class MoveCubeMechanic : vPushActionController
 
     public bool CheckDistance()
     {
-        //if (currentCubeFloor == null)
-        //    return false;
+        if (currentCubeFloor == null)
+            return false;
 
         Debug.Log($"currentCubeFloor: {currentCubeFloor}");
         //Debug.Log($"pushPoint.pushableObject: {pushPoint.pushableObject}");
