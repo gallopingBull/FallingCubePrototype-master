@@ -20,7 +20,7 @@ public class CubeManager : MonoBehaviour
     public List<GameObject> cubes = new List<GameObject>();
     [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
     public List<SpawnData> SpawnDatas { get => spawnDatas; set => spawnDatas = value; }
-    private Transform cubesParent;
+    [SerializeField] Transform cubesParent;
 
     [Header("Arena Generation Properties")]
     public int minHeight = 1;
@@ -64,7 +64,7 @@ public class CubeManager : MonoBehaviour
     private void Init()
     {
         init = false;
-        cubesParent = GameObject.Find("Cubes").transform;
+       
         if (!cubesParent)
         {
             cubesParent = new GameObject("Cubes").transform;
@@ -74,14 +74,20 @@ public class CubeManager : MonoBehaviour
 
         if (GameManager.gm) 
         {
-            if(!GameManager.gm.isDebug)
+            if (!GameManager.gm.isDebug)
                 GenerateArena(gridSizeX, gridSizeZ);
             else
-                CheckForCubesAnyway();
+            {
+                // this is used when debugging randomly generated arena
+                if (cubesParent.childCount == 0)
+                    GenerateArena(gridSizeX, gridSizeZ);
+                else
+                    CheckForCubesAnyway();  // this is used when debugging manaully created arena
+            }
         }
-        init = true;
 
-        Debug.Log("CubeManager initialized");
+        init = true;
+        Debug.Log("CubeManager Initialized");
     }
 
     private void CheckForCubesAnyway()

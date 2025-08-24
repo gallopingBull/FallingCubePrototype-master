@@ -8637,6 +8637,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4807872587156508070, guid: 5fc93216a95dbf140a27b8ea71a4b575, type: 3}
     - target: {fileID: 4201830530435554295, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
+      propertyPath: cubesParent
+      value: 
+      objectReference: {fileID: 936565385}
+    - target: {fileID: 4201830530435554295, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
       propertyPath: arenaGenerated
       value: 0
       objectReference: {fileID: 0}
