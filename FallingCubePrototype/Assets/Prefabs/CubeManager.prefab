@@ -48,12 +48,16 @@ MonoBehaviour:
   gridSizeX: 6
   gridSizeZ: 6
   spawnDelay: 0.01
+  tolerance: 0.2
+  init: 0
   cubes: []
+  cubesParent: {fileID: 0}
   minHeight: 0
   maxHeight: 4
   CubeSize: 2
   floatProbability: 0
   minimumDistance: 10
+  arenaGenerated: 0
   colorsUsed: 
 --- !u!114 &1519661966
 MonoBehaviour:

@@ -13,6 +13,7 @@ public class CubeManager : MonoBehaviour
     public int gridSizeZ = 10;
     public float spawnDelay = 0.01f;
 
+    // this is best so far between .125f and .2f. Closes to furthest.
     public float tolerance = 0.0001f;
 
     public bool init;

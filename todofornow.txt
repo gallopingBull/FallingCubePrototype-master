@@ -4,9 +4,6 @@ prevent player from grabbing cube while they or the a cube is falling.
 those gameobjects should be moved to their own game object. conditions that rely on the top of gameobject should have their own physics layer. 
 
 ------
-- the cube code has been refactored and works as it was before -- which is about 90% from good enough. When a cube is move to an adjacent cube in a corner location, or the cube is moved to any empty location and falls over a matching cube underneath, the cube will successfully destory and player gains a score.
-
-However, when the player is pushing a cube adjacent a single unit next to a matching cube, there's still room to expand the window of forgivness to allow for gurantted a combo and score.
 
 - test pause menu and take another look at the canvas gameobject and how its setup across scenes
 	- any room for improvement or consildation, etc.
