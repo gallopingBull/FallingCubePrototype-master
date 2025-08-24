@@ -74,8 +74,12 @@ public class MoveCubeMechanic : vPushActionController
         OnExitCubePosition += RemoveNewFloorCube;
     }
 
-    // I changed GetButtonDown() to GetButton() to remove toggle input. I also check if the button is being held
+    // *I changed GetButtonDown() to GetButton() to remove toggle input. I also check if the button is being held
     // down in the final stop condition. 
+    //
+    // **I also  had to add an inline check for mouse button input because invector is not detecting an input
+    // device change anymore. This wasn't an issue around this commit: 7bf66c1885c46fa9ee1924a6dcb6546af5619e5a
+    // TODO: resolve issue with mouse keyboard detection.
     protected override void EnterExitInput()
     {
         if (tpInput.enabled || !isStarted || !pushPoint)
@@ -103,7 +107,7 @@ public class MoveCubeMechanic : vPushActionController
                 onLostObject.Invoke();
             }
 
-            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton() && CanUseInput() && 
+            if (pushPoint && pushPoint.canUse && (startPushPullInput.GetButton() || Input.GetMouseButton(0)) && CanUseInput() && 
                 pushPoint.gameObject.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
             {
                 StartCoroutine(StartPushAndPull());
@@ -111,7 +115,7 @@ public class MoveCubeMechanic : vPushActionController
             }
 
         }
-        else if (isPushingPulling && !startPushPullInput.GetButton())
+        else if (isPushingPulling && (!startPushPullInput.GetButton() && !Input.GetMouseButton(0)))
         {
             StartCoroutine(StopPushAndPull());
         }
