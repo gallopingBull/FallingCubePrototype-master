@@ -527,7 +527,7 @@ public class MoveCubeMechanic : vPushActionController
         if (currentCubeFloor == null)
             return false;
 
-        Debug.Log($"currentCubeFloor: {currentCubeFloor}");
+        //Debug.Log($"currentCubeFloor: {currentCubeFloor}");
         //Debug.Log($"pushPoint.pushableObject: {pushPoint.pushableObject}");
 
         var tmpPos = new Vector3();
