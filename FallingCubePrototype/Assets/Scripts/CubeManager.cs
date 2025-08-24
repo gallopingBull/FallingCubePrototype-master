@@ -252,8 +252,7 @@ public class CubeManager : MonoBehaviour
         float snappedX = (targetPosition.x / cubeScale) * cubeScale;
         float snappedZ = (targetPosition.z / cubeScale) * cubeScale;
 
-
-        // TODO: Determine if this rigidbodyconstraot code
+        // TODO: Determine if this RigidbodyConstraints code
         // does anything...
 
         //RigidbodyConstraints tmpConst;
@@ -275,16 +274,6 @@ public class CubeManager : MonoBehaviour
         cube.transform.position = targetPosition;
         //rb.constraints = tmpConst;// TODO: this rb statement too...
     }
-
-    bool IsWholeVector(float v)
-    {
-        Debug.Log($"v = {v}");
-        Debug.Log($"Mathf.Abs(v - Mathf.Round(v)) < tolerance = {Mathf.Abs(v - Mathf.Round(v)) < tolerance}");
-
-        Debug.Log($"float.Epsilon: {float.Epsilon}");
-        return Mathf.Abs(v - Mathf.Round(v)) < tolerance;
-    }
-
 
     private void AdjustAllCubePositions()
     {
