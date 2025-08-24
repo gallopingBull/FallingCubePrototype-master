@@ -93,7 +93,6 @@ public class CubeBehavior : MonoBehaviour
     {
         if (state != States.init)
         {
-   
             // custom velocity calculation since cube behavior doesn't use rb at times.
             float tmpYVel = Mathf.Round(rb.velocity.y);
             velocity = (transform.position - prevVel) / Time.deltaTime;
@@ -239,7 +238,8 @@ public class CubeBehavior : MonoBehaviour
                 if (state == States.falling)
                 {
                     PlaySFX(landingSFX);
-                    RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
+                    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
+                    //RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
                 }
                 
                
@@ -327,9 +327,6 @@ public class CubeBehavior : MonoBehaviour
                     lastRoutine = StartCoroutine(HideCubeInfo());
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
-              
-                //if (player.CheckDistance())
-                //    RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
 
                 break;
             default:
@@ -404,40 +401,6 @@ public class CubeBehavior : MonoBehaviour
         rb.drag = 100;
         rb.useGravity = false;
         rb.isKinematic = true;
-    }
-
-    float cubeScale = 2;
-    public float snapThreshold = 0.1f; // Distance threshold for snapping to whole numbers
-    public void RoundCubeLocation()
-    {
-        Debug.Log($"Stepping into CubeBehavior.RoundCubeLocation()");
-        Vector3 targetPosition = new Vector3(Mathf.Round(transform.position.x),
-         Mathf.Round(transform.position.y),
-         Mathf.Round(transform.position.z));
-
-        // Snap X and Z positions to multiples of cube scale
-        float snappedX = (targetPosition.x / cubeScale) * cubeScale;
-        float snappedZ = (targetPosition.z / cubeScale) * cubeScale;
-
-        RigidbodyConstraints tmpConst;
-        tmpConst = rb.constraints;
-        rb.constraints = RigidbodyConstraints.FreezePosition;
-
-
-        // Snap to whole numbers if close enough
-        if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
-        {
-            //Debug.Log("snapping x!"); 
-            targetPosition.x = snappedX;
-        }
-        if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
-        {
-            //Debug.Log("snapping z!");
-            targetPosition.z = snappedZ;
-        }
-
-        transform.position = targetPosition;
-        rb.constraints = tmpConst;
     }
 
     // Draw the BoxCast as a gizmo to show where it currently is testing. Click the Gizmos button to see this

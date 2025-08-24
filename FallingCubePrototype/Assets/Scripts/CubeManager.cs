@@ -93,9 +93,9 @@ public class CubeManager : MonoBehaviour
     private void CheckForCubesAnyway()
     {
         Debug.Log("Stepping into CheckForCubesAnyway()");
+
         var currentCubes = GameObject.FindGameObjectsWithTag("Block").GetComponents<CubeBehavior>();
         Debug.Log($"currentCubes.Count = {currentCubes.Count()}");
-
 
         if (currentCubes != null && currentCubes.Length > 0)
         {
@@ -108,8 +108,8 @@ public class CubeManager : MonoBehaviour
                 cubes.Add(currentCubes[i].gameObject);
             }
         }
-        Debug.Log("Stepping out of CheckForCubesAnyway()");
 
+        Debug.Log("Stepping out of CheckForCubesAnyway()");
     }
 
     public void GenerateArena(int gridSizex = 6, int gridSizeZ = 6)
@@ -228,7 +228,7 @@ public class CubeManager : MonoBehaviour
             return;
         }
         AdjustCubePosition(cube);
-        CheckAdjacentCubesForColor(cube);
+        CheckAdjacentCubesForMatchingColor(cube);
     }
 
     float cubeScale = 2;
@@ -242,7 +242,7 @@ public class CubeManager : MonoBehaviour
             return;
         }
 
-        Vector3 targetPosition = new Vector3(
+        Vector3 targetPosition = new Vector3 (
             Mathf.Round(cube.transform.position.x),
             Mathf.Round(cube.transform.position.y),
             Mathf.Round(cube.transform.position.z)
@@ -252,10 +252,13 @@ public class CubeManager : MonoBehaviour
         float snappedX = (targetPosition.x / cubeScale) * cubeScale;
         float snappedZ = (targetPosition.z / cubeScale) * cubeScale;
 
+
+        // TODO: Determine if this rigidbodyconstraot code
+        // does anything...
+
         //RigidbodyConstraints tmpConst;
         //tmpConst = rb.constraints;
         //rb.constraints = RigidbodyConstraints.FreezePosition;
-
 
         // Snap to whole numbers if close enough
         if (Mathf.Abs(targetPosition.x - snappedX) < tolerance)
@@ -270,7 +273,7 @@ public class CubeManager : MonoBehaviour
         }
 
         cube.transform.position = targetPosition;
-        //rb.constraints = tmpConst;
+        //rb.constraints = tmpConst;// TODO: this rb statement too...
     }
 
     bool IsWholeVector(float v)
@@ -302,7 +305,7 @@ public class CubeManager : MonoBehaviour
     }
 
     // this method should only be used after a cube has moved or fell.
-    private void CheckAdjacentCubesForColor(GameObject cube)
+    private void CheckAdjacentCubesForMatchingColor(GameObject cube)
     {
         var cb = cube.GetComponent<CubeBehavior>();
         Debug.Log($"Stepping into CheckAdjacentCubesForColor({cb.id})");

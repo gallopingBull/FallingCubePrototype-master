@@ -522,22 +522,6 @@ public class MoveCubeMechanic : vPushActionController
 
     private void RemoveNewFloorCube() => currentCubeFloor = null;
 
-    public bool CheckDistance()
-    {
-        if (currentCubeFloor == null)
-            return false;
-
-        Debug.Log($"currentCubeFloor: {currentCubeFloor}");
-        //Debug.Log($"pushPoint.pushableObject: {pushPoint.pushableObject}");
-
-        var tmpPos = new Vector3();
-        tmpPos = new Vector3(
-           currentCubeFloor.transform.position.x,
-           transform.position.y,
-           currentCubeFloor.transform.position.z);
-        Distance = Vector3.Distance(transform.position, tmpPos);
-        return Distance <= .25f; // .45-.65f seems to work the best but the former causes issues when cubes fall to early
-    }
     
     private void OnDestroy()
     {
