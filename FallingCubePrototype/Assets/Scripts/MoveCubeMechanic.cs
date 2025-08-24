@@ -383,13 +383,16 @@ public class MoveCubeMechanic : vPushActionController
 
             //intendedPosition = ApplyStepConstraints(intendedPosition);
             pushPoint.targetBody.velocity = intendedDirection * inputWeight;
-            
             //Debug.Log("calling PositionIsLocked...");
             if (IsPositionAligned(intendedPosition))
             {
                 // Only apply the movement if the new position is different from the current position
                 pushPoint.targetBody.position = intendedPosition;
                 UpdateMovementState(intendedPosition);
+            }
+            else
+            {
+                DiscretePushToNearestWholeNumber(intendedPosition);
             }
         }
     }
@@ -456,6 +459,30 @@ public class MoveCubeMechanic : vPushActionController
 
     //protected override IEnumerator StopPushAndPull(bool playAnimation = true) { }
 
+    // Ensures the push point stays aligned to the grid by snapping its position 
+    // to the nearest whole grid value. This prevents small input offsets from 
+    // leaving it between cells or locking movement along the grid path.
+    private void DiscretePushToNearestWholeNumber(Vector3 targetPosition)
+    {
+        // Snap X and Z positions to multiples of cube scale
+        float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
+        float snappedZ = Mathf.Round(targetPosition.z / cubeScale) * cubeScale;
+
+        // Snap to whole numbers if close enough
+        if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
+        {
+            targetPosition.x = snappedX;
+        }
+        if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
+        {
+            targetPosition.z = snappedZ;
+        }
+
+        // Move the cube to the snapped position
+        pushPoint.targetBody.position = targetPosition;
+        lastBodyPosition = targetPosition;
+    }
+
     private bool IsPositionAligned(Vector3 position)
     {
         // Check if both X and Z positions are whole numbers considering the cube's scale
@@ -495,6 +522,22 @@ public class MoveCubeMechanic : vPushActionController
 
     private void RemoveNewFloorCube() => currentCubeFloor = null;
 
+    public bool CheckDistance()
+    {
+        if (currentCubeFloor == null)
+            return false;
+
+        Debug.Log($"currentCubeFloor: {currentCubeFloor}");
+        //Debug.Log($"pushPoint.pushableObject: {pushPoint.pushableObject}");
+
+        var tmpPos = new Vector3();
+        tmpPos = new Vector3(
+           currentCubeFloor.transform.position.x,
+           transform.position.y,
+           currentCubeFloor.transform.position.z);
+        Distance = Vector3.Distance(transform.position, tmpPos);
+        return Distance <= .25f; // .45-.65f seems to work the best but the former causes issues when cubes fall to early
+    }
     
     private void OnDestroy()
     {
