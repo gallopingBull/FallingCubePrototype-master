@@ -3,7 +3,6 @@ using Shapes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq; 
 using UnityEngine;
 
@@ -227,52 +226,68 @@ public class CubeManager : MonoBehaviour
             Debug.LogWarning("cube is null!");
             return;
         }
-        AdjustCubePosition(cube);
-        CheckAdjacentCubesForMatchingColor(cube);
+
+        StartCoroutine(AdjustCubePosition(cube, () => {
+            CheckAdjacentCubesForMatchingColor(cube);
+        }));
     }
 
     float cubeScale = 2;
-    private void AdjustCubePosition(GameObject cube)
+    private IEnumerator AdjustCubePosition(GameObject cube, Action onComplete = null)
     {
-        Debug.Log($"Stepping into CubeManager.AdjustCubePosition({cube})");
-
+        //Debug.Log($"Stepping into CubeManager.AdjustCubePosition({cube})");
         if (cubes.Count > 0 && !cube)
         {
             Debug.LogWarning($"Cube ({cube.GetComponent<CubeBehavior>().id}) is not registered or is cube is null!");
-            return;
+            yield break;
         }
 
-        Vector3 targetPosition = new Vector3 (
-            Mathf.Round(cube.transform.position.x),
-            Mathf.Round(cube.transform.position.y),
-            Mathf.Round(cube.transform.position.z)
-            );
+        Vector3 currentPos = cube.transform.position;
 
-        // Snap X and Z positions to multiples of cube scale
-        float snappedX = (targetPosition.x / cubeScale) * cubeScale;
-        float snappedZ = (targetPosition.z / cubeScale) * cubeScale;
+        // Calculate the nearest snapped grid point
+        float snappedX = Mathf.Round(currentPos.x / cubeScale) * cubeScale;
+        float snappedZ = Mathf.Round(currentPos.z / cubeScale) * cubeScale;
+
+        Vector3 snappedPosition = new Vector3(snappedX, Mathf.Round(currentPos.y), snappedZ);
 
         // TODO: Determine if this RigidbodyConstraints code
-        // does anything...
+        // from CubeBehavior is needed or does anything...
 
         //RigidbodyConstraints tmpConst;
         //tmpConst = rb.constraints;
         //rb.constraints = RigidbodyConstraints.FreezePosition;
 
-        // Snap to whole numbers if close enough
-        if (Mathf.Abs(targetPosition.x - snappedX) < tolerance)
+        // Only snap if cube is *close enough* to the snapped position
+        if (Vector3.Distance(currentPos, snappedPosition) < tolerance)
         {
-            //Debug.Log("snapping x!"); 
-            targetPosition.x = snappedX;
+            // Smoothly move into place
+            Debug.Log("Close enough to begin lerping.");
+            yield return StartCoroutine(LerpCubePosition(cube, snappedPosition, 0.1f));
         }
-        if (Mathf.Abs(targetPosition.z - snappedZ) < tolerance)
+        else
         {
-            //Debug.Log("snapping z!");
-            targetPosition.z = snappedZ;
+            // Don’t snap yet, just keep current position
+            Debug.Log("Cube not close enough to snap yet.");
         }
 
-        cube.transform.position = targetPosition;
+        onComplete?.Invoke();
+
         //rb.constraints = tmpConst;// TODO: this rb statement too...
+    }
+
+    private IEnumerator LerpCubePosition(GameObject cube, Vector3 targetPosition, float duration = 0.2f)
+    {
+        Vector3 startPos = cube.transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            cube.transform.position = Vector3.Lerp(startPos, targetPosition, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        cube.transform.position = targetPosition; // Final snap
     }
 
     private void AdjustAllCubePositions()
@@ -297,7 +312,7 @@ public class CubeManager : MonoBehaviour
     private void CheckAdjacentCubesForMatchingColor(GameObject cube)
     {
         var cb = cube.GetComponent<CubeBehavior>();
-        Debug.Log($"Stepping into CheckAdjacentCubesForColor({cb.id})");
+        //Debug.Log($"Stepping into CheckAdjacentCubesForColor({cb.id})");
 
         if (cb.color == ColorOption.Neutral)
             return;
@@ -312,7 +327,7 @@ public class CubeManager : MonoBehaviour
             target.GetComponent<CubeBehavior>().color == cb.color && 
             !cb.isDestroying).ToList();
 
-            Debug.Log($"matchingColors {matchingColors.Count}");
+            //Debug.Log($"matchingColors {matchingColors.Count}");
 
         if (matchingColors.Count > 0)
         {
@@ -335,7 +350,7 @@ public class CubeManager : MonoBehaviour
             }
         }
        
-        Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
+        //Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
     }
 
     // this mostly used to prevent spawning similar colors next to each other in arenas.
@@ -372,7 +387,6 @@ public class CubeManager : MonoBehaviour
     {
         return cubes.Count;
     }
-
 
     // this was moved over from GetAdjacentCubes.cs
     public void DestoryAdjacentCubes(CubeBehavior targetCube, GameObject adjCube, List<CubeBehavior> targetCubes)

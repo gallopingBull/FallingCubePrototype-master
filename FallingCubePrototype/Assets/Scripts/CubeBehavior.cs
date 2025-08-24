@@ -239,10 +239,8 @@ public class CubeBehavior : MonoBehaviour
                 {
                     PlaySFX(landingSFX);
                     GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
-                    //RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
                 }
                 
-               
                 state = _state;
                 cubeCollider.enabled = true;
                 DisableRB();
@@ -250,9 +248,7 @@ public class CubeBehavior : MonoBehaviour
                 if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
                 {
                     GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
-                    //RoundCubeLocation(); // TODO: I should limit the distance to only closer to new cube
                 }
-
 
                 break;
 
@@ -381,7 +377,6 @@ public class CubeBehavior : MonoBehaviour
                 break;
         }
     }
-
 
     private void EnableRB()
     {

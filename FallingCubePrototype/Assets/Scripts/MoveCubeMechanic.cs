@@ -383,17 +383,13 @@ public class MoveCubeMechanic : vPushActionController
 
             //intendedPosition = ApplyStepConstraints(intendedPosition);
             pushPoint.targetBody.velocity = intendedDirection * inputWeight;
+            
             //Debug.Log("calling PositionIsLocked...");
             if (IsPositionAligned(intendedPosition))
             {
                 // Only apply the movement if the new position is different from the current position
                 pushPoint.targetBody.position = intendedPosition;
                 UpdateMovementState(intendedPosition);
-            }
-            else
-            {
-                DiscretePushToNearestWholeNumber(intendedPosition);
-                //Debug.Log("Position is locked...\n\tThis would be where SnapToMultipleOfCubeScale() would be called...");
             }
         }
     }
@@ -459,29 +455,6 @@ public class MoveCubeMechanic : vPushActionController
     }
 
     //protected override IEnumerator StopPushAndPull(bool playAnimation = true) { }
-
-    // TODO: not sure if this even used, might delete.
-    private void DiscretePushToNearestWholeNumber(Vector3 targetPosition)
-    {
-        Debug.Log("Stepping into MoveCubeMechanic.DiscretePushToNearestWholeNumber()");
-        // Snap X and Z positions to multiples of cube scale
-        float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
-        float snappedZ = Mathf.Round(targetPosition.z / cubeScale) * cubeScale;
-
-        // Snap to whole numbers if close enough
-        if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
-        {
-            targetPosition.x = snappedX;
-        }
-        if (Mathf.Abs(targetPosition.z - snappedZ) < snapThreshold)
-        {
-            targetPosition.z = snappedZ;
-        }
-
-        // Move the cube to the snapped position
-        pushPoint.targetBody.position = targetPosition;
-        lastBodyPosition = targetPosition;
-    }
 
     private bool IsPositionAligned(Vector3 position)
     {
