@@ -107,7 +107,7 @@ public class MoveCubeMechanic : vPushActionController
                 onLostObject.Invoke();
             }
 
-            if (pushPoint && pushPoint.canUse && (startPushPullInput.GetButton() || Input.GetMouseButton(0)) && CanUseInput() && 
+            if (pushPoint && pushPoint.canUse && startPushPullInput.GetButton() && CanUseInput() && 
                 pushPoint.gameObject.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
             {
                 StartCoroutine(StartPushAndPull());
@@ -115,7 +115,7 @@ public class MoveCubeMechanic : vPushActionController
             }
 
         }
-        else if (isPushingPulling && (!startPushPullInput.GetButton() && !Input.GetMouseButton(0)))
+        else if (isPushingPulling && !startPushPullInput.GetButton())
         {
             StartCoroutine(StopPushAndPull());
         }
