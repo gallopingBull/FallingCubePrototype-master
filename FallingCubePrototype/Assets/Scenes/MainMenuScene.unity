@@ -328,19 +328,15 @@ MonoBehaviour:
   gameCompleted: 0
   MAXScore: 20
   Score: 0
-  ScoreText: {fileID: 0}
   initialCountingDown: 0
   initialCountdownTime: 0
-  InitalTimerPanel: {fileID: 0}
-  initialTimerText: {fileID: 0}
-  beginGameText: {fileID: 0}
   TimeGameMode: 1
   countingDown: 0
   currentCountdownTime: 0
   totalGameTime: 30
-  countdownText: {fileID: 0}
+  CubeTargets: []
   ObjectiveGate: {fileID: 0}
-  GameHudPanel: {fileID: 0}
+  HUDPanel: {fileID: 0}
 --- !u!82 &739944590
 AudioSource:
   m_ObjectHideFlags: 0
@@ -521,8 +517,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalAxis: LeftAnalogHorizontal
-  m_VerticalAxis: LeftAnalogVertical
+  m_HorizontalAxis: LeftAnalogHorizontalMenus
+  m_VerticalAxis: LeftAnalogVerticalMenus
   m_SubmitButton: Submit
   m_CancelButton: Cancel
   m_InputActionsPerSecond: 10

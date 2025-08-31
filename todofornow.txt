@@ -17,3 +17,32 @@ generate random map in editor
 ---------
 
 plan and break down how to manage dynamic data(unity projects, code, games, etc), static data (images, videos, etc), and os/programs/etc. across built in ssd storage and secondary storage devices (external/internall ssds) for current pc and laptop as I was thinking about today on 7/2.  	
+
+
+
+----------------
+I have mouse0 assigned for mouse/key input in my derived vPushAndPullController class. This worked fine up until recently where mouse0 and left shift started log warning unity messages and I wasn't able to use the mouse button 0 to push or pull objects anymore.  
+
+I finally got a chance to investigate the issue and it seems invector input device detection is not successfully detecting when i move between mouse/keyboard and a gamepad. When I check what's being returned with startPushPullInput.GetButton() and it's returning the gamepad unity input ("RB") and not the expected input and device (Mouse 0).
+
+The other thing of note is that the warning messages imply that  mouse0 and left shift were in the input manager, but they were keycode values. So i thought it was interesting that a warning message for those keys was being logged.
+
+
+This is the commit that caused the issue:
+551d9f8a2d1fb2faee77750f7350942dcddf2326
+
+--------------------
+
+LEFT STICK ON GAMEPAD IS NOT BEING DETECTED DURING PAUSE MENU NAVIGATION.
+	- ONLY ESC KEY AND START BUTTON SEEM TO CORRECTLY TOGGLE PAUSE MENU.
+	
+ENTER KEY OVER 'RETURN TO GAME' BUTTON DOES NOTHING IN PAUSE MENU
+	- A BUTTON DOES ON GAMEPAD
+	
+THE MAIN MENU SEEMS TO HAVE SIMILAR ISSUES, BUT IN REVERSE OR OPPOSITE OF THE INPUTS/DEVICE.
+	
+MOUSE CURSOR OR SELECTION GOES MISSING IF EMPTY SPACE IS SELECTED WITH MOUSE.
+	- SOLUTION? 
+		- if (EventSystem.current.currentSelectedGameObject == null)
+		EventSystem.current.SetSelectedGameObject(myFirstSelectedGameObject);
+		
