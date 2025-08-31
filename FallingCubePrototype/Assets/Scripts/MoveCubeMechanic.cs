@@ -392,10 +392,15 @@ public class MoveCubeMechanic : vPushActionController
             {
                 // Only apply the movement if the new position is different from the current position
                 pushPoint.targetBody.position = intendedPosition;
+                
+                // i think this and the other conditon should be where checks for 
+                // stacked cubes should occur
+                
                 UpdateMovementState(intendedPosition);
             }
             else
             {
+                // see comment above
                 DiscretePushToNearestWholeNumber(intendedPosition);
             }
         }

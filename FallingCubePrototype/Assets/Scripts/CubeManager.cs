@@ -101,7 +101,9 @@ public class CubeManager : MonoBehaviour
         {
             for(int i = 0; i < currentCubes.Length; i++)
             {
-                currentCubes[i].transform.parent = cubesParent;
+                // I might not this. When this method is called, it's called
+                // in scenes with custom arenas.
+                //currentCubes[i].transform.parent = cubesParent;
 
                 SpawnData spawnData = new SpawnData { id = i, position = currentCubes[i].transform.position, color = currentCubes[i].color };
                 spawnDatas.Add(spawnData);
@@ -229,6 +231,7 @@ public class CubeManager : MonoBehaviour
         }
 
         StartCoroutine(AdjustCubePosition(cube, () => {
+            // ADD CHECK FOR STACKED CUBES
             CheckAdjacentCubesForMatchingColor(cube);
         }));
     }
@@ -274,6 +277,11 @@ public class CubeManager : MonoBehaviour
         onComplete?.Invoke();
 
         //rb.constraints = tmpConst;// TODO: this rb statement too...
+    }
+
+    private void CheckStackedCubes(GameObject cube)
+    {
+
     }
 
     private IEnumerator LerpCubePosition(GameObject cube, Vector3 targetPosition, float duration = 0.2f)

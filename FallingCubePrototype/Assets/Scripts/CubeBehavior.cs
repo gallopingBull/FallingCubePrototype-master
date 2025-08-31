@@ -104,7 +104,7 @@ public class CubeBehavior : MonoBehaviour
                 transform.rotation, m_MaxDistance);
 
 
-            // TODO: update cubeInfoPanel text objects here
+            //Update cubeInfoPanel text objects here
             if (cubeInfoPanel && cubeInfoPanel.activeInHierarchy)
             {
                 cubeStateText.text = state.ToString();
