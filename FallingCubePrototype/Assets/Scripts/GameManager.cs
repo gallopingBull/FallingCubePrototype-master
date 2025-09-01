@@ -335,7 +335,6 @@ public class GameManager : MonoBehaviour
         Invoke("DestoryCubeTargets", .15f);
     }
 
-
     private void DestoryCubeTargets()
     {
         if (CubeTargets != null)
@@ -403,8 +402,6 @@ public class GameManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "MainScene")
             InitalTimerPanel.SetActive(false);
     }
-
-    
 
     public void OnDestroy()
     {

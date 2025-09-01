@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class TestStackedCubeMovement : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        
+        // if exploding
+            // collect a list of nested cubes
+            // set the parent of each cube to the Cubes gameobject in the scene hiarchy.
+
+
     }   
 }

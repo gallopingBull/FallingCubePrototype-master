@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Threading;
+﻿using System.Collections;
+// using System.Threading; 
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 
 public class CubeBehavior : MonoBehaviour
 { 
@@ -93,7 +92,7 @@ public class CubeBehavior : MonoBehaviour
     {
         if (state != States.init)
         {
-            // custom velocity calculation since cube behavior doesn't use rb at times.
+            // Custom velocity calculation since cube behavior doesn't use rb at times.
             float tmpYVel = Mathf.Round(rb.velocity.y);
             velocity = (transform.position - prevVel) / Time.deltaTime;
             prevVel = transform.position;
@@ -103,8 +102,7 @@ public class CubeBehavior : MonoBehaviour
                 -transform.up, out m_Hit,
                 transform.rotation, m_MaxDistance);
 
-
-            //Update cubeInfoPanel text objects here
+            // Update cubeInfoPanel text objects here.
             if (cubeInfoPanel && cubeInfoPanel.activeInHierarchy)
             {
                 cubeStateText.text = state.ToString();
@@ -128,7 +126,6 @@ public class CubeBehavior : MonoBehaviour
               
                 if (m_HitDetect)
                 {
-                  
                     // Debug.Log(gameObject.name+ " Hit : " + m_Hit.collider.name);
                     EnableLandingMarker();
 
@@ -143,7 +140,6 @@ public class CubeBehavior : MonoBehaviour
                         EnterState(States.grounded);
                     }
                 }
-
                 else
                 {
                     LandingIndicator.transform.position =

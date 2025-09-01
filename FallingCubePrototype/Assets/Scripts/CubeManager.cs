@@ -253,13 +253,17 @@ public class CubeManager : MonoBehaviour
         float snappedZ = Mathf.Round(currentPos.z / cubeScale) * cubeScale;
 
         Vector3 snappedPosition = new Vector3(snappedX, Mathf.Round(currentPos.y), snappedZ);
-
+        #region migrated rb code
         // TODO: Determine if this RigidbodyConstraints code
         // from CubeBehavior is needed or does anything...
+        // **edit: look at invector pushpoint classes.
+        // there seems to be some rb updates that may make
+        // this code redundant.
 
         //RigidbodyConstraints tmpConst;
         //tmpConst = rb.constraints;
         //rb.constraints = RigidbodyConstraints.FreezePosition;
+        #endregion
 
         // Only snap if cube is *close enough* to the snapped position
         if (Vector3.Distance(currentPos, snappedPosition) < tolerance)
@@ -275,8 +279,10 @@ public class CubeManager : MonoBehaviour
         }
 
         onComplete?.Invoke();
-
+        #region migrated rb code
         //rb.constraints = tmpConst;// TODO: this rb statement too...
+        #endregion
+
     }
 
     private void CheckStackedCubes(GameObject cube)
@@ -382,7 +388,7 @@ public class CubeManager : MonoBehaviour
         }
 
         return false;
-    }
+    }   
 
     void DisplayAllSpawnDatas()
     {
@@ -436,6 +442,11 @@ public class CubeManager : MonoBehaviour
         spawnDatas.Clear();
         //cubes = new List<GameObject>();
         Debug.Log("post destory - cubes.Count: " + cubes.Count);
+    }
+
+    public void ResetCubeParent(GameObject cube)
+    {
+        cube.transform.parent = cubesParent;
     }
 
     private void OnDestroy()
