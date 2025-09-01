@@ -346,13 +346,9 @@ public class CubeManager : MonoBehaviour
 
         if (matchingColors.Count > 0)
         {
-            Debug.Log($"is {cube.name} in matchingColor: {matchingColors.Contains(cube)}");
-
             if (!matchingColors.Contains(cube))
             {
-                Debug.Log($"now adding {cube.name} to matchingColor");
                 matchingColors.Add(cube);
-                Debug.Log($"new matchingColors {matchingColors.Count}");
             }
 
             foreach (var c in matchingColors)
