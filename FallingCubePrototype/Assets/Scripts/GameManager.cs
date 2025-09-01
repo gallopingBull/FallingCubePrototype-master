@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -50,16 +49,11 @@ public class GameManager : MonoBehaviour
     public int totalGameTime = 30; // Total time allowed for the game session.
     private TMP_Text countdownText; // Displays the remaining time in the game.
 
-    //[Header("Cube Management Variables")]
-    // cube reference stuff\
-    [HideInInspector]
-    public List<GameObject> CubeTargets;
-
     private GameObject cameraTarget; // this is the camera target for the invector 3rd person controller
     [SerializeField]
     private GameObject ObjectiveGate;
     private CubeManager cubeManager;
-    private AerialCubeSpawner? aerialCubeSpawner;
+    public AerialCubeSpawner? aerialCubeSpawner;
     private Pause pause;
 
     [HideInInspector]
@@ -309,54 +303,6 @@ public class GameManager : MonoBehaviour
 
         countingDown = false;
         StopCoroutine("Timer");
-    }
-
-    public void AddCubeTarget(GameObject target)
-    {
-        // prevent cube meshes to be added as a cube target
-        if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
-        {
-            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
-            CubeTargets.Add(target);
-        }
-
-        Invoke("DestoryCubeTargets", .15f);
-        //DestoryCubeTargets();
-    }
-    public void AddCubeTargets(GameObject target)
-    {
-        // prevent cube meshes to be added as a cube target
-        if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
-        {
-            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
-            CubeTargets.Add(target);
-        }
-
-        Invoke("DestoryCubeTargets", .15f);
-    }
-
-    private void DestoryCubeTargets()
-    {
-        if (CubeTargets != null)
-        {
-            int _multiplier;
-            if (CubeTargets.Count < 1)
-                _multiplier = 1;
-            else
-                _multiplier = CubeTargets.Count;
-
-            foreach (GameObject target in CubeTargets)
-            {
-                if (target != null)
-                {
-                    AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
-                    aerialCubeSpawner.Spawn();
-                    target.GetComponent<CubeBehavior>().DestroyCube();
-                }
-            }
-        }
-        CubeTargets.Clear();
-        cubeManager.cubes.RemoveAll(cube => cube == null);  
     }
 
     private void SpawnPlayer()

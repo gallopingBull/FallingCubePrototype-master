@@ -34,7 +34,9 @@ public class CubeManager : MonoBehaviour
     // TODO: the mimunum distance should be passed throuigh the method call. 
     [SerializeField] float minimumDistance = 4f;
 
-    public bool arenaGenerated = false; 
+    public bool arenaGenerated = false;
+
+    private List<GameObject> CubeTargets = new List<GameObject>();
 
     [HideInInspector]
     public List<ColorOption> colorsUsed = new List<ColorOption>(); // Track colors used in the current arena generation
@@ -237,6 +239,7 @@ public class CubeManager : MonoBehaviour
     }
 
     float cubeScale = 2;
+
     private IEnumerator AdjustCubePosition(GameObject cube, Action onComplete = null)
     {
         //Debug.Log($"Stepping into CubeManager.AdjustCubePosition({cube})");
@@ -269,7 +272,7 @@ public class CubeManager : MonoBehaviour
         if (Vector3.Distance(currentPos, snappedPosition) < tolerance)
         {
             // Smoothly move into place
-            Debug.Log("Close enough to begin lerping.");
+            //Debug.Log("Close enough to begin lerping.");
             yield return StartCoroutine(LerpCubePosition(cube, snappedPosition, 0.1f));
         }
         else
@@ -354,10 +357,7 @@ public class CubeManager : MonoBehaviour
             foreach (var c in matchingColors)
             {
                 Debug.Log($"{c.GetComponent<CubeBehavior>().id} in matchingColors ");
-
-                if (!GameManager.gm)
-                    return;
-                GameManager.gm.AddCubeTarget(c);
+                AddCubeTarget(c);
             }
         }
        
@@ -399,30 +399,6 @@ public class CubeManager : MonoBehaviour
         return cubes.Count;
     }
 
-    // this was moved over from GetAdjacentCubes.cs
-    public void DestoryAdjacentCubes(CubeBehavior targetCube, GameObject adjCube, List<CubeBehavior> targetCubes)
-    {
-        // if other block has been destoryed so null, exit
-        if (!adjCube)
-            return;
-
-        targetCube.isDestroying = true;
-        if (adjCube.tag == "Block")
-        {
-            if (adjCube.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
-            {
-                //Debug.Log("\tDestroying " + tmp.name + " from " + transform.parent.parent.gameObject.name);
-
-                // check if this cube and the other cuber (tmp) are in game manager's target list
-                // if not add them in
-                if (!GameManager.gm)
-                    return;
-                GameManager.gm.AddCubeTarget(adjCube);
-                GameManager.gm.AddCubeTarget(transform.parent.parent.gameObject);
-            }
-        }
-    }
-
     public void DestoryAllCubes()
     {
         if (cubes.Count == 0)
@@ -439,11 +415,61 @@ public class CubeManager : MonoBehaviour
         //cubes = new List<GameObject>();
         Debug.Log("post destory - cubes.Count: " + cubes.Count);
     }
+    public void AddCubeTarget(GameObject target)
+    {
+        Debug.Log($"Stepping into AddCubeTargets({target.name})");
+        // prevent cube meshes to be added as a cube target
+        if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
+        {
+            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
+            CubeTargets.Add(target);
+        }
+
+        Invoke("DestoryCubeTargets", .15f);
+        //DestoryCubeTargets();
+    }
+    public void AddCubeTargets(GameObject target)
+    {
+        // prevent cube meshes to be added as a cube target
+        if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
+        {
+            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
+            CubeTargets.Add(target);
+        }
+
+        Invoke("DestoryCubeTargets", .15f);
+    }
+
+    private void DestoryCubeTargets()
+    {
+        if (CubeTargets != null)
+        {
+            int _multiplier;
+            if (CubeTargets.Count < 1)
+                _multiplier = 1;
+            else
+                _multiplier = CubeTargets.Count;
+
+            foreach (GameObject target in CubeTargets)
+            {
+                if (target != null)
+                {
+                    GameManager.gm.AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
+                    GameManager.gm.aerialCubeSpawner.Spawn();
+                    target.GetComponent<CubeBehavior>().DestroyCube();
+                }
+            }
+        }
+        CubeTargets.Clear();
+        cubes.RemoveAll(cube => cube == null);
+    }
 
     public void ResetCubeParent(GameObject cube)
     {
         cube.transform.parent = cubesParent;
     }
+
+
 
     private void OnDestroy()
     {
