@@ -105,10 +105,6 @@ public class CubeManager : MonoBehaviour
         {
             for(int i = 0; i < currentCubes.Length; i++)
             {
-                // I might not this. When this method is called, it's called
-                // in scenes with custom arenas.
-                //currentCubes[i].transform.parent = cubesParent;
-
                 SpawnData spawnData = new SpawnData { id = i, position = currentCubes[i].transform.position, color = currentCubes[i].color };
                 spawnDatas.Add(spawnData);
                 cubes.Add(currentCubes[i].gameObject);
@@ -427,7 +423,8 @@ public class CubeManager : MonoBehaviour
             {
                 foreach(var cube in stackedCubes)
                 {
-                    // Weird cons
+                    // Weird condition that will ensure only nested stacked
+                    // cubes are added.
                     if (cube.layer == LayerMask.NameToLayer("Default"))
                     {
                         ResetCubeParent(cube);
