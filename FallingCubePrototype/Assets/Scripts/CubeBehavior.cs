@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-// using System.Threading; 
+//using System.Threading; 
 using TMPro;
 using UnityEngine;
 
@@ -231,11 +231,12 @@ public class CubeBehavior : MonoBehaviour
                     //Debug.Log("play landing paritcle");
                     GroundedDust.GetComponent<ParticleSystem>().Play();
                 }
-                if (state == States.falling)
-                {
-                    PlaySFX(landingSFX);
-                    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
-                }
+                
+                //if (state == States.falling)
+                //{
+                //    PlaySFX(landingSFX);
+                //    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, state);
+                //}
                 
                 state = _state;
                 cubeCollider.enabled = true;
@@ -243,7 +244,7 @@ public class CubeBehavior : MonoBehaviour
 
                 if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
                 {
-                    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
+                    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, state);
                 }
 
                 break;

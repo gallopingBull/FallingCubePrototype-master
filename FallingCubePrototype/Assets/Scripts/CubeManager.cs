@@ -223,17 +223,36 @@ public class CubeManager : MonoBehaviour
         Debug.Log($"{GetTotalCubeCount()} cubes spawned");
     }
 
-    public void FinalizeCubePosition(GameObject cube) 
+    public void FinalizeCubePosition(GameObject cube, CubeBehavior.States exitState) 
     {
+        Debug.Log($"Stepping into FinalizeCubePosition({cube.name}, {exitState})");
         if (!cube)
         {
             Debug.LogWarning("cube is null!");
             return;
         }
+        switch (exitState)
+        {
+            case CubeBehavior.States.falling:
+                StartCoroutine(AdjustCubePosition(cube, () => {
+                    CheckAdjacentCubesForMatchingColor(cube);
+                }));
+                break;
+            case CubeBehavior.States.grounded:
+                StartCoroutine(AdjustCubePosition(cube, () => {
+                    // check for any stacked cubes and add them to list
+                    CheckAdjacentCubesForMatchingColor(cube);
+                }));
+                break;
+            case CubeBehavior.States.dragging:
+                break;
+            case CubeBehavior.States.init:
+                break;
+            default:
+                break;
+        }
+        Debug.Log($"Stepping out of FinalizeCubePosition({cube.name}, {exitState})");
 
-        StartCoroutine(AdjustCubePosition(cube, () => {
-            CheckAdjacentCubesForMatchingColor(cube);
-        }));
     }
 
     private IEnumerator AdjustCubePosition(GameObject cube, Action onComplete = null)
