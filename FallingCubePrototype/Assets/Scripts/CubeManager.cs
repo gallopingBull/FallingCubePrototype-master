@@ -13,6 +13,8 @@ public class CubeManager : MonoBehaviour
     public int gridSizeZ = 10;
     public float spawnDelay = 0.01f;
 
+    public const float CUBE_SCALE_SIZE = 2;
+
     // this is best so far between .125f and .2f. Closes to furthest.
     public float tolerance = 0.0001f;
 
@@ -196,6 +198,7 @@ public class CubeManager : MonoBehaviour
                 }
             }
         }
+
         arenaGenerated = true;
         OnFloorComplete?.Invoke();
     }
@@ -233,12 +236,9 @@ public class CubeManager : MonoBehaviour
         }
 
         StartCoroutine(AdjustCubePosition(cube, () => {
-            // ADD CHECK FOR STACKED CUBES
             CheckAdjacentCubesForMatchingColor(cube);
         }));
     }
-
-    float cubeScale = 2;
 
     private IEnumerator AdjustCubePosition(GameObject cube, Action onComplete = null)
     {
@@ -252,8 +252,8 @@ public class CubeManager : MonoBehaviour
         Vector3 currentPos = cube.transform.position;
 
         // Calculate the nearest snapped grid point
-        float snappedX = Mathf.Round(currentPos.x / cubeScale) * cubeScale;
-        float snappedZ = Mathf.Round(currentPos.z / cubeScale) * cubeScale;
+        float snappedX = Mathf.Round(currentPos.x / CUBE_SCALE_SIZE) * CUBE_SCALE_SIZE;
+        float snappedZ = Mathf.Round(currentPos.z / CUBE_SCALE_SIZE) * CUBE_SCALE_SIZE;
 
         Vector3 snappedPosition = new Vector3(snappedX, Mathf.Round(currentPos.y), snappedZ);
         #region migrated rb code
@@ -338,7 +338,6 @@ public class CubeManager : MonoBehaviour
         // 2 is cube scale on cube transform.scale
         var adjCubePositions = directions.Select(dir => cb.transform.position + (dir*2)).ToList();
 
-
         var matchingColors = cubes.Where(target =>
             target && 
             adjCubePositions.Contains(target.transform.position) &&
@@ -360,7 +359,7 @@ public class CubeManager : MonoBehaviour
                 AddCubeTarget(c);
             }
         }
-       
+     
         //Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
     }
 
@@ -415,12 +414,27 @@ public class CubeManager : MonoBehaviour
         //cubes = new List<GameObject>();
         Debug.Log("post destory - cubes.Count: " + cubes.Count);
     }
+    
     public void AddCubeTarget(GameObject target)
     {
         Debug.Log($"Stepping into AddCubeTargets({target.name})");
         // prevent cube meshes to be added as a cube target
         if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
         {
+            // Check for stacked cubes nested in target cube gameobject.
+            var stackedCubes = target.transform.FindObjectsWithTag("Block");
+            if (stackedCubes != null && stackedCubes.Count > 0)
+            {
+                foreach(var cube in stackedCubes)
+                {
+                    // Weird cons
+                    if (cube.layer == LayerMask.NameToLayer("Default"))
+                    {
+                        ResetCubeParent(cube);
+                    }
+                }
+            }
+
             target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
             CubeTargets.Add(target);
         }
@@ -428,13 +442,20 @@ public class CubeManager : MonoBehaviour
         Invoke("DestoryCubeTargets", .15f);
         //DestoryCubeTargets();
     }
-    public void AddCubeTargets(GameObject target)
+
+    public void AddCubeTargets(List<GameObject> targets)
     {
-        // prevent cube meshes to be added as a cube target
-        if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
+        if (targets != null || targets.Count > 0)
         {
-            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
-            CubeTargets.Add(target);
+            foreach (GameObject cube in targets)
+            {
+                // prevent cube meshes to be added as a cube target
+                if (!CubeTargets.Contains(cube) && cube.name != "CubeMesh")
+                {
+                    cube.GetComponent<CubeBehavior>().PlaySFX(cube.GetComponent<CubeBehavior>().contactSFX);
+                    CubeTargets.Add(cube);
+                }
+            }
         }
 
         Invoke("DestoryCubeTargets", .15f);
@@ -460,6 +481,7 @@ public class CubeManager : MonoBehaviour
                 }
             }
         }
+
         CubeTargets.Clear();
         cubes.RemoveAll(cube => cube == null);
     }
@@ -468,8 +490,6 @@ public class CubeManager : MonoBehaviour
     {
         cube.transform.parent = cubesParent;
     }
-
-
 
     private void OnDestroy()
     {
