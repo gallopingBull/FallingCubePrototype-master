@@ -235,16 +235,19 @@ public class CubeManager : MonoBehaviour
         {
             case CubeBehavior.States.falling:
                 StartCoroutine(AdjustCubePosition(cube, () => {
+                    //ResetParentForStackedCubes(cube);
                     CheckAdjacentCubesForMatchingColor(cube);
                 }));
                 break;
             case CubeBehavior.States.grounded:
                 StartCoroutine(AdjustCubePosition(cube, () => {
+                    //ResetParentForStackedCubes(cube);
                     // check for any stacked cubes and add them to list
                     CheckAdjacentCubesForMatchingColor(cube);
                 }));
                 break;
             case CubeBehavior.States.dragging:
+                Debug.Log($"{cube.name} is in dragging state!");
                 break;
             case CubeBehavior.States.init:
                 break;
@@ -433,14 +436,29 @@ public class CubeManager : MonoBehaviour
     public void AddCubeTarget(GameObject target)
     {
         Debug.Log($"Stepping into AddCubeTargets({target.name})");
+
         // prevent cube meshes to be added as a cube target
+        if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
+        {
+            ResetParentForStackedCubes(target);
+
+            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
+            CubeTargets.Add(target);
+        }
+
+        Invoke("DestoryCubeTargets", .15f);
+        //DestoryCubeTargets();
+    }
+
+    private void ResetParentForStackedCubes(GameObject target)
+    {
         if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
         {
             // Check for stacked cubes nested in target cube gameobject.
             var stackedCubes = target.transform.FindObjectsWithTag("Block");
             if (stackedCubes != null && stackedCubes.Count > 0)
             {
-                foreach(var cube in stackedCubes)
+                foreach (var cube in stackedCubes)
                 {
                     // Weird condition that will ensure only nested stacked
                     // cubes are added.
@@ -450,13 +468,7 @@ public class CubeManager : MonoBehaviour
                     }
                 }
             }
-
-            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
-            CubeTargets.Add(target);
         }
-
-        Invoke("DestoryCubeTargets", .15f);
-        //DestoryCubeTargets();
     }
 
     public void AddCubeTargets(List<GameObject> targets)
