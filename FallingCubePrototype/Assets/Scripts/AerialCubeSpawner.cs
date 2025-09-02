@@ -140,7 +140,7 @@ public class AerialCubeSpawner : MonoBehaviour
     {
         if (!enabled)
         {
-            Debug.Log("aerial spawn component is currently disabled, returning...");
+            //Debug.Log("aerial spawn component is currently disabled, returning...");
             return;
         }
 

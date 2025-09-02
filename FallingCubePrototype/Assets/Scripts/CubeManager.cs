@@ -235,13 +235,14 @@ public class CubeManager : MonoBehaviour
         {
             case CubeBehavior.States.falling:
                 StartCoroutine(AdjustCubePosition(cube, () => {
-                    //ResetParentForStackedCubes(cube);
+                    //RemoveStackedCubes(cube);
                     CheckAdjacentCubesForMatchingColor(cube);
                 }));
                 break;
             case CubeBehavior.States.grounded:
+                Debug.Log($"{cube.name} is in grounded state!");
                 StartCoroutine(AdjustCubePosition(cube, () => {
-                    //ResetParentForStackedCubes(cube);
+                    //RemoveStackedCubes(cube);
                     // check for any stacked cubes and add them to list
                     CheckAdjacentCubesForMatchingColor(cube);
                 }));
@@ -440,8 +441,7 @@ public class CubeManager : MonoBehaviour
         // prevent cube meshes to be added as a cube target
         if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
         {
-            ResetParentForStackedCubes(target);
-
+            RemoveStackedCubes(target);
             target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
             CubeTargets.Add(target);
         }
@@ -450,7 +450,7 @@ public class CubeManager : MonoBehaviour
         //DestoryCubeTargets();
     }
 
-    private void ResetParentForStackedCubes(GameObject target)
+    private void RemoveStackedCubes(GameObject target)
     {
         if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
         {
@@ -461,7 +461,7 @@ public class CubeManager : MonoBehaviour
                 foreach (var cube in stackedCubes)
                 {
                     // Weird condition that will ensure only nested stacked
-                    // cubes are added.
+                    // cubes are reset.
                     if (cube.layer == LayerMask.NameToLayer("Default"))
                     {
                         ResetCubeParent(cube);
