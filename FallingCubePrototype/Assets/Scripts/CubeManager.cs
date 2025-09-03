@@ -473,10 +473,10 @@ public class CubeManager : MonoBehaviour
             return;
 
         // Position directly above
-        Vector3 checkPos = baseData.Value.position + (Vector3.up * CubeSize);
+        Vector3 checkPos = baseData.Value.position + (Vector3.up * CUBE_SCALE_SIZE);
 
         // Skip if we’re at floor level (prevents absorbing the floor at (0,0,0))
-        if (checkPos.y <= 0f)
+        if (checkPos.y <= 2f)
             return;
 
         // Look for a cube at this position
