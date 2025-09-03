@@ -250,6 +250,12 @@ public class CubeBehavior : MonoBehaviour
                 break;
 
             case States.dragging:
+                if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
+                {
+                    // add stacked cubes here.
+                    //GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, state);
+                }
+
                 PlaySFX(grabSFX);
                 if (DraggingDust != null)
                 {
