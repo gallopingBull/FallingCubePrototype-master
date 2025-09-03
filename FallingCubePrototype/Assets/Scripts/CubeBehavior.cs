@@ -253,7 +253,7 @@ public class CubeBehavior : MonoBehaviour
                 if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
                 {
                     // add stacked cubes here.
-                    //GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, state);
+                    GameManager.gm.CubeManager.AddStackedCubes(gameObject);
                 }
 
                 PlaySFX(grabSFX);

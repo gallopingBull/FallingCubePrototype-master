@@ -15,6 +15,7 @@ public class CubeManager : MonoBehaviour
 
     public const float CUBE_SCALE_SIZE = 2;
 
+    public int maxStackHeight = 5;
     // this is best so far between .125f and .2f. Closes to furthest.
     public float tolerance = 0.0001f;
 
@@ -50,7 +51,7 @@ public class CubeManager : MonoBehaviour
         Vector3.forward, Vector3.back,
         Vector3.right,  Vector3.left,
         Vector3.up, Vector3.down
-    }; 
+    };
 
     private void Start()
     {
@@ -68,7 +69,7 @@ public class CubeManager : MonoBehaviour
     private void Init()
     {
         init = false;
-       
+
         if (!cubesParent)
         {
             cubesParent = new GameObject("Cubes").transform;
@@ -76,7 +77,7 @@ public class CubeManager : MonoBehaviour
         }
         //OnFloorComplete += DisplayAllSpawnDatas;
 
-        if (GameManager.gm) 
+        if (GameManager.gm)
         {
             if (!GameManager.gm.isDebug)
                 GenerateArena(gridSizeX, gridSizeZ);
@@ -103,7 +104,7 @@ public class CubeManager : MonoBehaviour
 
         if (currentCubes != null && currentCubes.Length > 0)
         {
-            for(int i = 0; i < currentCubes.Length; i++)
+            for (int i = 0; i < currentCubes.Length; i++)
             {
                 SpawnData spawnData = new SpawnData { id = i, position = currentCubes[i].transform.position, color = currentCubes[i].color };
                 spawnDatas.Add(spawnData);
@@ -117,7 +118,7 @@ public class CubeManager : MonoBehaviour
     public void GenerateArena(int gridSizex = 6, int gridSizeZ = 6)
     {
         DestoryAllCubes();
-        arenaGenerated = false; 
+        arenaGenerated = false;
         for (int x = 0; x < gridSizex; x++)
         {
             for (int z = 0; z < gridSizeZ; z++)
@@ -223,7 +224,7 @@ public class CubeManager : MonoBehaviour
         Debug.Log($"{GetTotalCubeCount()} cubes spawned");
     }
 
-    public void FinalizeCubePosition(GameObject cube, CubeBehavior.States exitState) 
+    public void FinalizeCubePosition(GameObject cube, CubeBehavior.States exitState)
     {
         Debug.Log($"Stepping into FinalizeCubePosition({cube.name}, {exitState})");
         if (!cube)
@@ -355,15 +356,15 @@ public class CubeManager : MonoBehaviour
             return;
 
         // 2 is cube scale on cube transform.scale
-        var adjCubePositions = directions.Select(dir => cb.transform.position + (dir*2)).ToList();
+        var adjCubePositions = directions.Select(dir => cb.transform.position + (dir * 2)).ToList();
 
         var matchingColors = cubes.Where(target =>
-            target && 
+            target &&
             adjCubePositions.Contains(target.transform.position) &&
-            target.GetComponent<CubeBehavior>().color == cb.color && 
+            target.GetComponent<CubeBehavior>().color == cb.color &&
             !cb.isDestroying).ToList();
 
-            //Debug.Log($"matchingColors {matchingColors.Count}");
+        //Debug.Log($"matchingColors {matchingColors.Count}");
 
         if (matchingColors.Count > 0)
         {
@@ -375,10 +376,10 @@ public class CubeManager : MonoBehaviour
             foreach (var c in matchingColors)
             {
                 Debug.Log($"{c.GetComponent<CubeBehavior>().id} in matchingColors ");
-                AddCubeTarget(c);
+                AddCubeTargetToDestroy(c);
             }
         }
-     
+
         //Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
     }
 
@@ -402,7 +403,7 @@ public class CubeManager : MonoBehaviour
         }
 
         return false;
-    }   
+    }
 
     void DisplayAllSpawnDatas()
     {
@@ -433,8 +434,8 @@ public class CubeManager : MonoBehaviour
         //cubes = new List<GameObject>();
         Debug.Log("post destory - cubes.Count: " + cubes.Count);
     }
-    
-    public void AddCubeTarget(GameObject target)
+
+    public void AddCubeTargetToDestroy(GameObject target)
     {
         Debug.Log($"Stepping into AddCubeTargets({target.name})");
 
@@ -450,22 +451,67 @@ public class CubeManager : MonoBehaviour
         //DestoryCubeTargets();
     }
 
+    // Recursive method to add stacked cubes
+    public void AddStackedCubes(GameObject target)
+    {
+        Debug.Log($"Stepping into AddStackedCubes({target.name})");
+
+        // Find the SpawnData for this target cube
+        SpawnData? targetData = SpawnDatas.Find(s => cubes[s.id] == target);
+        if (targetData == null)
+        {
+            Debug.LogWarning($"Target {target.name} has no SpawnData!");
+            return;
+        }
+
+        AddStackedRecursive(targetData, target.transform, 1);
+    }
+
+    private void AddStackedRecursive(SpawnData? baseData, Transform parent, int depth)
+    {
+        if (depth > maxStackHeight)
+            return;
+
+        // Position directly above
+        Vector3 checkPos = baseData.Value.position + (Vector3.up * CubeSize);
+
+        // Skip if we’re at floor level (prevents absorbing the floor at (0,0,0))
+        if (checkPos.y <= 0f)
+            return;
+
+        // Look for a cube at this position
+        SpawnData? stackedData = SpawnDatas.Find(s => s.position == checkPos);
+
+        if (stackedData != null)
+        {
+            Debug.Log($"Stacked cube {stackedData.Value.id} found above {baseData.Value.id} at {checkPos}");
+
+            // Get the actual GameObject from global array
+            GameObject stackedCube = cubes[stackedData.Value.id];
+            if (stackedCube != null)
+            {
+                // Parent it to the base cube
+                stackedCube.transform.SetParent(parent, true);
+
+                // Recurse: check if THIS stacked cube has another cube on top
+                AddStackedRecursive(stackedData, stackedCube.transform, depth + 1);
+            }
+        }
+    }
+
     private void RemoveStackedCubes(GameObject target)
     {
-        if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
+        // Check for stacked cubes nested in target cube gameobject.
+        var stackedCubes = target.transform.FindObjectsWithTag("Block");
+        if (stackedCubes != null && stackedCubes.Count > 0)
         {
-            // Check for stacked cubes nested in target cube gameobject.
-            var stackedCubes = target.transform.FindObjectsWithTag("Block");
-            if (stackedCubes != null && stackedCubes.Count > 0)
+            foreach (var cube in stackedCubes)
             {
-                foreach (var cube in stackedCubes)
+                // Weird condition that will ensure only nested stacked
+                // cubes are reset.
+                if (cube.layer == LayerMask.NameToLayer("Default"))
                 {
-                    // Weird condition that will ensure only nested stacked
-                    // cubes are reset.
-                    if (cube.layer == LayerMask.NameToLayer("Default"))
-                    {
-                        ResetCubeParent(cube);
-                    }
+                    ResetCubeParent(cube);
                 }
             }
         }

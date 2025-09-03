@@ -437,8 +437,8 @@ MonoBehaviour:
   countingDown: 0
   currentCountdownTime: 0
   totalGameTime: 30
-  CubeTargets: []
   ObjectiveGate: {fileID: 0}
+  aerialCubeSpawner: {fileID: 0}
   HUDPanel: {fileID: 0}
 --- !u!114 &122218757
 MonoBehaviour:
@@ -7192,6 +7192,10 @@ PrefabInstance:
     - target: {fileID: 4201830530435554295, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
       propertyPath: arenaGenerated
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4201830530435554295, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
+      propertyPath: maxStackHeight
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4201830530435554295, guid: 03206548ab535764cbd33975ea2617dd, type: 3}
       propertyPath: minimumDistance
