@@ -2,6 +2,7 @@
 //using System.Threading; 
 using TMPro;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 
 public class CubeBehavior : MonoBehaviour
@@ -242,7 +243,7 @@ public class CubeBehavior : MonoBehaviour
                 cubeCollider.enabled = true;
                 DisableRB();
 
-                if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
+                if (GameManager.gm && GameManager.gm.CubeManager.init)
                 {
                     GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, state);
                 }
@@ -250,7 +251,7 @@ public class CubeBehavior : MonoBehaviour
                 break;
 
             case States.dragging:
-                if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
+                if (GameManager.gm && GameManager.gm.CubeManager.init)
                 {
                     // add stacked cubes here.
                     GameManager.gm.CubeManager.AddStackedCubes(gameObject);
@@ -326,6 +327,12 @@ public class CubeBehavior : MonoBehaviour
                     lastRoutine = StartCoroutine(HideCubeInfo());
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
+                
+                GameManager.gm.CubeManager.RemoveStackedCubes(gameObject);
+                //if (GameManager.gm && GameManager.gm.CubeManager.init)
+                //{
+                //    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, _state);
+                //}
 
                 break;
             default:

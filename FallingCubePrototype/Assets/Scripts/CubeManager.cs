@@ -250,6 +250,10 @@ public class CubeManager : MonoBehaviour
                 break;
             case CubeBehavior.States.dragging:
                 Debug.Log($"{cube.name} is in dragging state!");
+                StartCoroutine(AdjustCubePosition(cube, () => {
+                    //RemoveStackedCubes(cube);
+                    CheckAdjacentCubesForMatchingColor(cube);
+                }));
                 break;
             case CubeBehavior.States.init:
                 break;
@@ -437,7 +441,7 @@ public class CubeManager : MonoBehaviour
 
     public void AddCubeTargetToDestroy(GameObject target)
     {
-        Debug.Log($"Stepping into AddCubeTargets({target.name})");
+        Debug.Log($"Stepping into AddCubeTargetToDestroy({target.name})");
 
         // prevent cube meshes to be added as a cube target
         if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
@@ -499,7 +503,7 @@ public class CubeManager : MonoBehaviour
         }
     }
 
-    private void RemoveStackedCubes(GameObject target)
+    public void RemoveStackedCubes(GameObject target)
     {
         // Check for stacked cubes nested in target cube gameobject.
         var stackedCubes = target.transform.FindObjectsWithTag("Block");
