@@ -106,6 +106,7 @@ public class CubeBehavior : MonoBehaviour
             // Update cubeInfoPanel text objects here.
             if (cubeInfoPanel && cubeInfoPanel.activeInHierarchy)
             {
+                cubeIDText.text = id.ToString();
                 cubeStateText.text = state.ToString();
                 cubePosText.text =
                     $"x: {Mathf.Floor(transform.position.x * 10) / 10}, y: {Mathf.Floor(transform.position.y * 10) / 10}, z: {Mathf.Floor(transform.position.z * 10) / 10}";
