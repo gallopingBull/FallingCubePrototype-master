@@ -571,8 +571,6 @@ public class CubeManager : MonoBehaviour
         CubeTargets.Clear();
         spawnDatas.RemoveAll(data => data.cubeRef == null);
         cubes.RemoveAll(cube => cube == null);
-        //yield return new WaitUntil( ()=> cubes.);
-        //cubes.Clear();
     }
 
     public void ResetCubeParent(GameObject cube)
