@@ -106,8 +106,9 @@ public class CubeManager : MonoBehaviour
         {
             for (int i = 0; i < currentCubes.Length; i++)
             {
-                SpawnData spawnData = new SpawnData { id = i, position = currentCubes[i].transform.position, color = currentCubes[i].color };
+                SpawnData spawnData = new SpawnData { id = i, position = currentCubes[i].transform.position, color = currentCubes[i].color, cubeRef = currentCubes[i].transform.gameObject};
                 spawnDatas.Add(spawnData);
+                currentCubes[i].id = i;
                 cubes.Add(currentCubes[i].gameObject);
             }
         }
@@ -202,8 +203,10 @@ public class CubeManager : MonoBehaviour
 
     public void SpawnCube(SpawnData data)
     {
-        spawnDatas.Add(data);
         var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
+        data.cubeRef = cube;    
+        spawnDatas.Add(data);
+
         cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
         cubes.Add(cube);
     }
@@ -449,9 +452,9 @@ public class CubeManager : MonoBehaviour
             RemoveStackedCubes(target);
             target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
             CubeTargets.Add(target);
+            StartCoroutine(DestoryCubeTargets());
         }
 
-        Invoke("DestoryCubeTargets", .15f);
         //DestoryCubeTargets();
     }
 
@@ -491,7 +494,7 @@ public class CubeManager : MonoBehaviour
             Debug.Log($"Stacked cube {stackedData.Value.id} found above {baseData.Value.id} at {checkPos}");
 
             // Get the actual GameObject from global array
-            GameObject stackedCube = cubes[stackedData.Value.id];
+            GameObject stackedCube = stackedData.Value.cubeRef;
             if (stackedCube != null)
             {
                 // Parent it to the base cube
@@ -535,12 +538,12 @@ public class CubeManager : MonoBehaviour
                 }
             }
         }
-
-        Invoke("DestoryCubeTargets", .15f);
+        StartCoroutine(DestoryCubeTargets());
     }
 
-    private void DestoryCubeTargets()
+    private IEnumerator DestoryCubeTargets()
     {
+        yield return new WaitForSeconds(.5f);
         if (CubeTargets != null)
         {
             int _multiplier;
@@ -559,9 +562,12 @@ public class CubeManager : MonoBehaviour
                 }
             }
         }
-
+    
         CubeTargets.Clear();
+        spawnDatas.RemoveAll(data => data.cubeRef == null);
         cubes.RemoveAll(cube => cube == null);
+        //yield return new WaitUntil( ()=> cubes.);
+        //cubes.Clear();
     }
 
     public void ResetCubeParent(GameObject cube)
@@ -589,4 +595,5 @@ public struct SpawnData
     public int id;
     public Vector3 position;
     public ColorOption color;
+    public GameObject cubeRef;
 }
