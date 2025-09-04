@@ -206,8 +206,9 @@ public class ArenaGenerator : MonoBehaviour
     }
     public void SpawnCube(SpawnData data)
     {
-        spawnDatas.Add(data);
         var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
+        data.cubeRef = cube;    
+        spawnDatas.Add(data);
         cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
         cubes.Add(cube);
     }
