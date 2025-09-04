@@ -106,9 +106,9 @@ public class CubeManager : MonoBehaviour
         {
             for (int i = 0; i < currentCubes.Length; i++)
             {
-                SpawnData spawnData = new SpawnData { id = i, position = currentCubes[i].transform.position, color = currentCubes[i].color, cubeRef = currentCubes[i].transform.gameObject};
+                SpawnData spawnData = new SpawnData { id = Guid.NewGuid(), position = currentCubes[i].transform.position, color = currentCubes[i].color, cubeRef = currentCubes[i].transform.gameObject};
                 spawnDatas.Add(spawnData);
-                currentCubes[i].id = i;
+                currentCubes[i].id = spawnData.id;
                 cubes.Add(currentCubes[i].gameObject);
             }
         }
@@ -132,7 +132,7 @@ public class CubeManager : MonoBehaviour
                     randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 }
 
-                int id = SpawnDatas.Count;
+                Guid id = Guid.NewGuid();
                 Vector3 cubePosition = new Vector3(x * CubeSize, randomHeight, z * CubeSize);
                 ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
 
@@ -174,7 +174,7 @@ public class CubeManager : MonoBehaviour
                 {
                     for (int i = (int)cubePosition.y - (int)CubeSize; i < cubePosition.y; i = i - (int)CubeSize)
                     {
-                        id = SpawnDatas.Count;
+                        
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
 
                         //Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
@@ -391,7 +391,7 @@ public class CubeManager : MonoBehaviour
     }
 
     // this mostly used to prevent spawning similar colors next to each other in arenas.
-    public bool CheckIfColorIsNearByDistance(int id, Vector3 position, ColorOption color, float minDistance)
+    public bool CheckIfColorIsNearByDistance(Guid id, Vector3 position, ColorOption color, float minDistance)
     {
         if (SpawnDatas.Count == 0)
             return false;
@@ -464,7 +464,7 @@ public class CubeManager : MonoBehaviour
         Debug.Log($"Stepping into AddStackedCubes({target.name})");
 
         // Find the SpawnData for this target cube
-        SpawnData? targetData = SpawnDatas.Find(s => cubes[s.id] == target);
+        SpawnData? targetData = SpawnDatas.Find(s => s.cubeRef == target);
         if (targetData == null)
         {
             Debug.LogWarning($"Target {target.name} has no SpawnData!");
@@ -489,9 +489,9 @@ public class CubeManager : MonoBehaviour
         // Look for a cube at this position
         SpawnData? stackedData = SpawnDatas.Find(s => s.position == checkPos);
 
-        if (stackedData != null)
+        if (stackedData != null && stackedData.Value.cubeRef != null)
         {
-            Debug.Log($"Stacked cube {stackedData.Value.id} found above {baseData.Value.id} at {checkPos}");
+            Debug.Log($"Stacked cube {stackedData.Value.cubeRef.name} found above {baseData.Value.cubeRef.name} at {checkPos}");
 
             // Get the actual GameObject from global array
             GameObject stackedCube = stackedData.Value.cubeRef;
@@ -558,7 +558,12 @@ public class CubeManager : MonoBehaviour
                 {
                     GameManager.gm.AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
                     GameManager.gm.aerialCubeSpawner.Spawn();
+                    Debug.Log($"Destroying cube{target.name}");
+                    SpawnData spawnData = spawnDatas.Find(s => s.cubeRef.name == target.name); 
+                    spawnDatas.Remove(spawnData);
+                    cubes.Remove(target);
                     target.GetComponent<CubeBehavior>().DestroyCube();
+    
                 }
             }
         }
@@ -592,7 +597,7 @@ public enum ColorOption
 
 public struct SpawnData
 {
-    public int id;
+    public Guid id;
     public Vector3 position;
     public ColorOption color;
     public GameObject cubeRef;

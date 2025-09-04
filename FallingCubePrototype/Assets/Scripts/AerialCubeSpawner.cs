@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class AerialCubeSpawner : MonoBehaviour
 {
@@ -106,7 +107,7 @@ public class AerialCubeSpawner : MonoBehaviour
         // TODO: maybe add some delay here before spawning begins??? 
 
         if (init)
-            MAXCubeSpawnAmmount = Random.Range(10, 15);
+            MAXCubeSpawnAmmount = UnityEngine.Random.Range(10, 15);
 
         while (EnableSpawner)
         {
@@ -121,7 +122,7 @@ public class AerialCubeSpawner : MonoBehaviour
                     StopCoroutine(AutoSpawner());
                 }
                 CubeSpawnAmmount++;
-                randFloat = Random.Range(.25f, .35f);
+                randFloat = UnityEngine.Random.Range(.25f, .35f);
             }
 
             else
@@ -150,7 +151,7 @@ public class AerialCubeSpawner : MonoBehaviour
         randLoc = GetRandomSpawnPosition();
         CurSpawnLoc = SpawnLocs[randLoc];
 
-        int id = cubeManager.SpawnDatas.Count;
+        Guid id = Guid.NewGuid();
         Vector3 cubePosition = new Vector3(CurSpawnLoc.position.x, 0, CurSpawnLoc.position.z);
 
         float cubebeneath =
@@ -189,30 +190,30 @@ public class AerialCubeSpawner : MonoBehaviour
         float tmpRate;
         if (GameManager.gm.currentCountdownTime > 67.5)
         {
-            tmpRate = Random.Range(8, 10);
+            tmpRate = UnityEngine.Random.Range(8, 10);
         }
         else if (GameManager.gm.currentCountdownTime > 45)
         {
-            tmpRate = Random.Range(6.5f, 8);
+            tmpRate = UnityEngine.Random.Range(6.5f, 8);
         }
         else if (GameManager.gm.currentCountdownTime > 45)
         {
-            tmpRate = Random.Range(4, 6.5f);
+            tmpRate = UnityEngine.Random.Range(4, 6.5f);
         }
         else if (GameManager.gm.currentCountdownTime > 22.5)
         {
-            tmpRate = Random.Range(2.5f, 4f);
+            tmpRate = UnityEngine.Random.Range(2.5f, 4f);
         }
         else
         {
-            tmpRate = Random.Range(2, 2.5f);
+            tmpRate = UnityEngine.Random.Range(2, 2.5f);
         }
         return tmpRate;
     }
 
     private int GetRandomSpawnPosition()
     {
-        int tmpLoc = Random.Range(0, SpawnLocs.Count);
+        int tmpLoc = UnityEngine.Random.Range(0, SpawnLocs.Count);
         if (lastSpawnLocs == null)
             return 0;
 

@@ -91,7 +91,7 @@ public class ArenaGenerator : MonoBehaviour
                     randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 }
 
-                int id = spawnDatas.Count;
+                Guid id = Guid.NewGuid();
                 Vector3 cubePosition = new Vector3(x * CubeSize, randomHeight, z * CubeSize);
                 ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
 
@@ -133,7 +133,7 @@ public class ArenaGenerator : MonoBehaviour
                 {
                     for (int i = (int)cubePosition.y - (int)CubeSize; i < cubePosition.y; i = i - (int)CubeSize)
                     {
-                        id = spawnDatas.Count;
+                        id = Guid.NewGuid();
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
 
                         //Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
@@ -182,7 +182,7 @@ public class ArenaGenerator : MonoBehaviour
     }
 
     public float minimumDistance = 100f;
-    public bool CheckIfColorIsNearbyDistance(int id, Vector3 position, ColorOption color)
+    public bool CheckIfColorIsNearbyDistance(Guid id, Vector3 position, ColorOption color)
     {
         if (spawnDatas.Count == 0)
             return false;

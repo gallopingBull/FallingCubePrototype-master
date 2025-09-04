@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 //using System.Threading; 
 using TMPro;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class CubeBehavior : MonoBehaviour
 
     // Cube Member Variables
     #region variables
-    public int id; // I think it might be better to use a GUID instead.
+    public Guid id; // I think it might be better to use a GUID instead.
     public States state;
     private Rigidbody rb;
     public Vector3 velocity;
@@ -572,7 +573,7 @@ public class CubeBehavior : MonoBehaviour
     }
 
     #region public state callers
-    public void InitializeCube(int _id, ColorOption _color)
+    public void InitializeCube(Guid _id, ColorOption _color)
     {
         //Debug.Log($"cube.id({id}) is being initialized with color: {color}");
         id = _id;
