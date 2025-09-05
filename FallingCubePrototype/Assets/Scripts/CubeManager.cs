@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq; 
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class CubeManager : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class CubeManager : MonoBehaviour
 
     public bool init;
     public List<GameObject> cubes = new List<GameObject>();
-    [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
+    [SerializeField]public List<SpawnData> spawnDatas = new List<SpawnData>();
     public List<SpawnData> SpawnDatas { get => spawnDatas; set => spawnDatas = value; }
     [SerializeField] Transform cubesParent;
 
@@ -239,6 +240,7 @@ public class CubeManager : MonoBehaviour
         {
             case CubeBehavior.States.falling:
                 StartCoroutine(AdjustCubePosition(cube, () => {
+                    UpdateSpawnData(cube);
                     //RemoveStackedCubes(cube);
                     CheckAdjacentCubesForMatchingColor(cube);
                 }));
@@ -254,6 +256,7 @@ public class CubeManager : MonoBehaviour
             case CubeBehavior.States.dragging:
                 Debug.Log($"{cube.name} is in dragging state!");
                 StartCoroutine(AdjustCubePosition(cube, () => {
+                    UpdateSpawnData(cube);
                     //RemoveStackedCubes(cube);
                     CheckAdjacentCubesForMatchingColor(cube);
                 }));
@@ -461,10 +464,11 @@ public class CubeManager : MonoBehaviour
     // Recursive method to add stacked cubes
     public void AddStackedCubes(GameObject target)
     {
-        Debug.Log($"Stepping into AddStackedCubes({target.name})");
+        Debug.Log($"Stepping into AddStackedCubes({target.name})"); 
 
         // Find the SpawnData for this target cube
         SpawnData? targetData = SpawnDatas.Find(s => s.cubeRef == target);
+        Debug.Log($"targetData = {targetData.Value.cubeRef.name}");
         if (targetData == null)
         {
             Debug.LogWarning($"Target {target.name} has no SpawnData!");
@@ -480,7 +484,10 @@ public class CubeManager : MonoBehaviour
             return;
 
         // Position directly above
+        Debug.Log($"baseData.Value.position: {baseData.Value.position}");
         Vector3 checkPos = baseData.Value.position + (Vector3.up * CUBE_SCALE_SIZE);
+        Debug.Log($"checkPos: {checkPos}");
+
 
         // Skip if we’re at floor level (prevents absorbing the floor at (0,0,0))
         if (checkPos.y <= 2f)
@@ -488,9 +495,13 @@ public class CubeManager : MonoBehaviour
 
         // Look for a cube at this position
         SpawnData? stackedData = SpawnDatas.Find(s => s.position == checkPos);
+        if (stackedData.Value.cubeRef == null)
+            return;
+        Debug.Log($"targetDat(Rescursive) = {stackedData.Value.cubeRef.name}");
 
         if (stackedData != null && stackedData.Value.cubeRef != null)
         {
+
             Debug.Log($"Stacked cube {stackedData.Value.cubeRef.name} found above {baseData.Value.cubeRef.name} at {checkPos}");
 
             // Get the actual GameObject from global array
@@ -543,7 +554,7 @@ public class CubeManager : MonoBehaviour
 
     private IEnumerator DestoryCubeTargets()
     {
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.15f);
         if (CubeTargets != null)
         {
             int _multiplier;
@@ -558,8 +569,8 @@ public class CubeManager : MonoBehaviour
                 {
                     GameManager.gm.AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
                     GameManager.gm.aerialCubeSpawner.Spawn();
-                    Debug.Log($"Destroying cube{target.name}");
-                    SpawnData spawnData = spawnDatas.Find(s => s.cubeRef.name == target.name); 
+                    Debug.Log($"Destroying cube: {target.name}");
+                    SpawnData spawnData = spawnDatas.Find(s => s.id == target.GetComponent<CubeBehavior>().id); 
                     spawnDatas.Remove(spawnData);
                     cubes.Remove(target);
                     target.GetComponent<CubeBehavior>().DestroyCube();
@@ -578,6 +589,12 @@ public class CubeManager : MonoBehaviour
         cube.transform.parent = cubesParent;
     }
 
+    public void UpdateSpawnData(GameObject cube)
+    {
+        SpawnData targetData = SpawnDatas.Find(s => s.cubeRef == cube);
+        targetData.position = cube.transform.position;  
+    }
+
     private void OnDestroy()
     {
         //OnFloorComplete -= DisplayAllSpawnDatas;
@@ -593,6 +610,7 @@ public enum ColorOption
     Blue
 }
 
+[Serializable]
 public struct SpawnData
 {
     public Guid id;

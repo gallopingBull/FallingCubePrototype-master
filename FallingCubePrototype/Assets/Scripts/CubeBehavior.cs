@@ -244,6 +244,7 @@ public class CubeBehavior : MonoBehaviour
                 state = _state;
                 cubeCollider.enabled = true;
                 DisableRB();
+                 GameManager.gm.CubeManager.RemoveStackedCubes(gameObject);
 
                 if (GameManager.gm && GameManager.gm.CubeManager.init)
                 {
@@ -253,11 +254,8 @@ public class CubeBehavior : MonoBehaviour
                 break;
 
             case States.dragging:
-                if (GameManager.gm && GameManager.gm.CubeManager.init)
-                {
-                    // add stacked cubes here.
-                    GameManager.gm.CubeManager.AddStackedCubes(gameObject);
-                }
+
+                GameManager.gm.CubeManager.AddStackedCubes(gameObject);
 
                 PlaySFX(grabSFX);
                 if (DraggingDust != null)
@@ -330,7 +328,7 @@ public class CubeBehavior : MonoBehaviour
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
                 
-                GameManager.gm.CubeManager.RemoveStackedCubes(gameObject);
+                //GameManager.gm.CubeManager.RemoveStackedCubes(gameObject);
                 //if (GameManager.gm && GameManager.gm.CubeManager.init)
                 //{
                 //    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, _state);
