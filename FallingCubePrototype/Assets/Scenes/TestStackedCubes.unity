@@ -908,6 +908,101 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4807872587156508124, guid: 5fc93216a95dbf140a27b8ea71a4b575, type: 3}
   m_PrefabInstance: {fileID: 459299033}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &279707887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 279707891}
+  - component: {fileID: 279707890}
+  - component: {fileID: 279707888}
+  - component: {fileID: 279707889}
+  m_Layer: 5
+  m_Name: fadeText (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 4294967295
+  m_IsActive: 1
+--- !u!114 &279707888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279707887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: a8f74dbf0f81e504bbbdf3f6063e1047, type: 3}
+    m_FontSize: 16
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 1
+    m_MaxSize: 40
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 0
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 1
+    m_LineSpacing: 1
+  m_Text: 
+--- !u!114 &279707889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279707887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
+--- !u!222 &279707890
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279707887}
+  m_CullTransparentMesh: 0
+--- !u!224 &279707891
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279707887}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1204735743}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -20}
+  m_SizeDelta: {x: 320, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!43 &284386906
 Mesh:
   m_ObjectHideFlags: 0
@@ -3384,6 +3479,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5fc93216a95dbf140a27b8ea71a4b575, type: 3}
+--- !u!224 &1204735743 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1092062236709688998, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
+  m_PrefabInstance: {fileID: 9101355439640480022}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1212313120 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4807872587156508124, guid: 5fc93216a95dbf140a27b8ea71a4b575, type: 3}
@@ -7524,6 +7624,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1092062234841189388, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1092062235473313717, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: _onDead.m_PersistentCalls.m_Calls.Array.size
       value: 5
@@ -7616,6 +7720,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1092062236709689001, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9101355439397174700, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
+      propertyPath: text
+      value: 
+      objectReference: {fileID: 279707888}
     - target: {fileID: 9101355440838918540, guid: d6d32e38d8cf59040ac59b6fc93cf747, type: 3}
       propertyPath: maxDistance
       value: 2.83
