@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
         cubeManager = FindObjectOfType<CubeManager>();
         if (cubeManager == null) 
         {
-            Debug.Log("cameraTarget is null");
+            Debug.Log("cubeManager is null");
             return;
         }
 
@@ -310,10 +310,12 @@ public class GameManager : MonoBehaviour
         Debug.Log("Spawning player");
         // Scale by cube size and grid size first (then subtract by one to account for zero) to get the center of the grid
         float x, z;
+        float yOffset = 6;
+
         x = ((cubeManager.gridSizeX * cubeManager.CubeSize) / 2) - 1;
         z = ((cubeManager.gridSizeZ * cubeManager.CubeSize) / 2) - 1;
-        //Debug.Log($"player spawn point - x: {x}, z: {z}");
-        Player.transform.position = new Vector3(x, 6, z);
+        Player.transform.position = new Vector3(x, yOffset, z);
+        Debug.Log($"player spawn position = x: {x}, y:{yOffset} z: {z}");
         Player.SetActive(true);
         cameraTarget.transform.position = new Vector3(x, 0, z);
     }

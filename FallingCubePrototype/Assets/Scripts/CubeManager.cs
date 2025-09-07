@@ -230,7 +230,7 @@ public class CubeManager : MonoBehaviour
 
     public void FinalizeCubePosition(GameObject cube, CubeBehavior.States exitState)
     {
-        Debug.Log($"Stepping into FinalizeCubePosition({cube.name}, {exitState})");
+        //Debug.Log($"Stepping into FinalizeCubePosition({cube.name}, {exitState})");
         if (!cube)
         {
             Debug.LogWarning("cube is null!");
@@ -266,7 +266,7 @@ public class CubeManager : MonoBehaviour
             default:
                 break;
         }
-        Debug.Log($"Stepping out of FinalizeCubePosition({cube.name}, {exitState})");
+        //Debug.Log($"Stepping out of FinalizeCubePosition({cube.name}, {exitState})");
 
     }
 
