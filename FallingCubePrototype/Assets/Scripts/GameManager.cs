@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
 
             InitUI();
 
-            Player = GameObject.FindGameObjectWithTag("Player");
+            Player = GameObject.Find("Player");
             cameraTarget = GameObject.Find("MainCameraTarget");
 
             Player.SetActive(false);

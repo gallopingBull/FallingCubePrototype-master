@@ -233,7 +233,7 @@ public class CubeManager : MonoBehaviour
         //Debug.Log($"Stepping into FinalizeCubePosition({cube.name}, {exitState})");
         if (!cube)
         {
-            Debug.LogWarning("cube is null!");
+            //Debug.LogWarning("cube is null!");
             return;
         }
         switch (exitState)
@@ -246,7 +246,7 @@ public class CubeManager : MonoBehaviour
                 }));
                 break;
             case CubeBehavior.States.grounded:
-                Debug.Log($"{cube.name} is in grounded state!");
+                //Debug.Log($"{cube.name} is in grounded state!");
                 StartCoroutine(AdjustCubePosition(cube, () => {
                     //RemoveStackedCubes(cube);
                     // check for any stacked cubes and add them to list
@@ -254,7 +254,7 @@ public class CubeManager : MonoBehaviour
                 }));
                 break;
             case CubeBehavior.States.dragging:
-                Debug.Log($"{cube.name} is in dragging state!");
+                //Debug.Log($"{cube.name} is in dragging state!");
                 StartCoroutine(AdjustCubePosition(cube, () => {
                     UpdateSpawnData(cube);
                     //RemoveStackedCubes(cube);

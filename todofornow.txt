@@ -34,21 +34,20 @@ MOUSE CURSOR OR SELECTION GOES MISSING IF EMPTY SPACE IS SELECTED WITH MOUSE.
 		- if (EventSystem.current.currentSelectedGameObject == null)
 		EventSystem.current.SetSelectedGameObject(myFirstSelectedGameObject);
 		
-------------------
-
-
+-----0000----------0000----------0000-----	
 
 
 LINUX (SteamDeck) issues:
 
 	infinite mode: 	
-		- player controller breaks. camera dont move but mesh is still moving around.
-
 		- dpad not working
 		
 		- test stacked cubes scene -
 			only way to exit out of scene is by dying. back button doesnt do anything and no menu is displayed with start button.
-		
+	
+	
+---------------------
+	
 Linux Configurations:
 
 	- Project Settings > Player > Other Settings > Configuration > Scripting Backend > IL2CPP
@@ -56,10 +55,26 @@ Linux Configurations:
 		> Target Platform > Linux
 		> Architecture > x86_64
 		
-	- Input Manager(Legacy) > Add custom Trigger Input
+	- Input Manager(Legacy) > Add custom Trigger Inputs
+	
 
-----=----
+-----0000----------0000----------0000-----	
+
+
 
 cool idea: show arm coming down when left or right trigger are released during climbing. maybe the player appears like theyre falling?
+idea: slow mo power up like bullet time, or activated when narrowly dodgin cube.
+
+ideas about infinite mode:
+- map randomly generates periodically through the round
+	- the frequency of this should be dertermined by difficulty/round length/total score/ etc/
+- The player should be able to trigger these map  regeneration a limited set of times. 
+	- maybe this earned through a session, or only a finite count is allowed?
+	- this should help in difficult situations or if the current arena is not providing any 
+	valuable oppurtunites.
+	
+- the player can hack any cube and change its properties(color, maybe type?).
+
+- time is constantly decrementing. matching cubes earn points and more time. 
 	
 

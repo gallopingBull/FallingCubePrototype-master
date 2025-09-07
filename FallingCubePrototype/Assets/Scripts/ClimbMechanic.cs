@@ -8,18 +8,14 @@ using UnityEngine.UI;
 public class ClimbMechanic : vFreeClimb
 {
     public Text text;
+#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+    private string L_TriggerName = "LT_Linux";
+    private string R_TriggerName = "RT_Linux";
+
+#else
     private string L_TriggerName = "LT";
     private string R_TriggerName = "RT";
-
-    protected override void Start()
-    {
-        base.Start();
-        //text = GetComponent<Text>();
-#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
-        L_TriggerName = "LT_Linux";
-        R_TriggerName = "RT_Linux";
 #endif
-    }
 
     protected override void Update()
     {

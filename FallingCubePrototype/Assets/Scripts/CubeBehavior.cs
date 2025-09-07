@@ -81,7 +81,6 @@ public class CubeBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();    
         // Temporarily ignore collisions with the same game object
         colliders = GetComponentsInChildren<Collider>();
         cubePushZoneCollider = transform.Find("PushZone").GetComponent<Collider>();
@@ -184,6 +183,8 @@ public class CubeBehavior : MonoBehaviour
                 {
                     // release cube here 
                     // TODO: check if player is dragging to avoid unecessary call StopPush... also if user has ability to move cubes over gaps.
+                    player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();
+
                     player.StopPushAndPullCaller();
                     EnterState(States.falling);
                     //Debug.Log(gameObject.name + " should start falling");
