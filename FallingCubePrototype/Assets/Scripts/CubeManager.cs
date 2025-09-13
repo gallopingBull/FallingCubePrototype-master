@@ -22,8 +22,10 @@ public class CubeManager : MonoBehaviour
 
     public bool init;
     public List<GameObject> cubes = new List<GameObject>();
-    [SerializeField]public List<SpawnData> spawnDatas = new List<SpawnData>();
-    public List<SpawnData> SpawnDatas { get => spawnDatas; set => spawnDatas = value; }
+    [SerializeField]public List<SpawnData> cubeData = new List<SpawnData>();
+
+    [SerializeField]public List<SpawnData> spawnData = new List<SpawnData>();
+    public List<SpawnData> SpawnDatas { get => spawnData; set => spawnData = value; }
     [SerializeField] Transform cubesParent;
 
     [Header("Arena Generation Properties")]
@@ -108,7 +110,7 @@ public class CubeManager : MonoBehaviour
             for (int i = 0; i < currentCubes.Length; i++)
             {
                 SpawnData spawnData = new SpawnData { id = Guid.NewGuid(), position = currentCubes[i].transform.position, color = currentCubes[i].color, cubeRef = currentCubes[i].transform.gameObject};
-                spawnDatas.Add(spawnData);
+                this.spawnData.Add(spawnData);
                 currentCubes[i].id = spawnData.id;
                 cubes.Add(currentCubes[i].gameObject);
             }
@@ -206,7 +208,7 @@ public class CubeManager : MonoBehaviour
     {
         var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
         data.cubeRef = cube;    
-        spawnDatas.Add(data);
+        spawnData.Add(data);
 
         cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
         cubes.Add(cube);
@@ -215,7 +217,7 @@ public class CubeManager : MonoBehaviour
     // This adds a delay between spawning cubes, which is nice for debugging and looks cool.
     private IEnumerator SpawnCubesWithDelay()
     {
-        foreach (SpawnData data in spawnDatas)
+        foreach (SpawnData data in spawnData)
         {
             yield return new WaitForSeconds(spawnDelay);
             var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
@@ -417,7 +419,7 @@ public class CubeManager : MonoBehaviour
 
     void DisplayAllSpawnDatas()
     {
-        foreach (SpawnData data in spawnDatas)
+        foreach (SpawnData data in spawnData)
         {
             Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
         }
@@ -440,7 +442,7 @@ public class CubeManager : MonoBehaviour
             Destroy(cube);
 
         cubes.Clear();
-        spawnDatas.Clear();
+        spawnData.Clear();
         //cubes = new List<GameObject>();
         Debug.Log("post destory - cubes.Count: " + cubes.Count);
     }
@@ -570,8 +572,8 @@ public class CubeManager : MonoBehaviour
                     GameManager.gm.AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
                     GameManager.gm.aerialCubeSpawner.Spawn();
                     Debug.Log($"Destroying cube: {target.name}");
-                    SpawnData spawnData = spawnDatas.Find(s => s.id == target.GetComponent<CubeBehavior>().id); 
-                    spawnDatas.Remove(spawnData);
+                    SpawnData _spawnData = spawnData.Find(s => s.id == target.GetComponent<CubeBehavior>().id); 
+                    spawnData.Remove(_spawnData);
                     cubes.Remove(target);
                     target.GetComponent<CubeBehavior>().DestroyCube();
     
@@ -580,7 +582,7 @@ public class CubeManager : MonoBehaviour
         }
     
         CubeTargets.Clear();
-        spawnDatas.RemoveAll(data => data.cubeRef == null);
+        spawnData.RemoveAll(data => data.cubeRef == null);
         cubes.RemoveAll(cube => cube == null);
     }
 

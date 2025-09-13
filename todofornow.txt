@@ -78,3 +78,17 @@ ideas about infinite mode:
 - time is constantly decrementing. matching cubes earn points and more time. 
 	
 
+-----------
+
+
+# clientDirectory: D:\Steam\steamapps\common\
+
+
+----
+
+spawnData is used during cube manager initilzation, spawning cubes, monitroing/debug.
+
+
+this sounds like this may be two seperare lists. one that is for spawning which is used at the begingin and maybe map creation.
+
+And another cube data and cube data list that is used to track cubes through out a match/context.
