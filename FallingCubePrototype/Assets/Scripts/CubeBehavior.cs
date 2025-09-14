@@ -239,22 +239,36 @@ public class CubeBehavior : MonoBehaviour
                     //Debug.Log("play landing paritcle");
                     GroundedDust.GetComponent<ParticleSystem>().Play();
                 }
-                
+
                 //if (state == States.falling)
                 //{
                 //    PlaySFX(landingSFX);
                 //    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, state);
                 //}
-                
-                state = _state;
-                cubeCollider.enabled = true;
-                DisableRB();
-                 GameManager.gm.CubeManager.RemoveStackedCubes(gameObject);
 
                 if (GameManager.gm && GameManager.gm.CubeManager.init)
                 {
                     GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, state);
                 }
+
+                // CHECK FOR STACKED CUBES AND FINALIZE THEIR POSITION
+                var stackedCubes = transform.FindObjectsWithTag("Block");
+                if (stackedCubes != null && stackedCubes.Count > 0)
+                {
+                    foreach (var cube in stackedCubes)
+                    {
+                        // Weird condition that will ensure only nested stacked
+                        // cubes are reset.
+                        if (cube.layer == LayerMask.NameToLayer("Default"))
+                        {
+                            GameManager.gm.CubeManager.FinalizeCubePosition(cube, cube.GetComponent<CubeBehavior>().state);
+                        }
+                    }
+                }
+
+                state = _state;
+                cubeCollider.enabled = true;
+                DisableRB();
 
                 break;
 

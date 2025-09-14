@@ -250,7 +250,6 @@ public class CubeManager : MonoBehaviour
             case CubeBehavior.States.grounded:
                 //Debug.Log($"{cube.name} is in grounded state!");
                 StartCoroutine(AdjustCubePosition(cube, () => {
-                    //RemoveStackedCubes(cube);
                     UpdateSpawnData(cube);
                     // check for any stacked cubes and add them to list
                     CheckAdjacentCubesForMatchingColor(cube);
@@ -306,6 +305,7 @@ public class CubeManager : MonoBehaviour
         {
             // Smoothly move into place
             //Debug.Log("Close enough to begin lerping.");
+            // maybe get list of all stacked cubes and move them here? maybe delay
             yield return StartCoroutine(LerpCubePosition(cube, snappedPosition, 0.1f));
         }
         else
@@ -479,7 +479,6 @@ public class CubeManager : MonoBehaviour
             return;
         }
 
-
         AddStackedRecursive(targetData.Value.cubeRef, target.transform, 1);
     }
 
@@ -513,7 +512,6 @@ public class CubeManager : MonoBehaviour
         {
             // Parent it to the base cube
             stackedCube.transform.SetParent(parent, true);
-
             // Recurse: check if THIS stacked cube has another cube on top
             AddStackedRecursive(stackedData, stackedCube.transform, depth + 1);
         }
