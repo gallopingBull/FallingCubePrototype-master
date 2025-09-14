@@ -16,6 +16,7 @@ public class CubeBehavior : MonoBehaviour
     // Cube Member Variables
     #region variables
     public Guid id; // I think it might be better to use a GUID instead.
+    
     public States state;
     private Rigidbody rb;
     public Vector3 velocity;
@@ -106,7 +107,10 @@ public class CubeBehavior : MonoBehaviour
             // Update cubeInfoPanel text objects here.
             if (cubeInfoPanel && cubeInfoPanel.activeInHierarchy)
             {
-                cubeIDText.text = id.ToString();
+                // Truncate the string to a desired length
+                int desiredLength = 8; // Example: take the first 8 characters
+                string truncatedGuidString = id.ToString().Substring(0, Math.Min(id.ToString().Length, desiredLength));
+                cubeIDText.text = truncatedGuidString;
                 cubeStateText.text = state.ToString();
                 cubePosText.text =
                     $"x: {Mathf.Floor(transform.position.x * 10) / 10}, y: {Mathf.Floor(transform.position.y * 10) / 10}, z: {Mathf.Floor(transform.position.z * 10) / 10}";
