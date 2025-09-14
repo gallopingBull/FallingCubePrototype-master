@@ -38,7 +38,7 @@ public class CubeManager : MonoBehaviour
     private int attempts = 0;
     private const int maxAttempts = 3;
     // TODO: the mimunum distance should be passed throuigh the method call. 
-    [SerializeField] float minimumDistance = 4f;
+    [SerializeField] float minColorMatchDistance = 4f;
 
     public bool arenaGenerated = false;
 
@@ -141,7 +141,7 @@ public class CubeManager : MonoBehaviour
 
                 if (color != ColorOption.Neutral)
                 {
-                    while ((CheckIfColorIsNearByDistance(id, cubePosition, color, minimumDistance) || colorsUsed.Contains(color)) && attempts < maxAttempts)
+                    while ((CheckIfColorIsNearByDistance(id, cubePosition, color, minColorMatchDistance) || colorsUsed.Contains(color)) && attempts < maxAttempts)
                     {
                         color = (ColorOption)UnityEngine.Random.Range(0, 4);
                         attempts++;
