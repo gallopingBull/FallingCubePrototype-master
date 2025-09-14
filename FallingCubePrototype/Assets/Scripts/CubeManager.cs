@@ -251,6 +251,7 @@ public class CubeManager : MonoBehaviour
                 //Debug.Log($"{cube.name} is in grounded state!");
                 StartCoroutine(AdjustCubePosition(cube, () => {
                     //RemoveStackedCubes(cube);
+                    UpdateSpawnData(cube);
                     // check for any stacked cubes and add them to list
                     CheckAdjacentCubesForMatchingColor(cube);
                 }));
@@ -470,6 +471,7 @@ public class CubeManager : MonoBehaviour
 
         // Find the SpawnData for this target cube
         SpawnData? targetData = SpawnDatas.Find(s => s.cubeRef == target);
+
         Debug.Log($"targetData = {targetData.Value.cubeRef.name}");
         if (targetData == null)
         {
@@ -477,17 +479,18 @@ public class CubeManager : MonoBehaviour
             return;
         }
 
-        AddStackedRecursive(targetData, target.transform, 1);
+
+        AddStackedRecursive(targetData.Value.cubeRef, target.transform, 1);
     }
 
-    private void AddStackedRecursive(SpawnData? baseData, Transform parent, int depth)
+    private void AddStackedRecursive(GameObject baseData, Transform parent, int depth)
     {
         if (depth > maxStackedCubeCount)
             return;
 
         // Position directly above
-        Debug.Log($"baseData.Value.position: {baseData.Value.position}");
-        Vector3 checkPos = baseData.Value.position + (Vector3.up * CUBE_SCALE_SIZE);
+        Debug.Log($"baseData.Value.position: {baseData}");
+        Vector3 checkPos = baseData.transform.position + (Vector3.up * CUBE_SCALE_SIZE);
         Debug.Log($"checkPos: {checkPos}");
 
 
@@ -496,26 +499,23 @@ public class CubeManager : MonoBehaviour
             return;
 
         // Look for a cube at this position
-        SpawnData? stackedData = SpawnDatas.Find(s => s.position == checkPos);
-        if (stackedData.Value.cubeRef == null)
+        GameObject stackedData = cubes.Find(s => s.transform.position == checkPos);
+        if (stackedData == null)
             return;
-        Debug.Log($"targetDat(Rescursive) = {stackedData.Value.cubeRef.name}");
+        Debug.Log($"targetDat(Rescursive) = {stackedData.name}");
 
-        if (stackedData != null && stackedData.Value.cubeRef != null)
+
+        Debug.Log($"Stacked cube {stackedData.name} found above {baseData.name} at {checkPos}");
+
+        // Get the actual GameObject from global array
+        GameObject stackedCube = stackedData;
+        if (stackedCube != null)
         {
+            // Parent it to the base cube
+            stackedCube.transform.SetParent(parent, true);
 
-            Debug.Log($"Stacked cube {stackedData.Value.cubeRef.name} found above {baseData.Value.cubeRef.name} at {checkPos}");
-
-            // Get the actual GameObject from global array
-            GameObject stackedCube = stackedData.Value.cubeRef;
-            if (stackedCube != null)
-            {
-                // Parent it to the base cube
-                stackedCube.transform.SetParent(parent, true);
-
-                // Recurse: check if THIS stacked cube has another cube on top
-                AddStackedRecursive(stackedData, stackedCube.transform, depth + 1);
-            }
+            // Recurse: check if THIS stacked cube has another cube on top
+            AddStackedRecursive(stackedData, stackedCube.transform, depth + 1);
         }
     }
 
