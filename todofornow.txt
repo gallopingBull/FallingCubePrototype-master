@@ -96,5 +96,3 @@ And another cube data and cube data list that is used to track cubes through out
 
 
 -----------
-
-maybe the cubes that land from the aerial spawner 
