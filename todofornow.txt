@@ -62,8 +62,9 @@ Linux Configurations:
 
 
 
-cool idea: show arm coming down when left or right trigger are released during climbing. maybe the player appears like theyre falling?
+cool idea: show arm coming down when left or right trigger are released during climbing. maybe the player appears like theyre falling?w
 idea: slow mo power up like bullet time, or activated when narrowly dodgin cube.
+idea: cubes that are snapped together from whatever side they interact with each other with. 
 
 ideas about infinite mode:
 - map randomly generates periodically through the round
@@ -92,3 +93,8 @@ spawnData is used during cube manager initilzation, spawning cubes, monitroing/d
 this sounds like this may be two seperare lists. one that is for spawning which is used at the begingin and maybe level creation as well.
 
 And another cube data and cube data list that is used to track cubes through out a match/context.
+
+
+-----------
+
+maybe the cubes that land from the aerial spawner 

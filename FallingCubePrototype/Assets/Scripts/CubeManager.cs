@@ -16,13 +16,13 @@ public class CubeManager : MonoBehaviour
 
     public const float CUBE_SCALE_SIZE = 2;
 
-    public int maxStackHeight = 5;
+    public int maxStackedCubeCount = 5;
     // this is best so far between .125f and .2f. Closes to furthest.
     public float tolerance = 0.0001f;
 
     public bool init;
     public List<GameObject> cubes = new List<GameObject>();
-    [SerializeField]public List<SpawnData> cubeData = new List<SpawnData>();
+    //[SerializeField]public List<SpawnData> cubeData = new List<SpawnData>();
 
     [SerializeField]public List<SpawnData> spawnData = new List<SpawnData>();
     public List<SpawnData> SpawnDatas { get => spawnData; set => spawnData = value; }
@@ -482,7 +482,7 @@ public class CubeManager : MonoBehaviour
 
     private void AddStackedRecursive(SpawnData? baseData, Transform parent, int depth)
     {
-        if (depth > maxStackHeight)
+        if (depth > maxStackedCubeCount)
             return;
 
         // Position directly above
