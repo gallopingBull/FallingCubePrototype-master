@@ -1,7 +1,7 @@
 prevent player from grabbing cube while they or the a cube is falling.
 	- keep grab delay, but also check y position of cube before grabbing. the y position of the cube and player should be the same (im assuming some whole value).
 	- in additin to what was said above. i think there needs to be further decoupling of physics responsibilites for the player and/or c. meaning that gameobject and behaviors that rely on the layer name for either of 
-those gameobjects should be moved to their own game object. conditions that rely on the top of gameobject should have their own physics layer. 
+	those gameobjects should be moved to their own game object. conditions that rely on the top of gameobject should have their own physics layer. 
 
 ------
 
@@ -14,9 +14,7 @@ save instances of randomly generated maps from within the player and editor.
 
 generate random map in editor
 
----------
 
-plan and break down how to manage dynamic data(unity projects, code, games, etc), static data (images, videos, etc), and os/programs/etc. across built in ssd storage and secondary storage devices (external/internall ssds) for current pc and laptop as I was thinking about today on 7/2.  	
 
 
 
@@ -33,16 +31,82 @@ This is the commit that caused the issue:
 
 --------------------
 
-LEFT STICK ON GAMEPAD IS NOT BEING DETECTED DURING PAUSE MENU NAVIGATION.
-	- ONLY ESC KEY AND START BUTTON SEEM TO CORRECTLY TOGGLE PAUSE MENU.
+KEYBOAARD NAVIGATION/INPUT (WASD AND DIR. KEYS) NOT DETECTED IN MAIN MENU OR PAUSE MENU
+
+GAMEPAD AND DECK MENU NAVIGATION/INPUT IS INVERTED (UP IS DOWN, ETC). THIS IS FOR BOTH MAIN MENU AND PAUSE MENU.
 	
 ENTER KEY OVER 'RETURN TO GAME' BUTTON DOES NOTHING IN PAUSE MENU
-	- A BUTTON DOES ON GAMEPAD
-	
-THE MAIN MENU SEEMS TO HAVE SIMILAR ISSUES, BUT IN REVERSE OR OPPOSITE OF THE INPUTS/DEVICE.
+	- A BUTTON DOES ON GAMEPAD AND DECK
 	
 MOUSE CURSOR OR SELECTION GOES MISSING IF EMPTY SPACE IS SELECTED WITH MOUSE.
 	- SOLUTION? 
 		- if (EventSystem.current.currentSelectedGameObject == null)
 		EventSystem.current.SetSelectedGameObject(myFirstSelectedGameObject);
 		
+<<<<<<< Updated upstream
+=======
+-----0000----------0000----------0000-----	
+
+
+LINUX (SteamDeck) issues:
+
+	infinite mode: 	
+		- dpad not working
+		
+		- test stacked cubes scene -
+			only way to exit out of scene is by dying. back button doesnt do anything and no menu is displayed with start button.
+	
+	
+---------------------
+	
+Linux Configurations:
+
+	- Project Settings > Player > Other Settings > Configuration > Scripting Backend > IL2CPP
+	- Build Settings 
+		> Target Platform > Linux
+		> Architecture > x86_64
+		
+	- Input Manager(Legacy) > Add custom Trigger Inputs
+	
+	
+---------------------
+
+
+# clientDirectory: D:\Steam\steamapps\common\
+	
+
+-----0000----------0000----------0000-----	
+
+
+
+cool idea: show arm coming down when left or right trigger are released during climbing. maybe the player appears like theyre falling?w
+idea: slow mo power up like bullet time, or activated when narrowly dodgin cube.
+idea: cubes that are snapped together from whatever side they interact with each other with. 
+idea: implement double cherry power up similar to mario bros
+ideas about infinite mode:
+- map randomly generates periodically through the round
+	- the frequency of this should be dertermined by difficulty/round length/total score/ etc/
+- The player should be able to trigger these map  regeneration a limited set of times. 
+	- maybe this earned through a session, or only a finite count is allowed?
+	- this should help in difficult situations or if the current arena is not providing any 
+	valuable oppurtunites.
+	
+- the player can hack any cube and change its properties(color, maybe type?).
+
+- time is constantly decrementing. matching cubes earn points and more time. 
+
+
+----
+
+spawnData is used during cube manager initilzation, spawning cubes, monitroing/debug.
+
+
+this sounds like this may be two seperare lists. one that is for spawning which is used at the begingin and maybe level creation as well.
+
+And another cube data and cube data list that is used to track cubes through out a match/context.
+
+
+---------
+
+plan and break down how to manage dynamic data(unity projects, code, games, etc), static data (images, videos, etc), and os/programs/etc. across built in ssd storage and secondary storage devices (external/internall ssds) for current pc and laptop as I was thinking about today on 7/2.  	
+>>>>>>> Stashed changes
