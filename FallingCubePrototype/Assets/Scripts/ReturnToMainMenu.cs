@@ -27,14 +27,8 @@ public class ReturnToMainMenu : MonoBehaviour
     public void ReturnMainMenu()
     {
         if (Pause.Instance.isPaused)
-        {
             Pause.Instance.ResumeGame();
-        }
 
         GameManager.gm.GetComponent<LoadScene>().LoadSceneByIndex(0); // not liking how this is invoked.
-    }
-    private void OnDestroy()
-    {
-        button.onClick?.RemoveAllListeners();
     }
 }

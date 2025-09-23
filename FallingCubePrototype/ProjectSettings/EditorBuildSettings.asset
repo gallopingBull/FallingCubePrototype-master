@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/PlaygroundScene.unity
     guid: f08710351cb207a42b974cc43ca96303
+  - enabled: 1
+    path: Assets/Scenes/TestStackedCubes.unity
+    guid: 25127baf96d0c4d4aa5ec02eb31fbe91
   m_configObjects: {}

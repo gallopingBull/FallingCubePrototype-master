@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
-using System.Threading;
+//using System.Threading; 
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
+
 
 public class CubeBehavior : MonoBehaviour
 { 
@@ -14,7 +15,8 @@ public class CubeBehavior : MonoBehaviour
 
     // Cube Member Variables
     #region variables
-    public int id; // I think it might be better to use a GUID instead.
+    public Guid id; // I think it might be better to use a GUID instead.
+    
     public States state;
     private Rigidbody rb;
     public Vector3 velocity;
@@ -80,7 +82,6 @@ public class CubeBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();    
         // Temporarily ignore collisions with the same game object
         colliders = GetComponentsInChildren<Collider>();
         cubePushZoneCollider = transform.Find("PushZone").GetComponent<Collider>();
@@ -93,7 +94,7 @@ public class CubeBehavior : MonoBehaviour
     {
         if (state != States.init)
         {
-            // custom velocity calculation since cube behavior doesn't use rb at times.
+            // Custom velocity calculation since cube behavior doesn't use rb at times.
             float tmpYVel = Mathf.Round(rb.velocity.y);
             velocity = (transform.position - prevVel) / Time.deltaTime;
             prevVel = transform.position;
@@ -103,10 +104,13 @@ public class CubeBehavior : MonoBehaviour
                 -transform.up, out m_Hit,
                 transform.rotation, m_MaxDistance);
 
-
-            // TODO: update cubeInfoPanel text objects here
+            // Update cubeInfoPanel text objects here.
             if (cubeInfoPanel && cubeInfoPanel.activeInHierarchy)
             {
+                // Truncate the string to a desired length
+                int desiredLength = 8; // Example: take the first 8 characters
+                string truncatedGuidString = id.ToString().Substring(0, Math.Min(id.ToString().Length, desiredLength));
+                cubeIDText.text = truncatedGuidString;
                 cubeStateText.text = state.ToString();
                 cubePosText.text =
                     $"x: {Mathf.Floor(transform.position.x * 10) / 10}, y: {Mathf.Floor(transform.position.y * 10) / 10}, z: {Mathf.Floor(transform.position.z * 10) / 10}";
@@ -128,7 +132,6 @@ public class CubeBehavior : MonoBehaviour
               
                 if (m_HitDetect)
                 {
-                  
                     // Debug.Log(gameObject.name+ " Hit : " + m_Hit.collider.name);
                     EnableLandingMarker();
 
@@ -143,7 +146,6 @@ public class CubeBehavior : MonoBehaviour
                         EnterState(States.grounded);
                     }
                 }
-
                 else
                 {
                     LandingIndicator.transform.position =
@@ -185,6 +187,8 @@ public class CubeBehavior : MonoBehaviour
                 {
                     // release cube here 
                     // TODO: check if player is dragging to avoid unecessary call StopPush... also if user has ability to move cubes over gaps.
+                    player = GameObject.Find("Player").GetComponent<MoveCubeMechanic>();
+
                     player.StopPushAndPullCaller();
                     EnterState(States.falling);
                     //Debug.Log(gameObject.name + " should start falling");
@@ -235,24 +239,43 @@ public class CubeBehavior : MonoBehaviour
                     //Debug.Log("play landing paritcle");
                     GroundedDust.GetComponent<ParticleSystem>().Play();
                 }
-                if (state == States.falling)
+
+                //if (state == States.falling)
+                //{
+                //    PlaySFX(landingSFX);
+                //    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, state);
+                //}
+
+                if (GameManager.gm && GameManager.gm.CubeManager.init)
                 {
-                    PlaySFX(landingSFX);
-                    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
+                    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, state);
                 }
-                
+
+                // CHECK FOR STACKED CUBES AND FINALIZE THEIR POSITION
+                var stackedCubes = transform.FindObjectsWithTag("Block");
+                if (stackedCubes != null && stackedCubes.Count > 0)
+                {
+                    foreach (var cube in stackedCubes)
+                    {
+                        // Weird condition that will ensure only nested stacked
+                        // cubes are reset.
+                        if (cube.layer == LayerMask.NameToLayer("Default"))
+                        {
+                            GameManager.gm.CubeManager.FinalizeCubePosition(cube, cube.GetComponent<CubeBehavior>().state);
+                        }
+                    }
+                }
+
                 state = _state;
                 cubeCollider.enabled = true;
                 DisableRB();
 
-                if (GameManager.gm && GameManager.gm.CubeManager.init/*&& GameManager.gm.CubeManager.arenaGenerated*/)
-                {
-                    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject);
-                }
-
                 break;
 
             case States.dragging:
+
+                GameManager.gm.CubeManager.AddStackedCubes(gameObject);
+
                 PlaySFX(grabSFX);
                 if (DraggingDust != null)
                 {
@@ -323,6 +346,12 @@ public class CubeBehavior : MonoBehaviour
                     lastRoutine = StartCoroutine(HideCubeInfo());
                 cubeKillZone.gameObject.SetActive(true);
                 ClimbingCollider.enabled = true;
+                
+                //GameManager.gm.CubeManager.RemoveStackedCubes(gameObject);
+                //if (GameManager.gm && GameManager.gm.CubeManager.init)
+                //{
+                //    GameManager.gm.CubeManager.FinalizeCubePosition(gameObject, _state);
+                //}
 
                 break;
             default:
@@ -561,7 +590,7 @@ public class CubeBehavior : MonoBehaviour
     }
 
     #region public state callers
-    public void InitializeCube(int _id, ColorOption _color)
+    public void InitializeCube(Guid _id, ColorOption _color)
     {
         //Debug.Log($"cube.id({id}) is being initialized with color: {color}");
         id = _id;

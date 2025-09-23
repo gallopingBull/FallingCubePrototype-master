@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq; 
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class CubeManager : MonoBehaviour
 {
@@ -13,13 +14,18 @@ public class CubeManager : MonoBehaviour
     public int gridSizeZ = 10;
     public float spawnDelay = 0.01f;
 
+    public const float CUBE_SCALE_SIZE = 2;
+
+    public int maxStackedCubeCount = 5;
     // this is best so far between .125f and .2f. Closes to furthest.
     public float tolerance = 0.0001f;
 
     public bool init;
     public List<GameObject> cubes = new List<GameObject>();
-    [SerializeField] List<SpawnData> spawnDatas = new List<SpawnData>();
-    public List<SpawnData> SpawnDatas { get => spawnDatas; set => spawnDatas = value; }
+    //[SerializeField]public List<SpawnData> cubeData = new List<SpawnData>();
+
+    [SerializeField]public List<SpawnData> spawnData = new List<SpawnData>();
+    public List<SpawnData> SpawnDatas { get => spawnData; set => spawnData = value; }
     [SerializeField] Transform cubesParent;
 
     [Header("Arena Generation Properties")]
@@ -32,9 +38,11 @@ public class CubeManager : MonoBehaviour
     private int attempts = 0;
     private const int maxAttempts = 3;
     // TODO: the mimunum distance should be passed throuigh the method call. 
-    [SerializeField] float minimumDistance = 4f;
+    [SerializeField] float minColorMatchDistance = 4f;
 
-    public bool arenaGenerated = false; 
+    public bool arenaGenerated = false;
+
+    private List<GameObject> CubeTargets = new List<GameObject>();
 
     [HideInInspector]
     public List<ColorOption> colorsUsed = new List<ColorOption>(); // Track colors used in the current arena generation
@@ -46,7 +54,7 @@ public class CubeManager : MonoBehaviour
         Vector3.forward, Vector3.back,
         Vector3.right,  Vector3.left,
         Vector3.up, Vector3.down
-    }; 
+    };
 
     private void Start()
     {
@@ -64,7 +72,7 @@ public class CubeManager : MonoBehaviour
     private void Init()
     {
         init = false;
-       
+
         if (!cubesParent)
         {
             cubesParent = new GameObject("Cubes").transform;
@@ -72,7 +80,7 @@ public class CubeManager : MonoBehaviour
         }
         //OnFloorComplete += DisplayAllSpawnDatas;
 
-        if (GameManager.gm) 
+        if (GameManager.gm)
         {
             if (!GameManager.gm.isDebug)
                 GenerateArena(gridSizeX, gridSizeZ);
@@ -99,12 +107,11 @@ public class CubeManager : MonoBehaviour
 
         if (currentCubes != null && currentCubes.Length > 0)
         {
-            for(int i = 0; i < currentCubes.Length; i++)
+            for (int i = 0; i < currentCubes.Length; i++)
             {
-                currentCubes[i].transform.parent = cubesParent;
-
-                SpawnData spawnData = new SpawnData { id = i, position = currentCubes[i].transform.position, color = currentCubes[i].color };
-                spawnDatas.Add(spawnData);
+                SpawnData spawnData = new SpawnData { id = Guid.NewGuid(), position = currentCubes[i].transform.position, color = currentCubes[i].color, cubeRef = currentCubes[i].transform.gameObject};
+                this.spawnData.Add(spawnData);
+                currentCubes[i].id = spawnData.id;
                 cubes.Add(currentCubes[i].gameObject);
             }
         }
@@ -115,7 +122,7 @@ public class CubeManager : MonoBehaviour
     public void GenerateArena(int gridSizex = 6, int gridSizeZ = 6)
     {
         DestoryAllCubes();
-        arenaGenerated = false; 
+        arenaGenerated = false;
         for (int x = 0; x < gridSizex; x++)
         {
             for (int z = 0; z < gridSizeZ; z++)
@@ -128,13 +135,13 @@ public class CubeManager : MonoBehaviour
                     randomHeight = UnityEngine.Random.Range(minHeight, maxHeight + 1);
                 }
 
-                int id = SpawnDatas.Count;
+                Guid id = Guid.NewGuid();
                 Vector3 cubePosition = new Vector3(x * CubeSize, randomHeight, z * CubeSize);
                 ColorOption color = (ColorOption)UnityEngine.Random.Range(0, 4);
 
                 if (color != ColorOption.Neutral)
                 {
-                    while ((CheckIfColorIsNearByDistance(id, cubePosition, color, minimumDistance) || colorsUsed.Contains(color)) && attempts < maxAttempts)
+                    while ((CheckIfColorIsNearByDistance(id, cubePosition, color, minColorMatchDistance) || colorsUsed.Contains(color)) && attempts < maxAttempts)
                     {
                         color = (ColorOption)UnityEngine.Random.Range(0, 4);
                         attempts++;
@@ -170,7 +177,7 @@ public class CubeManager : MonoBehaviour
                 {
                     for (int i = (int)cubePosition.y - (int)CubeSize; i < cubePosition.y; i = i - (int)CubeSize)
                     {
-                        id = SpawnDatas.Count;
+                        
                         Vector3 groundPos = new Vector3(cubePosition.x, i, cubePosition.z);
 
                         //Debug.Log($"Adding new SpawnData:\n\tid: {id}" +
@@ -192,14 +199,17 @@ public class CubeManager : MonoBehaviour
                 }
             }
         }
+
         arenaGenerated = true;
         OnFloorComplete?.Invoke();
     }
 
     public void SpawnCube(SpawnData data)
     {
-        spawnDatas.Add(data);
         var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
+        data.cubeRef = cube;    
+        spawnData.Add(data);
+
         cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
         cubes.Add(cube);
     }
@@ -207,7 +217,7 @@ public class CubeManager : MonoBehaviour
     // This adds a delay between spawning cubes, which is nice for debugging and looks cool.
     private IEnumerator SpawnCubesWithDelay()
     {
-        foreach (SpawnData data in spawnDatas)
+        foreach (SpawnData data in spawnData)
         {
             yield return new WaitForSeconds(spawnDelay);
             var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
@@ -220,20 +230,48 @@ public class CubeManager : MonoBehaviour
         Debug.Log($"{GetTotalCubeCount()} cubes spawned");
     }
 
-    public void FinalizeCubePosition(GameObject cube) 
+    public void FinalizeCubePosition(GameObject cube, CubeBehavior.States exitState)
     {
+        //Debug.Log($"Stepping into FinalizeCubePosition({cube.name}, {exitState})");
         if (!cube)
         {
-            Debug.LogWarning("cube is null!");
+            //Debug.LogWarning("cube is null!");
             return;
         }
+        switch (exitState)
+        {
+            case CubeBehavior.States.falling:
+                StartCoroutine(AdjustCubePosition(cube, () => {
+                    UpdateSpawnData(cube);
+                    //RemoveStackedCubes(cube);
+                    CheckAdjacentCubesForMatchingColor(cube);
+                }));
+                break;
+            case CubeBehavior.States.grounded:
+                //Debug.Log($"{cube.name} is in grounded state!");
+                StartCoroutine(AdjustCubePosition(cube, () => {
+                    UpdateSpawnData(cube);
+                    // check for any stacked cubes and add them to list
+                    CheckAdjacentCubesForMatchingColor(cube);
+                }));
+                break;
+            case CubeBehavior.States.dragging:
+                //Debug.Log($"{cube.name} is in dragging state!");
+                StartCoroutine(AdjustCubePosition(cube, () => {
+                    UpdateSpawnData(cube);
+                    //RemoveStackedCubes(cube);
+                    CheckAdjacentCubesForMatchingColor(cube);
+                }));
+                break;
+            case CubeBehavior.States.init:
+                break;
+            default:
+                break;
+        }
+        //Debug.Log($"Stepping out of FinalizeCubePosition({cube.name}, {exitState})");
 
-        StartCoroutine(AdjustCubePosition(cube, () => {
-            CheckAdjacentCubesForMatchingColor(cube);
-        }));
     }
 
-    float cubeScale = 2;
     private IEnumerator AdjustCubePosition(GameObject cube, Action onComplete = null)
     {
         //Debug.Log($"Stepping into CubeManager.AdjustCubePosition({cube})");
@@ -246,23 +284,28 @@ public class CubeManager : MonoBehaviour
         Vector3 currentPos = cube.transform.position;
 
         // Calculate the nearest snapped grid point
-        float snappedX = Mathf.Round(currentPos.x / cubeScale) * cubeScale;
-        float snappedZ = Mathf.Round(currentPos.z / cubeScale) * cubeScale;
+        float snappedX = Mathf.Round(currentPos.x / CUBE_SCALE_SIZE) * CUBE_SCALE_SIZE;
+        float snappedZ = Mathf.Round(currentPos.z / CUBE_SCALE_SIZE) * CUBE_SCALE_SIZE;
 
         Vector3 snappedPosition = new Vector3(snappedX, Mathf.Round(currentPos.y), snappedZ);
-
+        #region migrated rb code
         // TODO: Determine if this RigidbodyConstraints code
         // from CubeBehavior is needed or does anything...
+        // **edit: look at invector pushpoint classes.
+        // there seems to be some rb updates that may make
+        // this code redundant.
 
         //RigidbodyConstraints tmpConst;
         //tmpConst = rb.constraints;
         //rb.constraints = RigidbodyConstraints.FreezePosition;
+        #endregion
 
         // Only snap if cube is *close enough* to the snapped position
         if (Vector3.Distance(currentPos, snappedPosition) < tolerance)
         {
             // Smoothly move into place
-            Debug.Log("Close enough to begin lerping.");
+            //Debug.Log("Close enough to begin lerping.");
+            // maybe get list of all stacked cubes and move them here? maybe delay
             yield return StartCoroutine(LerpCubePosition(cube, snappedPosition, 0.1f));
         }
         else
@@ -272,8 +315,15 @@ public class CubeManager : MonoBehaviour
         }
 
         onComplete?.Invoke();
-
+        #region migrated rb code
         //rb.constraints = tmpConst;// TODO: this rb statement too...
+        #endregion
+
+    }
+
+    private void CheckStackedCubes(GameObject cube)
+    {
+
     }
 
     private IEnumerator LerpCubePosition(GameObject cube, Vector3 targetPosition, float duration = 0.2f)
@@ -319,43 +369,35 @@ public class CubeManager : MonoBehaviour
             return;
 
         // 2 is cube scale on cube transform.scale
-        var adjCubePositions = directions.Select(dir => cb.transform.position + (dir*2)).ToList();
-
+        var adjCubePositions = directions.Select(dir => cb.transform.position + (dir * 2)).ToList();
 
         var matchingColors = cubes.Where(target =>
-            target && 
+            target &&
             adjCubePositions.Contains(target.transform.position) &&
-            target.GetComponent<CubeBehavior>().color == cb.color && 
+            target.GetComponent<CubeBehavior>().color == cb.color &&
             !cb.isDestroying).ToList();
 
-            //Debug.Log($"matchingColors {matchingColors.Count}");
+        //Debug.Log($"matchingColors {matchingColors.Count}");
 
         if (matchingColors.Count > 0)
         {
-            Debug.Log($"is {cube.name} in matchingColor: {matchingColors.Contains(cube)}");
-
             if (!matchingColors.Contains(cube))
             {
-                Debug.Log($"now adding {cube.name} to matchingColor");
                 matchingColors.Add(cube);
-                Debug.Log($"new matchingColors {matchingColors.Count}");
             }
 
             foreach (var c in matchingColors)
             {
                 Debug.Log($"{c.GetComponent<CubeBehavior>().id} in matchingColors ");
-
-                if (!GameManager.gm)
-                    return;
-                GameManager.gm.AddCubeTarget(c);
+                AddCubeTargetToDestroy(c);
             }
         }
-       
+
         //Debug.Log($"Stepping out of CheckAdjacentCubesForColor({cb.id})");
     }
 
     // this mostly used to prevent spawning similar colors next to each other in arenas.
-    public bool CheckIfColorIsNearByDistance(int id, Vector3 position, ColorOption color, float minDistance)
+    public bool CheckIfColorIsNearByDistance(Guid id, Vector3 position, ColorOption color, float minDistance)
     {
         if (SpawnDatas.Count == 0)
             return false;
@@ -378,7 +420,7 @@ public class CubeManager : MonoBehaviour
 
     void DisplayAllSpawnDatas()
     {
-        foreach (SpawnData data in spawnDatas)
+        foreach (SpawnData data in spawnData)
         {
             Debug.Log($"id: {data.id}, position: {data.position}, color: {data.color}");
         }
@@ -387,30 +429,6 @@ public class CubeManager : MonoBehaviour
     private int GetTotalCubeCount()
     {
         return cubes.Count;
-    }
-
-    // this was moved over from GetAdjacentCubes.cs
-    public void DestoryAdjacentCubes(CubeBehavior targetCube, GameObject adjCube, List<CubeBehavior> targetCubes)
-    {
-        // if other block has been destoryed so null, exit
-        if (!adjCube)
-            return;
-
-        targetCube.isDestroying = true;
-        if (adjCube.tag == "Block")
-        {
-            if (adjCube.GetComponentInParent<CubeBehavior>().state == CubeBehavior.States.grounded)
-            {
-                //Debug.Log("\tDestroying " + tmp.name + " from " + transform.parent.parent.gameObject.name);
-
-                // check if this cube and the other cuber (tmp) are in game manager's target list
-                // if not add them in
-                if (!GameManager.gm)
-                    return;
-                GameManager.gm.AddCubeTarget(adjCube);
-                GameManager.gm.AddCubeTarget(transform.parent.parent.gameObject);
-            }
-        }
     }
 
     public void DestoryAllCubes()
@@ -425,9 +443,156 @@ public class CubeManager : MonoBehaviour
             Destroy(cube);
 
         cubes.Clear();
-        spawnDatas.Clear();
+        spawnData.Clear();
         //cubes = new List<GameObject>();
         Debug.Log("post destory - cubes.Count: " + cubes.Count);
+    }
+
+    public void AddCubeTargetToDestroy(GameObject target)
+    {
+        Debug.Log($"Stepping into AddCubeTargetToDestroy({target.name})");
+
+        // prevent cube meshes to be added as a cube target
+        if (!CubeTargets.Contains(target) && target.name != "CubeMesh")
+        {
+            RemoveStackedCubes(target);
+            target.GetComponent<CubeBehavior>().PlaySFX(target.GetComponent<CubeBehavior>().contactSFX);
+            CubeTargets.Add(target);
+            StartCoroutine(DestoryCubeTargets());
+        }
+
+        //DestoryCubeTargets();
+    }
+
+    // Recursive method to add stacked cubes
+    public void AddStackedCubes(GameObject target)
+    {
+        Debug.Log($"Stepping into AddStackedCubes({target.name})"); 
+
+        // Find the SpawnData for this target cube
+        SpawnData? targetData = SpawnDatas.Find(s => s.cubeRef == target);
+
+        Debug.Log($"targetData = {targetData.Value.cubeRef.name}");
+        if (targetData == null)
+        {
+            Debug.LogWarning($"Target {target.name} has no SpawnData!");
+            return;
+        }
+
+        AddStackedRecursive(targetData.Value.cubeRef, target.transform, 1);
+    }
+
+    private void AddStackedRecursive(GameObject baseData, Transform parent, int depth)
+    {
+        if (depth > maxStackedCubeCount)
+            return;
+
+        // Position directly above
+        Debug.Log($"baseData.Value.position: {baseData}");
+        Vector3 checkPos = baseData.transform.position + (Vector3.up * CUBE_SCALE_SIZE);
+        Debug.Log($"checkPos: {checkPos}");
+
+
+        // Skip if we’re at floor level (prevents absorbing the floor at (0,0,0))
+        if (checkPos.y <= 2f)
+            return;
+
+        // Look for a cube at this position
+        GameObject stackedData = cubes.Find(s => s.transform.position == checkPos);
+        if (stackedData == null)
+            return;
+        Debug.Log($"targetDat(Rescursive) = {stackedData.name}");
+
+
+        Debug.Log($"Stacked cube {stackedData.name} found above {baseData.name} at {checkPos}");
+
+        // Get the actual GameObject from global array
+        GameObject stackedCube = stackedData;
+        if (stackedCube != null)
+        {
+            // Parent it to the base cube
+            stackedCube.transform.SetParent(parent, true);
+            // Recurse: check if THIS stacked cube has another cube on top
+            AddStackedRecursive(stackedData, stackedCube.transform, depth + 1);
+        }
+    }
+
+    public void RemoveStackedCubes(GameObject target)
+    {
+        // Check for stacked cubes nested in target cube gameobject.
+        var stackedCubes = target.transform.FindObjectsWithTag("Block");
+        if (stackedCubes != null && stackedCubes.Count > 0)
+        {
+            foreach (var cube in stackedCubes)
+            {
+                // Weird condition that will ensure only nested stacked
+                // cubes are reset.
+                if (cube.layer == LayerMask.NameToLayer("Default"))
+                {
+                    ResetCubeParent(cube);
+                }
+            }
+        }
+    }
+
+    public void AddCubeTargets(List<GameObject> targets)
+    {
+        if (targets != null || targets.Count > 0)
+        {
+            foreach (GameObject cube in targets)
+            {
+                // prevent cube meshes to be added as a cube target
+                if (!CubeTargets.Contains(cube) && cube.name != "CubeMesh")
+                {
+                    cube.GetComponent<CubeBehavior>().PlaySFX(cube.GetComponent<CubeBehavior>().contactSFX);
+                    CubeTargets.Add(cube);
+                }
+            }
+        }
+        StartCoroutine(DestoryCubeTargets());
+    }
+
+    private IEnumerator DestoryCubeTargets()
+    {
+        yield return new WaitForSeconds(.15f);
+        if (CubeTargets != null)
+        {
+            int _multiplier;
+            if (CubeTargets.Count < 1)
+                _multiplier = 1;
+            else
+                _multiplier = CubeTargets.Count;
+
+            foreach (GameObject target in CubeTargets)
+            {
+                if (target != null)
+                {
+                    GameManager.gm.AddPoints(target.GetComponent<CubeBehavior>().ScoreValue, _multiplier);
+                    GameManager.gm.aerialCubeSpawner.Spawn();
+                    Debug.Log($"Destroying cube: {target.name}");
+                    SpawnData _spawnData = spawnData.Find(s => s.id == target.GetComponent<CubeBehavior>().id); 
+                    spawnData.Remove(_spawnData);
+                    cubes.Remove(target);
+                    target.GetComponent<CubeBehavior>().DestroyCube();
+    
+                }
+            }
+        }
+    
+        CubeTargets.Clear();
+        spawnData.RemoveAll(data => data.cubeRef == null);
+        cubes.RemoveAll(cube => cube == null);
+    }
+
+    public void ResetCubeParent(GameObject cube)
+    {
+        cube.transform.parent = cubesParent;
+    }
+
+    public void UpdateSpawnData(GameObject cube)
+    {
+        SpawnData targetData = SpawnDatas.Find(s => s.cubeRef == cube);
+        targetData.position = cube.transform.position;  
     }
 
     private void OnDestroy()
@@ -445,9 +610,11 @@ public enum ColorOption
     Blue
 }
 
+[Serializable]
 public struct SpawnData
 {
-    public int id;
+    public Guid id;
     public Vector3 position;
     public ColorOption color;
+    public GameObject cubeRef;
 }

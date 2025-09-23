@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class MoveCubeMechanic : vPushActionController
 {
-    private float cubeScale = 2f; // Default cube scale
-
     public float gamepadDeadzone = 0.1f; // Dead zone for gamepad stick input
     public float snapThreshold = .75f; // Distance threshold for snapping to whole numbers
     public Vector2Int maxGridSize = new Vector2Int(10, 10); // Maximum grid size of the map
@@ -74,12 +72,8 @@ public class MoveCubeMechanic : vPushActionController
         OnExitCubePosition += RemoveNewFloorCube;
     }
 
-    // *I changed GetButtonDown() to GetButton() to remove toggle input. I also check if the button is being held
+    // I changed GetButtonDown() to GetButton() to remove toggle input. I also check if the button is being held
     // down in the final stop condition. 
-    //
-    // **I also  had to add an inline check for mouse button input because invector is not detecting an input
-    // device change anymore. This wasn't an issue around this commit: 7bf66c1885c46fa9ee1924a6dcb6546af5619e5a
-    // TODO: resolve issue with mouse keyboard detection.
     protected override void EnterExitInput()
     {
         if (tpInput.enabled || !isStarted || !pushPoint)
@@ -379,11 +373,11 @@ public class MoveCubeMechanic : vPushActionController
                 Mathf.RoundToInt(intendedDirection.x),
                 0,
                 Mathf.RoundToInt(intendedDirection.z)
-                ) * strengthFactor * cubeScale * vTime.fixedDeltaTime;
+                ) * strengthFactor * CubeManager.CUBE_SCALE_SIZE * vTime.fixedDeltaTime;
 
             // Clamp target position within the boundaries of the map
-            intendedPosition.x = Mathf.Clamp(intendedPosition.x, 0, maxGridSize.x * cubeScale);
-            intendedPosition.z = Mathf.Clamp(intendedPosition.z, 0, maxGridSize.y * cubeScale);
+            intendedPosition.x = Mathf.Clamp(intendedPosition.x, 0, maxGridSize.x * CubeManager.CUBE_SCALE_SIZE);
+            intendedPosition.z = Mathf.Clamp(intendedPosition.z, 0, maxGridSize.y * CubeManager.CUBE_SCALE_SIZE);
 
             //intendedPosition = ApplyStepConstraints(intendedPosition);
             pushPoint.targetBody.velocity = intendedDirection * inputWeight;
@@ -392,10 +386,15 @@ public class MoveCubeMechanic : vPushActionController
             {
                 // Only apply the movement if the new position is different from the current position
                 pushPoint.targetBody.position = intendedPosition;
+                
+                // i think this and the other conditon should be where checks for 
+                // stacked cubes should occur
+                
                 UpdateMovementState(intendedPosition);
             }
             else
             {
+                // see comment above
                 DiscretePushToNearestWholeNumber(intendedPosition);
             }
         }
@@ -465,12 +464,12 @@ public class MoveCubeMechanic : vPushActionController
 
     // Ensures the push point stays aligned to the grid by snapping its position 
     // to the nearest whole grid value. This prevents small input offsets from 
-    // leaving it between cells or locking movement along the grid path.
+    // leaving it between grid cells or locking movement along the grid path.
     private void DiscretePushToNearestWholeNumber(Vector3 targetPosition)
     {
         // Snap X and Z positions to multiples of cube scale
-        float snappedX = Mathf.Round(targetPosition.x / cubeScale) * cubeScale;
-        float snappedZ = Mathf.Round(targetPosition.z / cubeScale) * cubeScale;
+        float snappedX = Mathf.Round(targetPosition.x / CubeManager.CUBE_SCALE_SIZE) * CubeManager.CUBE_SCALE_SIZE;
+        float snappedZ = Mathf.Round(targetPosition.z / CubeManager.CUBE_SCALE_SIZE) * CubeManager.CUBE_SCALE_SIZE;
 
         // Snap to whole numbers if close enough
         if (Mathf.Abs(targetPosition.x - snappedX) < snapThreshold)
