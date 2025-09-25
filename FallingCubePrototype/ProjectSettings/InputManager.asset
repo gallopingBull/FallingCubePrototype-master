@@ -39,7 +39,7 @@ InputManager:
     joyNum: 0
   - serializedVersion: 3
     m_Name: Horizontal
-    descriptiveName: Horizontal DPAD
+    descriptiveName: Horizontal Xbox DPAD
     descriptiveNegativeName: 
     negativeButton: 
     positiveButton: 
@@ -50,6 +50,22 @@ InputManager:
     sensitivity: 1
     snap: 0
     invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Horizontal
+    descriptiveName: Horizontal SteamDeck DPAD
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0
+    dead: 0.19
+    sensitivity: 1
+    snap: 0
+    invert: 1
     type: 2
     axis: 5
     joyNum: 0
@@ -87,7 +103,7 @@ InputManager:
     joyNum: 0
   - serializedVersion: 3
     m_Name: Vertical
-    descriptiveName: Vertical DPAD
+    descriptiveName: Vertical Xbox DPAD
     descriptiveNegativeName: 
     negativeButton: 
     positiveButton: 
@@ -100,6 +116,22 @@ InputManager:
     invert: 0
     type: 2
     axis: 6
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Vertical
+    descriptiveName: Vertical SteamDeck DPAD
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0
+    dead: 0.19
+    sensitivity: 1
+    snap: 0
+    invert: 1
+    type: 0
+    axis: 4
     joyNum: 0
   - serializedVersion: 3
     m_Name: Mouse X
