@@ -16,8 +16,6 @@ generate random map in editor
 
 --------------------
 
-
-
 ENTER KEY OVER 'RETURN TO GAME' BUTTON DOES NOTHING IN PAUSE MENU
 	- A BUTTON DOES ON GAMEPAD AND DECK
 	
@@ -62,9 +60,11 @@ Linux Configurations:
 
 
 cool idea: show arm coming down when left or right trigger are released during climbing. maybe the player appears like theyre falling?w
-idea: slow mo power up like bullet time, or activated when narrowly dodgin cube.
+idea: slow mo power up when player moves at  regular spped and everything else moves slower for a duration of time.
 idea: cubes that are snapped together from whatever side they interact with each other with. 
 idea: implement double cherry power up similar to mario bros
+idea: eagle vision/detective vision-like feature that allows the playr to see colored cubes through other cubes. 
+
 ideas about infinite mode:
 - map randomly generates periodically through the round
 	- the frequency of this should be dertermined by difficulty/round length/total score/ etc/
