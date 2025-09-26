@@ -16,11 +16,11 @@ generate random map in editor
 
 --------------------
 
-ENTER KEY OVER 'RETURN TO GAME' BUTTON DOES NOTHING IN PAUSE MENU
-	- A BUTTON DOES ON GAMEPAD AND DECK
+
 	
 MOUSE CURSOR OR SELECTION GOES MISSING IF EMPTY SPACE IS SELECTED WITH MOUSE.
 	- SOLUTION? 
+	- fix mouse input in menus in general
 		- if (EventSystem.current.currentSelectedGameObject == null)
 		EventSystem.current.SetSelectedGameObject(myFirstSelectedGameObject);
 		
