@@ -30,23 +30,9 @@ MOUSE CURSOR OR SELECTION GOES MISSING IF EMPTY SPACE IS SELECTED WITH MOUSE.
 
 LINUX (SteamDeck) issues:
 
-	infinite mode: 	
-		- dpad not working
-		
+
 	test stacked cubes scene:
 			only way to exit out of scene is by dying. back button doesnt do anything and no menu is displayed with start button.
-	
-	
----------------------
-	
-Linux Configurations:
-
-	- Project Settings > Player > Other Settings > Configuration > Scripting Backend > IL2CPP
-	- Build Settings 
-		> Target Platform > Linux
-		> Architecture > x86_64
-		
-	- Input Manager(Legacy) > Add custom Trigger Inputs
 	
 	
 ---------------------
@@ -91,3 +77,14 @@ And another cube data and cube data list that is used to track cubes through out
 ---------
 
 plan and break down how to manage dynamic data(unity projects, code, games, etc), static data (images, videos, etc), and os/programs/etc. across built in ssd storage and secondary storage devices (external/internall ssds) for current pc and laptop as I was thinking about today on 7/2.  	
+
+
+--cenagage
+
+collecting the full benchmark session is expensive, and there isn't an immediate way to translate our data to unity profiler data [look into]. also, profiler recorder has a fix count cap that are build exeeds.
+
+	- maybe create a local benchmark test that runs in the editor and saves the log file (but this will also be an issue to store these if too big.)
+
+i think it owuld be best to show line graphs at run time instead
+
+line graph for overall summary page to show averages for each metric for each buid over time
