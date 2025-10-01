@@ -9,15 +9,16 @@ prevent player from grabbing cube while they or the a cube is falling.
 	- any room for improvement or consildation, etc.
 	
 		- move menus all to one single canvas that is stored in main menu scene
+			- currently main menu canvas is different than the other canvas prefab used in main gamplay scenes. consoidate these.
 		
-		- create singleon UIManager that handles the display of main menu, pause menu, and HUD
+		- create singleton UIManager that handles the display of main menu, pause menu, and HUD
+			
 		
 		- make options accessible from pause menu
+		
+		- add menu sounds
 	
 	
-	- prioritize mouse selecion when mouse is hovered over button in all menus
-
-
 
 
 
