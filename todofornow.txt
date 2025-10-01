@@ -8,24 +8,25 @@ prevent player from grabbing cube while they or the a cube is falling.
 - test pause menu and take another look at the canvas gameobject and how its setup across scenes
 	- any room for improvement or consildation, etc.
 	
+		- move menus all to one single canvas that is stored in main menu scene
+		- create singleon UIManager that handles the display of main menu, pause menu, and HUD
 	
-	- create singleon UIManager that handles the display of main menu, pause menu, and HUD
+	
+	
+	- prioritize mouse selecion when mouse is hovered over button in all menus
+	
+	- main, playground scene, 'return to game' button not selected when returning to pause menu (not initial pause menu)
+
+
+
+
 ----------
 
 save instances of randomly generated maps from within the player and editor.
 
 generate random map in editor
 
---------------------
-.
-
 	
-MOUSE CURSOR OR SELECTION GOES MISSING IF EMPTY SPACE IS SELECTED WITH MOUSE.
-	- SOLUTION? 
-	- fix mouse input in menus in general
-		- if (EventSystem.current.currentSelectedGameObject == null)
-		EventSystem.current.SetSelectedGameObject(myFirstSelectedGameObject);
-		
 
 -----0000----------0000----------0000-----	
 
