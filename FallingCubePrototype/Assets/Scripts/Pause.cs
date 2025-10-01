@@ -26,7 +26,7 @@ public class Pause : MonoBehaviour
 
     public bool isPaused;
     private GameObject pauseMenu;
-    private GameObject pauseSelectedBut; // reference to first button that should be selected.
+    private Button pauseSelectedBut; // reference to first button that should be selected.
 
     // Actions for pausing/resuming
     public Action onPause;
@@ -55,7 +55,7 @@ public class Pause : MonoBehaviour
         } 
 
         // Default selected button when pause menu first displayed
-        pauseSelectedBut = GameObject.Find("ReturnButton"); 
+        pauseSelectedBut = GameObject.Find("ReturnButton").GetComponent<Button>(); 
         if (pauseSelectedBut == null)
         { 
             Debug.LogWarning("ReturnButton not found!");
@@ -90,7 +90,8 @@ public class Pause : MonoBehaviour
         Time.timeScale = 0;
         isPaused = true;
         pauseMenu.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(pauseSelectedBut);
+        pauseSelectedBut.Select(); // Select the button
+        pauseSelectedBut.OnSelect(null); // Highlight the button
         onPause?.Invoke(); // Invoke onPause if it's subscribed
     }
 

@@ -9,13 +9,14 @@ prevent player from grabbing cube while they or the a cube is falling.
 	- any room for improvement or consildation, etc.
 	
 		- move menus all to one single canvas that is stored in main menu scene
+		
 		- create singleon UIManager that handles the display of main menu, pause menu, and HUD
-	
+		
+		- make options accessible from pause menu
 	
 	
 	- prioritize mouse selecion when mouse is hovered over button in all menus
-	
-	- main, playground scene, 'return to game' button not selected when returning to pause menu (not initial pause menu)
+
 
 
 
