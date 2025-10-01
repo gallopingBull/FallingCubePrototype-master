@@ -1,6 +1,6 @@
 prevent player from grabbing cube while they or the a cube is falling.
 	- keep grab delay, but also check y position of cube before grabbing. the y position of the cube and player should be the same (im assuming some whole value).
-	- in additin to what was said above. i think there needs to be further decoupling of physics responsibilites for the player and/or c. meaning that gameobject and behaviors that rely on the layer name for either of 
+	- in additin to what was said above. i think there needs to be further decoupling of physics responsibilites for the player and/or cube. meaning that gameobject and behaviors that rely on the layer name for either of 
 	those gameobjects should be moved to their own game object. conditions that rely on the top of gameobject should have their own physics layer. 
 
 ------
@@ -18,9 +18,6 @@ prevent player from grabbing cube while they or the a cube is falling.
 		
 		- add menu sounds
 	
-	
-
-
 
 ----------
 
