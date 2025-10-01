@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 49e324e577e70fd418de1d7769247c8d
+guid: 7e0786f0471c3334197f7b7d19b06760
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
@@ -7,8 +7,33 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: defaultMat
-    second: {fileID: 2100000, guid: b169479e74e0d0d449cf78b98d694217, type: 2}
+      name: RefRep.132_Back.p_Bac_Back.png
+    second: {fileID: 2100000, guid: 3566058c7f0158f489046edb2955a897, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RefRep.134_Stomac_Sto_Stomach.png
+    second: {fileID: 2100000, guid: 8a5f0a65f2eb3ff4090cea79258d7cec, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RefRep.136_Breast_Bre_Breasts.png
+    second: {fileID: 2100000, guid: f707f94569462aa44b8fd19b2d3d77e1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RefRep.138_Face.p_Fac_Face.png
+    second: {fileID: 2100000, guid: f26c391d91dd4a04698ad3a7cad7df30, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RefRep.140_Shades_Sha_Shades.png
+    second: {fileID: 2100000, guid: 4d21d329f382ba44d8b485e021fd551e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RefRep.142_Hair.p_Hai_Hair.png
+    second: {fileID: 2100000, guid: 939c9a632464cef4dad34509285745c5, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -39,7 +64,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.5
+    globalScale: 0.4
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -90,7 +115,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.5
+    globalScale: 0.004
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
