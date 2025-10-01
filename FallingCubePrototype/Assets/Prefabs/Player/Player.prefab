@@ -1166,8 +1166,8 @@ MonoBehaviour:
   openCloseEvents: 0
   openCloseWindow: 0
   selectedToolbar: 0
-  unlockCursorOnStart: 0
-  showCursorOnStart: 0
+  unlockCursorOnStart: 1
+  showCursorOnStart: 1
   toggleWalk: 301
   horizontalInput:
     useInput: 1
@@ -1631,6 +1631,7 @@ MonoBehaviour:
   onExitClimb:
     m_PersistentCalls:
       m_Calls: []
+  text: {fileID: 0}
 --- !u!1 &1092062235563338480
 GameObject:
   m_ObjectHideFlags: 0
