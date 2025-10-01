@@ -15,7 +15,7 @@ save instances of randomly generated maps from within the player and editor.
 generate random map in editor
 
 --------------------
-
+create singleon UIManager that handles the display of main menu, pause menu, and HUD.
 
 	
 MOUSE CURSOR OR SELECTION GOES MISSING IF EMPTY SPACE IS SELECTED WITH MOUSE.
@@ -69,7 +69,7 @@ ideas about infinite mode:
 spawnData is used during cube manager initilzation, spawning cubes, monitroing/debug.
 
 
-this sounds like this may be two seperare lists. one that is for spawning which is used at the begingin and maybe level creation as well.
+this sounds like this may be two seperare lists. one that is for spawwning which is used at the begingin and maybe level creation as well.
 
 And another cube data and cube data list that is used to track cubes through out a match/context.
 
@@ -78,13 +78,3 @@ And another cube data and cube data list that is used to track cubes through out
 
 plan and break down how to manage dynamic data(unity projects, code, games, etc), static data (images, videos, etc), and os/programs/etc. across built in ssd storage and secondary storage devices (external/internall ssds) for current pc and laptop as I was thinking about today on 7/2.  	
 
-
---cenagage
-
-collecting the full benchmark session is expensive, and there isn't an immediate way to translate our data to unity profiler data [look into]. also, profiler recorder has a fix count cap that are build exeeds.
-
-	- maybe create a local benchmark test that runs in the editor and saves the log file (but this will also be an issue to store these if too big.)
-
-i think it owuld be best to show line graphs at run time instead
-
-line graph for overall summary page to show averages for each metric for each buid over time

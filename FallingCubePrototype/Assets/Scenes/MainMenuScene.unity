@@ -213,7 +213,7 @@ PrefabInstance:
       objectReference: {fileID: 1252911603}
     - target: {fileID: 2644436620615897223, guid: 69d83af5a1259c948a2a77cbe545ed7b, type: 3}
       propertyPath: m_Name
-      value: CustomEventSystem
+      value: EventSystem
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69d83af5a1259c948a2a77cbe545ed7b, type: 3}
