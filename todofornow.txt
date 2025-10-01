@@ -8,6 +8,8 @@ prevent player from grabbing cube while they or the a cube is falling.
 - test pause menu and take another look at the canvas gameobject and how its setup across scenes
 	- any room for improvement or consildation, etc.
 	
+	
+	- create singleon UIManager that handles the display of main menu, pause menu, and HUD
 ----------
 
 save instances of randomly generated maps from within the player and editor.
@@ -15,7 +17,7 @@ save instances of randomly generated maps from within the player and editor.
 generate random map in editor
 
 --------------------
-create singleon UIManager that handles the display of main menu, pause menu, and HUD.
+.
 
 	
 MOUSE CURSOR OR SELECTION GOES MISSING IF EMPTY SPACE IS SELECTED WITH MOUSE.
