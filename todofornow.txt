@@ -80,3 +80,4 @@ And another cube data and cube data list that is used to track cubes through out
 
 plan and break down how to manage dynamic data(unity projects, code, games, etc), static data (images, videos, etc), and os/programs/etc. across built in ssd storage and secondary storage devices (external/internall ssds) for current pc and laptop as I was thinking about today on 7/2.  	
 
+https://models.spriters-resource.com/gamecube/pn03productnumberzerothree/asset/289777/
