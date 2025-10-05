@@ -9,7 +9,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public class CubeManager : MonoBehaviour
 {
-    public GameObject cubePrefab;
+    public GameObject[] cubePrefabs;
     public int gridSizeX = 10;
     public int gridSizeZ = 10;
     public float spawnDelay = 0.01f;
@@ -206,7 +206,8 @@ public class CubeManager : MonoBehaviour
 
     public void SpawnCube(SpawnData data)
     {
-        var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
+        int random = UnityEngine.Random.Range(0, cubePrefabs.Length);
+        var cube = Instantiate(cubePrefabs[random], data.position, Quaternion.identity, cubesParent);
         data.cubeRef = cube;    
         spawnData.Add(data);
 
@@ -220,7 +221,10 @@ public class CubeManager : MonoBehaviour
         foreach (SpawnData data in spawnData)
         {
             yield return new WaitForSeconds(spawnDelay);
-            var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);
+            int random = UnityEngine.Random.Range(0, cubePrefabs.Length);
+
+            var cube = Instantiate(cubePrefabs[random], data.position, Quaternion.identity, cubesParent);
+
             cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
             cubes.Add(cube);
         }
