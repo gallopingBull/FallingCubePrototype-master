@@ -472,7 +472,7 @@ public class CubeManager : MonoBehaviour
         // Find the SpawnData for this target cube
         SpawnData? targetData = SpawnDatas.Find(s => s.cubeRef == target);
 
-        Debug.Log($"targetData = {targetData.Value.cubeRef.name}");
+        Debug.Log($"targetData = {targetData.Value.cubeRef.name}"); 
         if (targetData == null)
         {
             Debug.LogWarning($"Target {target.name} has no SpawnData!");
