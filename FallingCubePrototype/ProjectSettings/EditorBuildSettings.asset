@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TestStackedCubes.unity
     guid: 25127baf96d0c4d4aa5ec02eb31fbe91
+  - enabled: 1
+    path: Assets/Scenes/TestSpikedCubes.unity
+    guid: 7998c8a7921b25d4a8115b0543195d27
   m_configObjects: {}
