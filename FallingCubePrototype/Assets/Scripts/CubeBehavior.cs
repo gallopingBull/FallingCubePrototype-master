@@ -18,6 +18,7 @@ public class CubeBehavior : MonoBehaviour
     public Guid id; // I think it might be better to use a GUID instead.
     
     public States state;
+    public CubeType type;
     private Rigidbody rb;
     public Vector3 velocity;
     private Vector3 prevVel;
@@ -614,4 +615,9 @@ public class CubeBehavior : MonoBehaviour
     #endregion
 
     #endregion
+}
+
+public enum CubeType
+{
+    Colored, Spiked
 }
