@@ -216,7 +216,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5149774048836549129, guid: 445e614cfb8edcc4f89acf8d66d67a47, type: 3}
       propertyPath: m_Name
-      value: Cube Spike Variant Variant D
+      value: Spiked Cube Variant D
       objectReference: {fileID: 0}
     - target: {fileID: 5149774048836549235, guid: 445e614cfb8edcc4f89acf8d66d67a47, type: 3}
       propertyPath: m_RootOrder
