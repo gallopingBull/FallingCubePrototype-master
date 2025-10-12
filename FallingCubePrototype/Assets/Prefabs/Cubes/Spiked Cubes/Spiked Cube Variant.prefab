@@ -39,9 +39,13 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2308984914898095219, guid: 5fc93216a95dbf140a27b8ea71a4b575, type: 3}
+      propertyPath: type
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4807872587156508070, guid: 5fc93216a95dbf140a27b8ea71a4b575, type: 3}
       propertyPath: m_Name
-      value: Cube Spike Variant
+      value: Spiked Cube Variant
       objectReference: {fileID: 0}
     - target: {fileID: 4807872587156508124, guid: 5fc93216a95dbf140a27b8ea71a4b575, type: 3}
       propertyPath: m_RootOrder

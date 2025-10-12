@@ -77,6 +77,11 @@ public class CubeBehavior : MonoBehaviour
     [SerializeField] TextMeshProUGUI cubePosText;
     private Coroutine lastRoutine = null;
 
+    CubeBehavior()
+    {
+        
+    }
+
     #endregion
 
     #region functions 
@@ -368,7 +373,8 @@ public class CubeBehavior : MonoBehaviour
         if (!rend)
             rend = GetComponentInChildren<Renderer>();
 
-        SetMaterialColor();
+        if(type == CubeType.Colored)
+            SetMaterialColor();
         
         cubeIDText.text = id.ToString();
         cubeColorText.text = color.ToString();

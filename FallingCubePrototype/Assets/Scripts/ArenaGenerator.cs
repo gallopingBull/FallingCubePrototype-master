@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -204,6 +203,7 @@ public class ArenaGenerator : MonoBehaviour
         // If no cubes of the same color were found within the minimum distance, return false
         return false;
     }
+    
     public void SpawnCube(SpawnData data)
     {
         var cube = Instantiate(cubePrefab, data.position, Quaternion.identity, cubesParent);

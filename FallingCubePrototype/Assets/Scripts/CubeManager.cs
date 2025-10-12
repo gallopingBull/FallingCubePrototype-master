@@ -204,14 +204,41 @@ public class CubeManager : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
+    // Add these fields somewhere in your class
+    [SerializeField] private int maxSpikedCubes = 10;
+    private int currentSpikedCubes = 0;
+
     public void SpawnCube(SpawnData data)
     {
-        int random = UnityEngine.Random.Range(0, cubePrefabs.Length);
-        var cube = Instantiate(cubePrefabs[random], data.position, Quaternion.identity, cubesParent);
-        data.cubeRef = cube;    
+        int randomIndex = UnityEngine.Random.Range(0, cubePrefabs.Length);
+
+        // Check if the chosen prefab is a spiked cube
+        var chosenPrefab = cubePrefabs[randomIndex];
+        var cubeBehavior = chosenPrefab.GetComponent<CubeBehavior>();
+
+        // If it's spiked and we've reached the limit, fallback to default cube
+        if (cubeBehavior.type == CubeType.Spiked && currentSpikedCubes >= maxSpikedCubes)
+        {
+            chosenPrefab = cubePrefabs[0]; // fallback
+            cubeBehavior = chosenPrefab.GetComponent<CubeBehavior>();
+        }
+
+        var cube = Instantiate(chosenPrefab, data.position, Quaternion.identity, cubesParent);
+        data.cubeRef = cube;
         spawnData.Add(data);
 
-        cube.GetComponent<CubeBehavior>().InitializeCube(data.id, data.color); // this should allow some color colored cubes at some point
+        var cubeComp = cube.GetComponent<CubeBehavior>();
+        if (cubeComp.type == CubeType.Colored)
+        {
+            cubeComp.InitializeCube(data.id, data.color);
+        }
+        else if (cubeComp.type == CubeType.Spiked)
+        {
+            data.color = ColorOption.Neutral;
+            cubeComp.InitializeCube(data.id, data.color);
+            currentSpikedCubes++; // increment count after spawning spiked cube
+        }
+
         cubes.Add(cube);
     }
 
@@ -620,5 +647,6 @@ public struct SpawnData
     public Guid id;
     public Vector3 position;
     public ColorOption color;
+    //public CubeType cubeType;   
     public GameObject cubeRef;
 }

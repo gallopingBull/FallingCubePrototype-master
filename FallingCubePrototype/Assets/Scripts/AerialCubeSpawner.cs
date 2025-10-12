@@ -255,7 +255,6 @@ public class AerialCubeSpawner : MonoBehaviour
 
         for (int x = 0; x < gridPositions.Count; x++)
         {
-
             GameObject loc = new GameObject();
 
             //loc.name = $"SpawnLoc {x}";
