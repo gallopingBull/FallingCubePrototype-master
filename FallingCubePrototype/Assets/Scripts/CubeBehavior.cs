@@ -448,7 +448,7 @@ public class CubeBehavior : MonoBehaviour
             //Draw a cube that extends to where the hit exists
             Gizmos.DrawWireCube(transform.position + (-transform.up) * m_Hit.distance, transform.localScale * BoxColliderSize);
         }
-        // If there hasn't been a hit yet, draw the ray at the maximum distancepull push
+        // If there hasn't been a hit yet, draw the ray at the maximum distance
         else
         {
             // Draw a Ray forward from GameObject toward the maximum distance

@@ -39,6 +39,9 @@ public class CubeManager : MonoBehaviour
     private const int maxAttempts = 3;
     // TODO: the mimunum distance should be passed throuigh the method call. 
     [SerializeField] float minColorMatchDistance = 4f;
+    
+    [SerializeField] private int maxSpikedCubes = 15;
+    private int currentSpikedCubes = 0;
 
     public bool arenaGenerated = false;
 
@@ -204,10 +207,6 @@ public class CubeManager : MonoBehaviour
         OnFloorComplete?.Invoke();
     }
 
-    // Add these fields somewhere in your class
-    [SerializeField] private int maxSpikedCubes = 10;
-    private int currentSpikedCubes = 0;
-
     public void SpawnCube(SpawnData data)
     {
         int randomIndex = UnityEngine.Random.Range(0, cubePrefabs.Length);
@@ -238,7 +237,7 @@ public class CubeManager : MonoBehaviour
             cubeComp.InitializeCube(data.id, data.color);
             currentSpikedCubes++; // increment count after spawning spiked cube
         }
-
+        Debug.Log($"currentSpikedCubes: {currentSpikedCubes}");
         cubes.Add(cube);
     }
 
