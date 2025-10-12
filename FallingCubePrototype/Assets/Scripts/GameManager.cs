@@ -316,6 +316,19 @@ public class GameManager : MonoBehaviour
         z = ((cubeManager.gridSizeZ * cubeManager.CubeSize) / 2) - 1;
         Player.transform.position = new Vector3(x, yOffset, z);
         Debug.Log($"player spawn position = x: {x}, y:{yOffset} z: {z}");
+
+        RaycastHit hit; 
+        bool hitSpikedCube = Physics.BoxCast(Player.transform.position,
+             transform.localScale * CubeManager.CUBE_SCALE_SIZE,
+             -transform.up, out hit,
+             transform.rotation, 20f, LayerMask.NameToLayer("Cube"));
+
+        Debug.Log($"-----------hitSpikedCube: {hitSpikedCube} -----------");
+        if (hitSpikedCube)
+        {
+            Debug.Log($"hit.transform.name: {hit.transform.name}");
+        }
+
         Player.SetActive(true);
         cameraTarget.transform.position = new Vector3(x, 0, z);
     }
