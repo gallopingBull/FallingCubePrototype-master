@@ -5,6 +5,10 @@ prevent player from grabbing cube while they or the a cube is falling.
 
 ------
 
+GUIDs appended to cube gameobject name are assigned to two different cube gameobjects (mnost likely the following cube that was spawned).
+	
+------
+
 - test pause menu and take another look at the canvas gameobject and how its setup across scenes
 	- any room for improvement or consildation, etc.
 	
@@ -40,7 +44,7 @@ LINUX (SteamDeck) issues:
 ---------------------
 
 
-# clientDirectory: D:\Steam\steamapps\common\
+	# clientDirectory: D:\Steam\steamapps\common\
 	
 
 -----0000----------0000----------0000-----	
@@ -88,3 +92,5 @@ ADD UTILITY BELT BONE
 
 MESH SOURCE:
 https://models.spriters-resource.com/gamecube/pn03productnumberzerothree/asset/289777/
+
+

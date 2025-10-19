@@ -221,7 +221,8 @@ public class CubeManager : MonoBehaviour
             chosenPrefab = cubePrefabs[0]; // fallback
             cubeBehavior = chosenPrefab.GetComponent<CubeBehavior>();
         }
-
+        
+        data.cubeType = cubeBehavior.type;
         var cube = Instantiate(chosenPrefab, data.position, Quaternion.identity, cubesParent);
         data.cubeRef = cube;
         spawnData.Add(data);
@@ -646,6 +647,6 @@ public struct SpawnData
     public Guid id;
     public Vector3 position;
     public ColorOption color;
-    //public CubeType cubeType;   
+    public CubeType cubeType;   
     public GameObject cubeRef;
 }

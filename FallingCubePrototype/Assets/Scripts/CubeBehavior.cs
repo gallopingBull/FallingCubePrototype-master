@@ -77,11 +77,6 @@ public class CubeBehavior : MonoBehaviour
     [SerializeField] TextMeshProUGUI cubePosText;
     private Coroutine lastRoutine = null;
 
-    CubeBehavior()
-    {
-        
-    }
-
     #endregion
 
     #region functions 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -126,6 +128,7 @@ public class GameManager : MonoBehaviour
         {
             InitUI();
             InitalTimerPanel.SetActive(false);
+            SpawnPlayer();  
         }
     }
 
@@ -316,21 +319,58 @@ public class GameManager : MonoBehaviour
         z = ((cubeManager.gridSizeZ * cubeManager.CubeSize) / 2) - 1;
         Player.transform.position = new Vector3(x, yOffset, z);
         Debug.Log($"player spawn position = x: {x}, y:{yOffset} z: {z}");
-
+        
+        // Check for any spiked cubes beneahth the player spawn position
+        
+        Debug.Log($"- Checking for spiked cubes undernath player -");
         RaycastHit hit; 
         bool hitSpikedCube = Physics.BoxCast(Player.transform.position,
              transform.localScale * CubeManager.CUBE_SCALE_SIZE,
              -transform.up, out hit,
              transform.rotation, 20f, LayerMask.NameToLayer("Cube"));
 
-        Debug.Log($"-----------hitSpikedCube: {hitSpikedCube} -----------");
+        Debug.Log($"----------- hitSpikedCube: {hitSpikedCube} -----------");
         if (hitSpikedCube)
         {
             Debug.Log($"hit.transform.name: {hit.transform.name}");
+            List<SpawnData> targetSpawnData = CubeManager.spawnData.Where(sd => sd.cubeRef == hit.transform.gameObject).ToList();
+
+            if (targetSpawnData != null)
+            {
+                foreach (SpawnData spawnData in targetSpawnData)
+                { 
+                    CubeBehavior cb = spawnData.cubeRef.gameObject.GetComponent<CubeBehavior>();
+                    if (cb.type != CubeType.Spiked)
+                    {
+                        Debug.Log("----------- not a spiked cube, continue -----------");
+                        continue;
+                    }
+                    Destroy(spawnData.cubeRef);
+
+                    CubeManager.cubes.Clear();
+                    SpawnData sd = new SpawnData();
+                    sd.color = ColorOption.Neutral;
+                    sd.position = spawnData.position;
+                    sd.cubeRef = null;
+                    sd.cubeType = CubeType.Colored;
+
+                    CubeManager.spawnData.Remove(spawnData);
+                    CubeManager.spawnData.Clear();
+
+                    CubeManager.SpawnCube(spawnData);
+                }
+            }
+            else
+            {
+                Debug.Log("");
+            }
         }
 
+        Debug.Log("- Enabling Player GameObject -");
         Player.SetActive(true);
-        cameraTarget.transform.position = new Vector3(x, 0, z);
+        
+        if(cameraTarget)
+            cameraTarget.transform.position = new Vector3(x, 0, z); 
     }
 
     private void DisplayHUD()
