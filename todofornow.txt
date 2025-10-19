@@ -9,21 +9,6 @@ GUIDs appended to cube gameobject name are assigned to two different cube gameob
 	
 ------
 
-- test pause menu and take another look at the canvas gameobject and how its setup across scenes
-	- any room for improvement or consildation, etc.
-	
-		- move menus all to one single canvas that is stored in main menu scene
-			- currently main menu canvas is different than the other canvas prefab used in main gamplay scenes. consoidate these.
-		
-		- create singleton UIManager that handles the display of main menu, pause menu, and HUD
-			
-		
-		- make options accessible from pause menu
-		
-		- add menu sounds
-	
-
-----------
 
 save instances of randomly generated maps from within the player and editor.
 
