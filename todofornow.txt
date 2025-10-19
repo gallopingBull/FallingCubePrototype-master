@@ -56,7 +56,8 @@ idea: slow mo power up when player moves at  regular spped and everything else m
 idea: cubes that are snapped together from whatever side they interact with each other with. 
 idea: implement double cherry power up similar to mario bros
 idea: eagle vision/detective vision-like feature that allows the playr to see colored cubes through other cubes. 
-
+idea: perform certain combos on cubes to delay combo explosion. allowing player some time to move/adjust matching colored cubes next to eachother.
+idea: different hits can push a single cube or several stacked cubes n ammount of spaces.
 ideas about infinite mode:
 - map randomly generates periodically through the round
 	- the frequency of this should be dertermined by difficulty/round length/total score/ etc/
