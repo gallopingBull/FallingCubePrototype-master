@@ -36,13 +36,21 @@ LINUX (SteamDeck) issues:
 
 
 
-cool idea: show arm coming down when left or right trigger are released during climbing. maybe the player appears like theyre falling?w
+cool idea: show arm coming down when left or right trigger are released during climbing. maybe the player appears like theyre falling or smoking a vape?
+		- maybe the vape can be a mechanic and it reveals invisible threats (spiked cubes, hidden traps, etc.)
 idea: slow mo power up when player moves at  regular spped and everything else moves slower for a duration of time.
 idea: cubes that are snapped together from whatever side they interact with each other with. 
 idea: implement double cherry power up similar to mario bros
 idea: eagle vision/detective vision-like feature that allows the playr to see colored cubes through other cubes. 
 idea: perform certain combos on cubes to delay combo explosion. allowing player some time to move/adjust matching colored cubes next to eachother.
 idea: different hits can push a single cube or several stacked cubes n ammount of spaces.
+
+idea: treat climbing similar pushing/pulling cubes. while climbing, horizontal movement will only be allowed when player 
+is at center of the cube and there are cubes on adjacent position. This applies to vertical movement as well. 
+
+Also, climbing should be faster. instead of the current movement speed and animations, the player should jump from cube to cube. They will always land at the
+center of the cube.
+
 ideas about infinite mode:
 - map randomly generates periodically through the round
 	- the frequency of this should be dertermined by difficulty/round length/total score/ etc/

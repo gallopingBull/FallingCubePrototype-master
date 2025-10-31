@@ -565,6 +565,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPaused: 0
+--- !u!1 &1015838458 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8584376105293532429, guid: 268479d6cae0e7848968e932c072f222, type: 3}
+  m_PrefabInstance: {fileID: 4512647101403206994}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1124881097 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3413465020350306063, guid: 268479d6cae0e7848968e932c072f222, type: 3}
@@ -1961,7 +1966,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneNames: []
-  levelSelectButPrefab: {fileID: 0}
+  levelSelectButPrefab: {fileID: 8758539023031352810, guid: 474c36e1ce1240e4c8baaec7554c8d9e, type: 3}
+  rootPanel: {fileID: 1015838458}
+--- !u!114 &4512647101403207003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4512647101403206995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8236a84a549ffe445b63574f8270cac8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7016482256019464056
 PrefabInstance:
   m_ObjectHideFlags: 0

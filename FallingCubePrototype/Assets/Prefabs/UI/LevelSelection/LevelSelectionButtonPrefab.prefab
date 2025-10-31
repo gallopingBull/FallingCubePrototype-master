@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Infinite Mode
+  m_text: Level Name
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0b9750da691a9484395b4ea602243ff2, type: 2}
   m_sharedMaterial: {fileID: 2906188603085817958, guid: 0b9750da691a9484395b4ea602243ff2, type: 2}
@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 7526535524755532150}
   - component: {fileID: 7526535524755532155}
   m_Layer: 5
-  m_Name: InfiniteMode
+  m_Name: LevelSelectionButtonPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
