@@ -52,7 +52,7 @@ Also, climbing should be faster. instead of the current movement speed and anima
 center of the cube.
 
 ideas about infinite mode:
-- map randomly generates periodically through the round
+- map randomly generates periodically through the round (Refresh)
 	- the frequency of this should be dertermined by difficulty/round length/total score/ etc/
 - The player should be able to trigger these map  regeneration a limited set of times. 
 	- maybe this earned through a session, or only a finite count is allowed?
