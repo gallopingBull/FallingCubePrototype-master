@@ -65,7 +65,6 @@ public class LevelSelectionMenu : MonoBehaviour
                 button.GetComponentInChildren<TextMeshProUGUI>().text = sceneName;
             }
             
-            
             levelSelectionButtons.Add(button);
             button.transform.SetAsFirstSibling();
         }
