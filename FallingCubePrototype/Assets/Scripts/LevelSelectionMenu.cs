@@ -64,14 +64,15 @@ public class LevelSelectionMenu : MonoBehaviour
                 button.name = $"{sceneName} Button";
                 button.GetComponentInChildren<TextMeshProUGUI>().text = sceneName;
             }
-            
+            Navigation customNav = new Navigation();
+            customNav.mode = Navigation.Mode.Vertical;
+            button.GetComponent<Button>().navigation = customNav;
             levelSelectionButtons.Add(button);
-            button.transform.SetAsFirstSibling();
         }
 
         Debug.Log($"levelSelectionButtons.Count: {levelSelectionButtons.Count}");
 
-        // Reorder list
+        // Reorder list in scene hierarchy
         for (int i = levelSelectionButtons.Count ; i > 0; i--)
             levelSelectionButtons[i - 1].transform.SetAsFirstSibling();
 
