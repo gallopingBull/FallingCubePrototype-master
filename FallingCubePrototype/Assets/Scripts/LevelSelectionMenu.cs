@@ -40,7 +40,7 @@ public class LevelSelectionMenu : MonoBehaviour
             // initializing ui buttons
             GameObject button = Instantiate(levelSelectButPrefab, rootPanel.transform);
             button.GetComponent<Button>().onClick.AddListener(() => GetComponent<LoadScene>().LoadSceneByName(sceneName));
-            button.GetComponent<Button>().onClick.AddListener(() => audioSource.Play());
+            button.GetComponent<Button>().onClick.AddListener(() => audioSource.Play()); 
 
             // weird way to trigger audio to onSelect on button
             EventTrigger eventTrigger = button.GetComponent<EventTrigger>();
