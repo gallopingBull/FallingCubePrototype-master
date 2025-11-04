@@ -70,11 +70,18 @@ public class Pause : MonoBehaviour
     {
         if (Input.GetKeyDown("escape") || Input.GetButtonDown("Start"))
         {
-            if (!pauseMenu || !GameManager.gm.HUDPanel)
+            if (!pauseMenu)
             {
-                Debug.LogWarning("Pause or HUD Gameobjects are not assigned.");
+                Debug.LogWarning("Pause Gameobjects are not assigned.");
                 return;
             }
+
+            // Not entirely sure if this needs to be checked... 
+            //if (!!GameManager.gm.HUDPanel)
+            //{
+            //    Debug.LogWarning("HUD Gameobjects are not assigned.");
+            //    return;
+            //}
 
             if (!isPaused)
                 PauseGame();
