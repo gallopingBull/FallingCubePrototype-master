@@ -29,7 +29,7 @@ LINUX (SteamDeck) issues:
 ---------------------
 
 
-	# clientDirectory: D:\Steam\steamapps\common\
+# clientDirectory: D:\Steam\steamapps\common\
 	
 
 -----0000----------0000----------0000-----	
