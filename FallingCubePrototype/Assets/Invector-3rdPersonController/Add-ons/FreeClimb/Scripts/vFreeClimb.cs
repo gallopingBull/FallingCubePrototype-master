@@ -240,6 +240,7 @@ namespace Invector.vCharacterController.vActions
 
                 dragInfo.position = transform.TransformPoint(hitPointLocal);
 
+                //JS: Maybe move input/controller stuff here... investigate more. This is def. the entrance, 
                 if (enterExitInput.GetButtonDown() && dragInfo.inDrag && input.magnitude == 0 && Time.time > (oldInput + 0.5f))
                     ExitClimb();
                 else if (dragInfo.canGo && (enterExitInput.GetButton() || TP_Input.cc.input.z > 0.1f) && !dragInfo.inDrag && Time.time > (oldInput + 2f))
