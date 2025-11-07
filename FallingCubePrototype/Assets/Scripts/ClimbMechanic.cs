@@ -2,7 +2,6 @@ namespace galloping_bull.infinite_squared.PlayerController
 {
     using Invector.vCharacterController;
     using Invector.vCharacterController.vActions;
-    using Shapes;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -10,8 +9,8 @@ namespace galloping_bull.infinite_squared.PlayerController
     {
         public Text text;
 #if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
-    private string L_TriggerName = "LT_Linux";
-    private string R_TriggerName = "RT_Linux";
+        private string L_TriggerName = "LT_Linux";
+        private string R_TriggerName = "RT_Linux";
 #else
         private string L_TriggerName = "LT";
         private string R_TriggerName = "RT";
